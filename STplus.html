@@ -93,6 +93,7 @@
   <div class="tabs mt-4 fade-up">
     <button class="tab on" data-t="acc"><i data-lucide="users-round"></i><span>Аккаунты</span></button>
     <button class="tab" data-t="new"><i data-lucide="user-plus"></i><span>Создать</span></button>
+    <button class="tab" data-t="gift"><i data-lucide="gem"></i><span>Награды</span></button>
     <button class="tab" data-t="perm"><i data-lucide="shield-check"></i><span>Права</span></button>
     <button class="tab" data-t="sys"><i data-lucide="settings-2"></i><span>Система</span></button>
   </div>
@@ -104,6 +105,7 @@
 <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
 <script>
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const icons=()=>window.lucide&&lucide.createIcons(); icons();
 function toast(msg,type='info'){const m={info:['info','text-violet-300'],ok:['check','text-emerald-300'],err:['circle-alert','text-rose-300']}[type]||['info','text-violet-300'];
   const el=document.createElement('div');el.className='toast';el.innerHTML=`<span class="${m[1]} flex"><i data-lucide="${m[0]}" style="width:15px;height:15px"></i></span><span class="text-white/85">${msg}</span>`;
@@ -121,6 +123,8 @@ const ROLES={
 let ACC=[];
 let GROUPS=[];
 let STATE={grades:{},att:{},hw:{}};
+let DESIGNS=[];
+let giftOpen='';
 async function request(url,options={}){
   const r=await fetch(url,{...options,credentials:'same-origin',headers:{'Content-Type':'application/json',...(options.headers||{})}});
   const d=await r.json().catch(()=>({}));
@@ -131,6 +135,7 @@ async function request(url,options={}){
 async function loadAccounts(){ACC=await request('/api/accounts',{cache:'no-store'});}
 async function loadGroups(){GROUPS=await request('/api/groups',{cache:'no-store'});const count=$('#stGroups');if(count)count.textContent=GROUPS.length;const selector=$('#fGroup');if(selector){const previous=selector.value;selector.innerHTML=GROUPS.map(g=>`<option value="${String(g.id).replace(/&/g,'&amp;').replace(/\"/g,'&quot;').replace(/</g,'&lt;')}">${g.name}</option>`).join('');if(GROUPS.some(g=>g.id===previous))selector.value=previous;}}
 async function loadState(){STATE=await request('/api/state',{cache:'no-store'});}
+async function loadDesigns(){const d=await request('/api/profile',{cache:'no-store'});DESIGNS=d.designs||[];}
 function renderGroups(){const el=$('#groupList');if(!el)return;el.innerHTML=GROUPS.map(g=>`<div class="flex items-center gap-3 rounded-xl bg-white/[.03] border border-white/[.06] p-3"><div class="flex-1 min-w-0"><div class="text-[13px] font-semibold">${g.name}</div><div class="text-[11px] text-white/40">${g.specialty||'Учебная группа'} · ${g.course} курс · куратор: ${g.curatorLogin||'не назначен'} · староста: ${g.starostaLogin||'не назначен'}</div></div><button class="icon-btn !w-8 !h-8 !text-rose-300" data-group-del="${encodeURIComponent(g.id)}" title="Удалить группу"><i data-lucide="trash-2" style="width:14px;height:14px"></i></button></div>`).join('')||'<p class="text-[12px] text-white/40">Групп пока нет.</p>';icons();$$('[data-group-del]').forEach(b=>b.addEventListener('click',async()=>{const g=GROUPS.find(x=>x.id===decodeURIComponent(b.dataset.groupDel));if(!g||!confirm(`Удалить группу «${g.name}»?`))return;try{await request('/api/groups/'+encodeURIComponent(g.id),{method:'DELETE'});await loadGroups();renderGroups();toast('Группа удалена','ok')}catch(e){toast(e.message,'err')}}));}
 
 let tab='acc';
@@ -149,11 +154,12 @@ function viewAcc(){
 function accRows(f=''){
   const list=ACC.filter(a=>(a.fio+a.login+ROLES[a.role].n).toLowerCase().includes(f.toLowerCase()));
   return list.map((a,i)=>{const R=ROLES[a.role];const idx=ACC.indexOf(a);
+    const initials=String(a.fio||'').split(' ').map(x=>x[0]).slice(0,2).join('');
     return `<div class="flex items-center gap-3 p-3 ls-item" style="animation-delay:${i*.02}s">
-      <span class="av" style="background:${R.g}">${a.fio.split(' ').map(x=>x[0]).slice(0,2).join('')}</span>
+      <span class="pf-ava" style="width:38px;height:38px;font-size:12.5px;background:${R.g}">${a.avatar?`<img src="${esc(a.avatar)}" alt="">`:esc(initials)}</span>
       <span class="flex-1 min-w-0">
-        <span class="block text-[13.5px] font-semibold truncate">${a.fio}</span>
-        <span class="block text-[11.5px] text-white/35 mt-0.5 truncate">@${a.login}${a.group?` · ${a.group}`:''}${a.subj?` · ${a.subj}`:''}</span>
+        <span class="flex items-center gap-1.5 min-w-0"><span class="text-[13.5px] font-semibold truncate">${esc(a.fio)}</span>${a.verified?`<span class="verified" title="Проверенный аккаунт"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5"/></svg></span>`:''}${a.status&&a.status.kind==='emoji'?`<span class="text-[13px]">${esc(a.status.value)}</span>`:''}</span>
+        <span class="block text-[11.5px] text-white/35 mt-0.5 truncate">@${esc(a.login)}${a.group?` · ${esc(a.group)}`:''}${a.subj?` · ${esc(a.subj)}`:''}</span>
       </span>
       <span class="chip ${R.c} shrink-0"><i data-lucide="${R.i}"></i>${R.n}</span>
       ${a.role!=='dev'?`<button class="icon-btn shrink-0 !w-8 !h-8 !text-rose-300" data-del="${idx}" title="Удалить"><i data-lucide="trash-2" style="width:14px;height:14px"></i></button>`:''}
@@ -198,6 +204,87 @@ function viewNew(){
     </ul>
   </div>`;
 }
+/* ---------- НАГРАДЫ: эксклюзивные оформления, «проверенный» аккаунт, статус-эмодзи ---------- */
+let giftQ='';
+const EXCLUSIVE=()=>DESIGNS.filter(d=>d.exclusive);
+function viewGift(){
+  return `<div class="glass rounded-2xl p-4">
+    <div class="flex items-center justify-between gap-2 mb-2">
+      <div class="sec-title !mb-0"><i data-lucide="gem"></i>Награды и доступы</div>
+      <input class="inp !py-1.5 !w-auto !text-[12px]" id="gq" placeholder="поиск…" value="${esc(giftQ)}">
+    </div>
+    <div class="rounded-2xl divide-y divide-white/[0.06] overflow-hidden border border-white/[.07]" id="giftList"></div>
+    <p class="text-[11.5px] text-white/35 mt-3">Три оформления общедоступны и есть у всех. Эксклюзивные включаются отсюда: студент видит их в Настройках → Профиль и может выбрать любое выданное.</p>
+  </div>`;
+}
+function giftRow(a){
+  const R=ROLES[a.role]||{n:a.role,c:'c-s',i:'user',g:'linear-gradient(135deg,#475569,#334155)'};
+  const own=(a.designs||[]).filter(id=>EXCLUSIVE().some(d=>d.id===id));
+  const emoji=a.status&&a.status.kind==='emoji'?a.status.value:'';
+  const initials=String(a.fio||'').split(' ').map(x=>x[0]).slice(0,2).join('');
+  const open=giftOpen===a.login;
+  return `<div class="p-3 ls-item">
+    <div class="flex items-center gap-3">
+      <span class="pf-ava" style="width:38px;height:38px;font-size:12.5px;background:${R.g}">${a.avatar?`<img src="${esc(a.avatar)}" alt="">`:esc(initials)}</span>
+      <span class="flex-1 min-w-0">
+        <span class="flex items-center gap-1.5 min-w-0"><span class="text-[13.5px] font-semibold truncate">${esc(a.fio)}</span>${a.verified?'<span class="chip c-b !py-0.5 !px-1.5">галочка</span>':''}${emoji?`<span class="text-[13px]">${esc(emoji)}</span>`:''}</span>
+        <span class="block text-[11.5px] text-white/35 mt-0.5 truncate">@${esc(a.login)} · ${esc(R.n)}${a.group?' · '+esc(a.group):''} · оформление: ${esc((DESIGNS.find(d=>d.id===a.design)||{}).name||a.design)}</span>
+      </span>
+      <button class="icon-btn shrink-0" data-gift-open="${esc(a.login)}" title="Выдать награды"><i data-lucide="${open?'chevron-up':'gift'}" style="width:15px;height:15px"></i></button>
+    </div>
+    ${open?giftDetail(a,own):''}
+  </div>`;
+}
+function giftDetail(a,own){
+  const emoji=a.status&&a.status.kind==='emoji'?a.status.value:'';
+  return `<div class="mt-3 pt-3 border-t border-white/[.06]">
+    <div class="sec-title"><i data-lucide="palette"></i>Эксклюзивные оформления</div>
+    <div class="grid sm:grid-cols-2 gap-2">
+      ${EXCLUSIVE().map(d=>{const has=own.includes(d.id),used=a.design===d.id;
+        return `<button type="button" class="design-card ${has?'on':''}" data-design-gift="${esc(a.login)}" data-design-id="${esc(d.id)}" data-take="${has?0:1}">
+          <span class="design-sw" style="background:linear-gradient(135deg,${d.colors[0]},${d.colors[1]})"></span>
+          <span class="min-w-0 flex-1"><span class="block text-[13px] font-semibold truncate">${esc(d.name)}${used?' · выбрано':''}</span><span class="block text-[11px] text-white/40 truncate">${esc(d.hint)}</span></span>
+          <i data-lucide="${has?'check':'lock'}" style="width:15px;height:15px" class="${has?'text-emerald-300':'text-white/30'} shrink-0"></i>
+        </button>`}).join('')||'<p class="text-[12px] text-white/40">Каталог оформлений не загружен.</p>'}
+    </div>
+    <div class="sec-title mt-4"><i data-lucide="badge-check"></i>Отметка и статус</div>
+    <div class="flex flex-wrap items-center gap-2">
+      <button class="btn ${a.verified?'btn-d':'btn-p'} !py-2 !text-[12.5px]" data-verified-gift="${esc(a.login)}" data-take="${a.verified?0:1}">
+        <i data-lucide="${a.verified?'user-x':'badge-check'}" style="width:15px;height:15px"></i>${a.verified?'Снять галочку':'Выдать «проверенный»'}
+      </button>
+      <input class="inp !w-[130px] !py-2 !text-[13px]" placeholder="эмодзи статуса" data-emoji-in="${esc(a.login)}" value="${esc(emoji)}" maxlength="16">
+      <button class="btn btn-g !py-2 !text-[12.5px]" data-emoji-gift="${esc(a.login)}"><i data-lucide="smile" style="width:15px;height:15px"></i>Поставить</button>
+    </div>
+    <p class="text-[11.5px] text-white/35 mt-2.5">Галочка и эмодзи видны рядом с ником в дневнике, рейтинге и чатах. Анимированную GIF или фото студент загружает сам в Настройках → Профиль.</p>
+  </div>`;
+}
+function renderGift(){
+  const el=$('#giftList');if(!el)return;
+  const f=giftQ.trim().toLowerCase();
+  const list=ACC.filter(a=>a.role!=='dev'&&(`${a.fio} ${a.login} ${ROLES[a.role]?ROLES[a.role].n:''}`).toLowerCase().includes(f));
+  el.innerHTML=list.map(giftRow).join('')||`<div class="p-6 text-center text-[13px] text-white/40">Ничего не найдено</div>`;
+  icons();bindGift();
+}
+async function grant(login,body,done){
+  try{await request(`/api/accounts/${encodeURIComponent(login)}/grant`,{method:'POST',body:JSON.stringify(body)});await loadAccounts();renderGift();toast(done,'ok')}catch(e){toast(e.message,'err')}
+}
+function bindGift(){
+  $$('[data-gift-open]').forEach(b=>b.addEventListener('click',()=>{giftOpen=giftOpen===b.dataset.giftOpen?'':b.dataset.giftOpen;renderGift()}));
+  $$('[data-design-gift]').forEach(b=>b.addEventListener('click',()=>{
+    const login=b.dataset.designGift,id=b.dataset.designId,take=b.dataset.take==='1';
+    const name=(DESIGNS.find(d=>d.id===id)||{}).name||id;
+    grant(login,{design:id,grant:take},take?`«${name}» выдано`:`«${name}» снято`);
+  }));
+  $$('[data-verified-gift]').forEach(b=>b.addEventListener('click',()=>{
+    const login=b.dataset.verifiedGift,take=b.dataset.take==='1';
+    grant(login,{verified:take},take?'Галочка выдана':'Галочка снята');
+  }));
+  $$('[data-emoji-gift]').forEach(b=>b.addEventListener('click',()=>{
+    const login=b.dataset.emojiGift,input=$(`[data-emoji-in="${login}"]`);
+    const value=(input&&input.value||'').trim();
+    grant(login,{statusEmoji:value},value?'Эмодзи статуса обновлён':'Статус убран');
+  }));
+}
 const PERMS=[
   ['Просмотр расписания',['student','starosta','teacher','curator','admin','dev']],
   ['Оценки своей пары',['teacher','curator','dev']],
@@ -208,6 +295,7 @@ const PERMS=[
   ['Изменение расписания',['starosta','curator','admin','dev']],
   ['Мероприятия',['starosta','curator','admin','dev']],
   ['Создание аккаунтов',['dev']],
+  ['Выдача оформлений и галочки',['dev']],
 ];
 function viewPerm(){
   const cols=['student','starosta','teacher','curator','admin','dev'];
@@ -239,7 +327,7 @@ function viewSys(){
     <div class="glass rounded-2xl p-4">
       <div class="sec-title"><i data-lucide="info"></i>О платформе</div>
       <div class="text-[12.5px] text-white/50 space-y-1"><div class="flex justify-between"><span>Версия</span><span>1.0</span></div>
-      <div class="flex justify-between"><span>Файлы</span><span>login · diary · studio · zhurnal · STplus</span></div></div>
+      <div class="flex justify-between"><span>Файлы</span><span>login · diary · chat · studio · zhurnal · STplus</span></div></div>
     </div>
   </div>`;
 }
@@ -247,10 +335,14 @@ function viewSys(){
 function render(){
   stats();
   const b=$('#body');
-  b.innerHTML = tab==='acc'?viewAcc():tab==='new'?viewNew():tab==='perm'?viewPerm():viewSys();
+  b.innerHTML = tab==='acc'?viewAcc():tab==='new'?viewNew():tab==='gift'?viewGift():tab==='perm'?viewPerm():viewSys();
   b.firstElementChild&&b.firstElementChild.classList.add('view');
   icons();
 
+  if(tab==='gift'){
+    renderGift();
+    $('#gq').addEventListener('input',e=>{giftQ=e.target.value;renderGift()});
+  }
   if(tab==='acc'){
     const list=$('#accList'); list.innerHTML=accRows(); icons(); bindAcc();
     $('#q').addEventListener('input',e=>{list.innerHTML=accRows(e.target.value);icons();bindAcc()});
@@ -297,7 +389,7 @@ function bindAcc(){
   try{
     const me=await request('/api/me',{cache:'no-store'});
     if(me.user.role!=='dev')return location.replace('/'+me.user.home);
-    await Promise.all([loadAccounts(),loadGroups(),loadState()]);render();
+    await Promise.all([loadAccounts(),loadGroups(),loadState(),loadDesigns()]);render();
   }catch(e){toast(e.message||'Ошибка загрузки','err')}
 })();
 </script>

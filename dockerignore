@@ -1,10 +1,12 @@
 .env
 data.json
+data/
 node_modules
 npm-debug.log*
 .git
 .gitignore
 README.md
+*.corrupt-*
 # Виртуальное окружение — не копируем из хоста
 .venv/
 venv/

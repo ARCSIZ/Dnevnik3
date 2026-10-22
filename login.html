@@ -889,8 +889,13 @@ function playSuccess(panel) {
     setTimeout(() => wrap.innerHTML = '', 2200);
   }
 }
+/* Куда вести после входа: сервер возвращает на страницу из ?next (например, /chat/<код>) */
+const nextTarget = (() => {
+  const raw = new URLSearchParams(location.search).get('next') || '';
+  return /^\/[a-z0-9._/-]{2,60}$/i.test(raw) && !raw.startsWith('//') && !/^\/login\.html/i.test(raw) ? raw : '';
+})();
 $('#btnSuccess').addEventListener('click', () => {
-  window.location.href = 'diary.html';
+  window.location.href = nextTarget || 'diary.html';
 });
 
 /* ================= ВХОД ================= */
@@ -909,7 +914,7 @@ $('#loginForm').addEventListener('submit', async e => {
     const data = await apiRequest('/api/login', {
       method: 'POST', body: JSON.stringify({ login: lg.value.trim(), password: ps.value })
     });
-    window.location.href = data.user.home;
+    window.location.href = nextTarget || data.user.home;
   } catch (error) {
     setLoading(btn, false);
     $('#loginErrorText').textContent = error.message;

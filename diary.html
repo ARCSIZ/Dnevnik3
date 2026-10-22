@@ -139,6 +139,18 @@
   .g2 { background: linear-gradient(135deg, #f43f5e, #e11d48); }
   .gn { background: rgba(255,255,255,.08); color: rgba(255,255,255,.4); box-shadow: none; }
 
+  /* ---------- Отметки посещаемости ---------- */
+  .att-pill {
+    display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 9px;
+    font-size: 12.5px; font-weight: 800; color: #fff; flex-shrink: 0; text-transform: uppercase;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.25);
+  }
+  .att-u { background: linear-gradient(135deg, #84cc16, #4d7c0f); }
+  .att-n { background: linear-gradient(135deg, #f43f5e, #be123c); }
+  .att-o { background: linear-gradient(135deg, #f59e0b, #d97706); }
+  .att-b { background: linear-gradient(135deg, #38bdf8, #0284c7); }
+  .mark-word { font-size: 11px; font-weight: 600; color: rgba(255,255,255,.45); }
+
   /* ---------- Экран урока ---------- */
   .det-in { animation: detIn .45s cubic-bezier(.16,1,.3,1) both; }
   .det-out { animation: detOut .2s cubic-bezier(.4,0,1,1) both; }
@@ -266,9 +278,23 @@
   .badge-lec { background: linear-gradient(135deg, #0ea5e9, #6366f1); }
   .badge-prac { background: linear-gradient(135deg, var(--g1), #c026d3); }
 
-  .lesson-card { position: relative; overflow: hidden; transition: transform .2s cubic-bezier(.34,1.4,.64,1), border-color .2s; }
+  .lesson-card { position: relative; overflow: hidden; transition: transform .2s cubic-bezier(.34,1.4,.64,1), border-color .2s, background .25s; }
   .lesson-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.16); }
   .lesson-card.ls-live { border-color: rgba(52,211,153,.4); box-shadow: 0 0 0 1px rgba(52,211,153,.18), 0 20px 50px -24px rgba(16,185,129,.25); }
+
+  /* Состоявшиеся пары уходят в серый: взгляд сразу цепляет только то, что ещё впереди */
+  .lesson-card.ls-past { background: linear-gradient(160deg, rgba(255,255,255,.026), rgba(255,255,255,.01)); border-color: rgba(255,255,255,.055); }
+  .lesson-card.ls-past h3 { color: rgba(255,255,255,.52); }
+  .lesson-card.ls-past .pair-badge { background: linear-gradient(135deg, #4b5563, #374151); box-shadow: none; }
+  .lesson-card.ls-past .chip { opacity: .5; }
+  .lesson-card.ls-past .ls-arrow { color: rgba(255,255,255,.16); }
+  .lesson-card.ls-past:hover { border-color: rgba(255,255,255,.13); }
+  .lesson-card.ls-past:hover h3, .lesson-card.ls-past:hover .chip { color: #fff; opacity: 1; }
+  .past-chip { color: rgba(255,255,255,.4); background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.09); }
+
+  .day-cell.past { opacity: .48; }
+  .day-cell.past .dc-dot { background: rgba(255,255,255,.35); }
+  .day-cell.past.on { opacity: 1; }
 
   .live-dot { width: 6px; height: 6px; border-radius: 99px; background: #34d399; animation: livePulse 1.6s ease-in-out infinite; }
   @keyframes livePulse { 0%,100% { box-shadow: 0 0 0 0 rgba(52,211,153,.5); } 50% { box-shadow: 0 0 0 5px rgba(52,211,153,0); } }
@@ -303,21 +329,67 @@
   }
   .nav-ind {
     position: absolute; top: 6px; bottom: 6px; left: 6px;
-    width: calc(50% - 6px); border-radius: 18px;
+    width: calc((100% - 12px) / 4); border-radius: 18px;
     background: linear-gradient(135deg, rgba(var(--g1rgb),.9), rgba(var(--g2rgb),.9));
     box-shadow: 0 10px 24px -8px rgba(var(--glow),.7), inset 0 1px 0 rgba(255,255,255,.25);
     transition: transform .42s cubic-bezier(.22,1.2,.36,1);
   }
   .nav-btn {
     position: relative; z-index: 1; flex: 1; display: flex; align-items: center; justify-content: center;
-    gap: 8px; padding: 12px 0; border-radius: 18px; border: none; background: none; cursor: pointer;
-    color: rgba(255,255,255,.45); font-size: 13.5px; font-weight: 600;
+    gap: 5px; padding: 12px 0; border-radius: 18px; border: none; background: none; cursor: pointer;
+    color: rgba(255,255,255,.45); font-size: 12px; font-weight: 600;
     transition: color .25s, transform .12s;
   }
-  .nav-btn svg { width: 19px; height: 19px; transition: transform .3s cubic-bezier(.34,1.56,.64,1); }
+  .nav-btn svg { width: 18px; height: 18px; transition: transform .3s cubic-bezier(.34,1.56,.64,1); }
   .nav-btn:active { transform: scale(.94); }
   .nav-btn.active { color: #fff; }
   .nav-btn.active svg { transform: scale(1.08); }
+  @media (max-width: 380px) { .nav-btn { gap: 3px; font-size: 10.8px; } .nav-btn svg { width: 16px; height: 16px; } }
+
+  /* ---------- Рейтинг ---------- */
+  .sort-tabs { display: flex; gap: 7px; overflow-x: auto; padding: 2px 1px 8px; }
+  .sort-btn {
+    flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 9999px;
+    font-size: 12px; font-weight: 600; color: rgba(255,255,255,.5); cursor: pointer;
+    background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); transition: all .2s;
+  }
+  .sort-btn svg { width: 13px; height: 13px; }
+  .sort-btn:hover { color: #fff; border-color: rgba(var(--acc),.35); }
+  .sort-btn.active { color: #fff; background: linear-gradient(135deg, var(--g1), var(--g2)); border-color: transparent; box-shadow: 0 6px 16px -6px rgba(var(--glow),.7); }
+  .sort-btn:active { transform: scale(.95); }
+
+  .rank-badge {
+    width: 30px; height: 30px; border-radius: 11px; display: grid; place-items: center; flex-shrink: 0;
+    font-size: 12.5px; font-weight: 800; color: rgba(255,255,255,.6); background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.07);
+  }
+  .rank-medal { color: #fff; border-color: transparent; box-shadow: 0 8px 18px -8px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.3); }
+  .rank-1 { background: linear-gradient(135deg, #fbbf24, #d97706); }
+  .rank-2 { background: linear-gradient(135deg, #cbd5e1, #94a3b8); }
+  .rank-3 { background: linear-gradient(135deg, #d97706, #92400e); }
+  .rank-out { background: rgba(255,255,255,.03); color: rgba(255,255,255,.28); }
+  .ava {
+    width: 34px; height: 34px; border-radius: 13px; display: grid; place-items: center; flex-shrink: 0;
+    font-size: 12px; font-weight: 700; color: #fff; letter-spacing: .02em;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.22);
+  }
+  .rate-row { width: 100%; text-align: left; display: flex; align-items: center; gap: 11px; padding: 11px 14px; cursor: pointer; transition: background .18s; }
+  .rate-row:hover { background: rgba(255,255,255,.03); }
+  .rate-row:active { background: rgba(255,255,255,.05); }
+  .rate-row.me { background: rgba(var(--g1rgb),.12); box-shadow: inset 3px 0 0 var(--acc-c); }
+  .rate-body { max-height: 0; overflow: hidden; transition: max-height .42s cubic-bezier(.16,1,.3,1), opacity .3s; opacity: 0; }
+  .rate-row.open + .rate-body { max-height: 380px; opacity: 1; }
+  .rate-chev { transition: transform .3s cubic-bezier(.34,1.4,.64,1); }
+  .rate-row.open .rate-chev { transform: rotate(90deg); }
+  .score-bar { height: 6px; border-radius: 99px; background: rgba(255,255,255,.07); overflow: hidden; }
+  .score-fill { height: 100%; border-radius: 99px; transform-origin: left; transform: scaleX(0); transition: transform .9s cubic-bezier(.16,1,.3,1); }
+  .podium-card { position: relative; overflow: hidden; padding: 13px 12px; border-radius: 20px; text-align: center; }
+  .podium-card .ava { margin: 0 auto 8px; }
+  /* Аватар может быть картинкой — тогда она закрывает градиент целиком */
+  .ava { position: relative; overflow: hidden; }
+  .ava img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+  /* ---------- Чаты: список и бейдж (сам диалог живёт на странице /chat) ---------- */
 
   /* ---------- Скрыть все скролл-бары ---------- */
   html, body, * { scrollbar-width: none; }
@@ -439,6 +511,15 @@
             <span class="cat-meta" id="catNotifMeta">вкл</span>
             <i data-lucide="chevron-right" class="cat-arrow"></i>
           </button>
+          <button type="button" class="cat-card" data-cat="profile">
+            <span class="cat-ico" style="background:linear-gradient(135deg,#f472b6,#a855f7)"><i data-lucide="user-round-pen"></i></span>
+            <span class="cat-text">
+              <span class="cat-name">Профиль</span>
+              <span class="cat-desc">Аватар, био, баннер и оформление</span>
+            </span>
+            <span class="cat-meta" id="catProfileMeta">базовое</span>
+            <i data-lucide="chevron-right" class="cat-arrow"></i>
+          </button>
           <button type="button" class="cat-card" data-cat="look">
             <span class="cat-ico" style="background:linear-gradient(135deg,var(--g2),#ec4899)"><i data-lucide="palette"></i></span>
             <span class="cat-text">
@@ -496,6 +577,11 @@
             <span class="set-text"><span class="set-name">Мероприятия</span><span class="set-desc">События и встречи группы</span></span>
             <span class="switch"><input type="checkbox" data-pref="events"><span class="track"><span class="thumb"></span></span></span>
           </label>
+          <label class="set-row sub" data-dep="swMaster">
+            <span class="set-ico" style="background:rgba(99,102,241,.14);color:#a5b4fc"><i data-lucide="messages-square"></i></span>
+            <span class="set-text"><span class="set-name">Личные сообщения</span><span class="set-desc">Только личные диалоги, групповой чат не шумит</span></span>
+            <span class="switch"><input type="checkbox" data-pref="chat" checked><span class="track"><span class="thumb"></span></span></span>
+          </label>
           <div class="set-row sub" data-dep="swMaster">
             <span class="set-ico" style="background:rgba(56,189,248,.14);color:#7dd3fc"><i data-lucide="alarm-clock"></i></span>
             <span class="set-text"><span class="set-name">Напоминание о паре</span><span class="set-desc">За сколько минут до начала (мин)</span></span>
@@ -514,6 +600,58 @@
         </div>
         <button type="button" class="btn-ghost w-full mt-3 hidden" id="pushTest"><i data-lucide="send" style="width:15px;height:15px"></i>Отправить тестовое уведомление</button>
         <p class="text-[11.5px] text-white/30 mt-3 leading-relaxed">Настройки хранятся в вашем аккаунте. Переключатель «Push-уведомления» включает оповещения только на этом устройстве, на другом его нужно включить отдельно.</p>
+      </div>
+
+      <!-- Профиль -->
+      <div class="set-group hidden" data-group="profile">
+        <div class="glass rounded-3xl overflow-hidden mb-3">
+          <div class="pf-banner" id="pfBanner"><img id="pfBannerImg" alt="" class="hidden">
+            <button type="button" class="icon-btn absolute top-2.5 right-2.5 !bg-black/35" id="pfBannerBtn" title="Баннер профиля"><i data-lucide="image-plus" style="width:16px;height:16px"></i></button>
+          </div>
+          <div class="px-4 pb-4 relative">
+            <div class="flex items-end gap-2.5 flex-wrap">
+              <div class="pf-ava ava-lg" id="pfAva" style="margin-top:-32px;background:linear-gradient(135deg,var(--g1),var(--g2))"><span id="pfInitials" class="font-display font-bold tracking-wide"></span></div>
+              <button type="button" class="btn-ghost !py-2 !px-3.5 mb-1.5" id="pfAvatarBtn"><i data-lucide="camera" style="width:15px;height:15px"></i>Аватар</button>
+              <button type="button" class="btn-ghost !py-2 !px-3.5 mb-1.5 hidden" id="pfPhotoClear"><i data-lucide="image-off" style="width:15px;height:15px"></i>Без фото</button>
+            </div>
+            <p class="text-[11.5px] text-white/35 mt-3 leading-relaxed">Аватар и баннер — до 900 КБ, картинка статуса — до 400 КБ. Мы уменьшаем изображение в браузере перед отправкой, поэтому даже фото с телефона пройдёт. Файлы лежат рядом с базой данных и не теряются при обновлении сайта.</p>
+          </div>
+        </div>
+
+        <div class="glass rounded-2xl p-3.5 mb-3">
+          <label class="block text-[12px] text-white/45 mb-2" for="pfBio">О себе</label>
+          <textarea id="pfBio" rows="3" maxlength="300" class="w-full rounded-xl px-3 py-2.5 bg-white/[.04] border border-white/10 outline-none text-[13px] leading-relaxed placeholder:text-white/30 focus:border-[rgba(var(--acc),.45)] resize-none" placeholder="Пара строк о вас — это увидят в карточке профиля"></textarea>
+          <div class="flex items-center justify-between gap-2 mt-2">
+            <span class="text-[11px] text-white/30 tabular-nums" id="pfBioCount">0 / 300</span>
+            <button type="button" class="btn-ghost !py-2 !px-4" id="pfBioSave"><i data-lucide="save" style="width:15px;height:15px"></i>Сохранить</button>
+          </div>
+          <div class="text-[11.5px] mt-2 min-h-[16px]" id="pfNote"></div>
+        </div>
+
+        <div class="glass rounded-2xl p-3.5 mb-3">
+          <div class="text-[12px] text-white/45 mb-2">Статус рядом с именем</div>
+          <div class="flex gap-2 flex-wrap items-center">
+            <input id="pfEmoji" maxlength="8" class="flex-1 min-w-[130px] rounded-xl px-3 py-2.5 bg-white/[.04] border border-white/10 outline-none text-[13px] placeholder:text-white/30 focus:border-[rgba(var(--acc),.45)]" placeholder="Эмодзи, например 🎧">
+            <button type="button" class="btn-ghost !py-2 !px-3.5" id="pfStatusBtn"><i data-lucide="aperture" style="width:15px;height:15px"></i>GIF или фото</button>
+            <button type="button" class="btn-ghost !py-2 !px-3.5" id="pfStatusOff"><i data-lucide="x" style="width:15px;height:15px"></i>Снять</button>
+          </div>
+          <p class="text-[11px] text-white/30 mt-2 leading-relaxed">Эмодзи — до 8 символов. Картинка показывается маленьким кружком на аватаре и рядом с ником.</p>
+        </div>
+
+        <div class="glass rounded-2xl p-3.5 mb-3">
+          <div class="text-[12px] text-white/45 mb-1">Оформление профиля</div>
+          <p class="text-[11px] text-white/30 mb-3 leading-relaxed">Три оформления доступны всем. Остальные выдаёт разработчик из Студии Плюс — закрытые варианты помечены замком.</p>
+          <div id="pfDesigns" class="grid gap-2"></div>
+        </div>
+
+        <div class="glass rounded-2xl p-3.5 mb-3 flex items-center justify-between gap-3">
+          <span class="text-[12.5px] text-white/55 leading-relaxed">Ссылка на карточку профиля<br><span class="text-[11px] text-white/30">отправьте её, чтобы вам написали</span></span>
+          <button type="button" class="btn-ghost !py-2 !px-3.5 shrink-0" id="pfCopyLink"><i data-lucide="link" style="width:15px;height:15px"></i>Скопировать</button>
+        </div>
+
+        <input type="file" id="pfAvatarInput" accept="image/png,image/jpeg,image/webp,image/gif" class="hidden">
+        <input type="file" id="pfBannerInput" accept="image/png,image/jpeg,image/webp,image/gif" class="hidden">
+        <input type="file" id="pfStatusInput" accept="image/png,image/jpeg,image/webp,image/gif" class="hidden">
       </div>
 
       <!-- Внешний вид -->
@@ -565,22 +703,48 @@
       </div>
     </section>
 
+    <!-- ================= ЭКРАН: РЕЙТИНГ ================= -->
+    <section id="screenRating" class="hidden">
+      <div class="flex items-end justify-between gap-3 mt-5 mb-5 fade-up d1">
+        <div>
+          <h1 class="font-display font-bold text-[24px] leading-none">Рейтинг</h1>
+          <div class="flex items-center gap-1.5 mt-2.5 text-[12px] text-white/40">
+            <i data-lucide="trophy" style="width:13px;height:13px" class="text-amber-300"></i>
+            <span id="ratingCaption">считаем баллы…</span>
+          </div>
+        </div>
+        <button class="icon-btn" id="ratingRefresh" aria-label="Обновить рейтинг" title="Обновить"><i data-lucide="refresh-cw" style="width:17px;height:17px"></i></button>
+      </div>
+      <div id="ratingBody"></div>
+    </section>
+
+    <!-- Чаты живут на отдельной странице /chat (chat.html) — сюда ведёт кнопка нижнего меню. -->
+
     <!-- ================= ЭКРАН: АККАУНТ ================= -->
     <section id="screenAccount" class="hidden">
       <h1 class="font-display font-bold text-[24px] leading-none mt-5 mb-5">Аккаунт</h1>
 
-      <div class="glass rounded-3xl p-5 mb-4 relative overflow-hidden">
-        <div class="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-violet-400/50 to-transparent"></div>
-        <div class="flex items-center gap-4">
-          <div class="w-16 h-16 rounded-3xl grid place-items-center bg-gradient-to-br from-[var(--g1)] to-[var(--g2)] shadow-xl shadow-violet-500/30 shrink-0" id="accAvatar">
-            <span id="accInitials" class="text-white font-display font-bold text-[20px] tracking-wide"></span>
-          </div>
-          <div class="min-w-0">
-            <div class="font-display font-bold text-[16px] leading-tight" id="accName">Профиль</div>
-            <div class="text-[12.5px] text-white/45 mt-1" id="accMeta">загружаем аккаунт…</div>
-            <div class="chip mt-2.5" style="color:#6ee7b7;background:rgba(52,211,153,.1);border-color:rgba(110,231,183,.25)">
-              <i data-lucide="badge-check"></i> обучается
+      <div class="glass rounded-3xl mb-4 relative overflow-hidden">
+        <div class="pf-banner" id="accBanner"><img id="accBannerImg" alt="" class="hidden"></div>
+        <div class="px-5 pt-0 pb-5 relative">
+          <div class="flex items-end gap-4">
+            <div class="pf-ava ava-lg" id="accAvatar" style="margin-top:-34px;background:linear-gradient(135deg,var(--g1),var(--g2))">
+              <span id="accInitials" class="font-display font-bold tracking-wide"></span>
             </div>
+            <div class="flex-1 min-w-0 pb-1">
+              <div class="pf-name">
+                <span class="t font-display text-[16px]" id="accName">Профиль</span>
+                <span id="accVerified"></span><span id="accStatus"></span>
+              </div>
+              <div class="text-[12.5px] text-white/45 mt-1" id="accMeta">загружаем аккаунт…</div>
+            </div>
+          </div>
+          <p class="text-[12.5px] text-white/60 mt-3.5 leading-relaxed whitespace-pre-wrap break-words hidden" id="accBio"></p>
+          <div class="flex items-center gap-2 mt-3 flex-wrap">
+            <span class="chip" style="color:#6ee7b7;background:rgba(52,211,153,.1);border-color:rgba(110,231,183,.25)">
+              <i data-lucide="badge-check"></i> обучается
+            </span>
+            <button class="chip" id="accOpenProfile" style="cursor:pointer"><i data-lucide="id-card"></i> оформление профиля</button>
           </div>
         </div>
       </div>
@@ -629,6 +793,12 @@
     <div class="flex">
       <button class="nav-btn active" id="navDiaryBtn">
         <i data-lucide="notebook-pen"></i><span>Дневник</span>
+      </button>
+      <button class="nav-btn" id="navRatingBtn">
+        <i data-lucide="trophy"></i><span>Рейтинг</span>
+      </button>
+      <button class="nav-btn" id="navChatsBtn">
+        <i data-lucide="messages-square"></i><span>Чаты</span><span class="nav-badge hidden" id="navChatBadge"></span>
       </button>
       <button class="nav-btn" id="navAccountBtn">
         <i data-lucide="user-round"></i><span>Аккаунт</span>
@@ -685,6 +855,13 @@ const EXTRA = {};
 const extraOf = (di, n) => EXTRA[`${di}-${n}`] || {};
 const GRADE_CLS = { 5: 'g5', 4: 'g4', 3: 'g3', 2: 'g2' };
 const GRADE_WORD = { 5: 'отлично', 4: 'хорошо', 3: 'удовлетворительно', 2: 'неудовлетворительно' };
+const ATT_INFO = {
+  У: { cls: 'att-u', word: 'уважительная причина', short: 'уваж.', icon: 'circle-check' },
+  Н: { cls: 'att-n', word: 'неуважительный пропуск', short: 'неуваж.', icon: 'circle-x' },
+  О: { cls: 'att-o', word: 'опоздание', short: 'опоздание', icon: 'alarm-clock' },
+  Б: { cls: 'att-b', word: 'больничный', short: 'больничный', icon: 'stethoscope' },
+};
+const attText = a => (a.t === 'О' && a.min ? `опоздание на ${a.min} мин` : (ATT_INFO[a.t] || {}).word || '');
 
 const WD_GEN = { 'Понедельник': 'Понедельник', 'Вторник': 'Вторник', 'Среда': 'Среду', 'Четверг': 'Четверг', 'Пятница': 'Пятницу', 'Суббота': 'Субботу', 'Воскресенье': 'Воскресенье' };
 
@@ -724,11 +901,12 @@ let hideWknd = false;
 function renderWeekStrip() {
   const base = Math.floor(dayIdx / 7) * 7;
   stripWeek = base;
+  const today = todayOff();
   const first = dayInfo(base), last = dayInfo(base + 6);
   strip.innerHTML = Array.from({ length: 7 }, (_, k) => base + k).map(o => {
     const d = dayInfo(o);
     return `
-    <button type="button" class="day-cell ${d.weekend ? 'wknd' : ''} ${o === dayIdx ? 'on' : ''}" data-i="${o}" aria-label="${d.wd}, ${d.day} ${d.mon}">
+    <button type="button" class="day-cell ${d.weekend ? 'wknd' : ''} ${o === dayIdx ? 'on' : ''} ${o < today ? 'past' : ''}" data-i="${o}" aria-label="${d.wd}, ${d.day} ${d.mon}">
       <span class="dc-wd">${d.wdShort}</span>
       <span class="dc-nwrap"><span class="dc-d">${d.day}</span>${d.lessons.length ? '<span class="dc-dot"></span>' : ''}</span>
       ${d.mon !== first.mon ? `<span class="dc-mon">${d.mon}</span>` : ''}
@@ -754,22 +932,25 @@ function gapChip(minutes, big) {
     </div>`;
 }
 
-function lessonHTML(l, isLast, live, pct, elapsed, delay) {
+function lessonHTML(l, live, pct, elapsed, delay, past, endedToday) {
   const tp = TYPE[l.type];
   const [s, e] = pairRange(l.n);
   const icon = pickIcon(l.title, tp.icon);
   const ex = extraOf(dayIdx, l.n);
-  const marks = (ex.grade ? `<span class="grade-pill ${GRADE_CLS[ex.grade]}">${ex.grade}</span>` : '')
+  const att = ex.att && ATT_INFO[ex.att.t] ? ex.att : null;
+  const marks = (ex.grade ? `<span class="grade-pill ${GRADE_CLS[ex.grade]}" title="Оценка: ${GRADE_WORD[ex.grade] || ''}">${ex.grade}</span>` : '')
+    + (att ? `<span class="att-pill ${ATT_INFO[att.t].cls}">${att.t}</span><span class="mark-word">${attText(att)}</span>` : '')
     + (ex.hw ? `<span class="chip gap-chip-sm"><i data-lucide="book-marked"></i>ДЗ</span>` : '');
   return `
     <div class="flex gap-3.5 ls-item" style="animation-delay:${delay}s">
       <div class="w-9 shrink-0 flex flex-col items-center">
         <div class="pair-badge ${tp.badge}">${l.n}</div>
       </div>
-      <article role="button" tabindex="0" data-pair="${l.n}" class="lesson-card glass rounded-2xl px-4 py-3.5 flex-1 min-w-0 ${live ? 'ls-live' : ''}">
+      <article role="button" tabindex="0" data-pair="${l.n}" class="lesson-card glass rounded-2xl px-4 py-3.5 flex-1 min-w-0 ${live ? 'ls-live' : ''} ${past ? 'ls-past' : ''}">
         <div class="flex items-center gap-2 flex-wrap mb-2.5">
           <span class="chip ${tp.chip}"><i data-lucide="${icon}"></i>${tp.label}</span>
           ${live ? '<span class="chip live-chip"><span class="live-dot"></span>сейчас идёт</span>' : ''}
+          ${endedToday ? '<span class="chip past-chip"><i data-lucide="check"></i>завершена</span>' : ''}
           <span class="ml-auto flex items-center gap-1.5 text-[12px] font-medium text-white/45 whitespace-nowrap">
             <i data-lucide="clock" style="width:12.5px;height:12.5px" class="text-white/30"></i>${timeLabel(l.n)}
           </span>
@@ -785,7 +966,7 @@ function lessonHTML(l, isLast, live, pct, elapsed, delay) {
           </p>
         </div>
         <div class="flex items-center gap-2 mt-3 pt-3 border-t border-white/[0.06]">
-          ${marks || '<span class="text-[12px] text-white/25">нет оценок и ДЗ</span>'}
+          ${marks || '<span class="text-[12px] text-white/25">оценок, ДЗ и отметок нет</span>'}
           <i data-lucide="chevron-right" class="ls-arrow ml-auto" style="width:16px;height:16px"></i>
         </div>
         ${live ? `
@@ -801,6 +982,10 @@ function lessonHTML(l, isLast, live, pct, elapsed, delay) {
 
 function dayHTML(d, off) {
   const m = off === todayRaw() ? nowMin() : -1;
+  const isToday = off === todayRaw();
+  const isPastDay = off < todayRaw();
+  /* Состоявшаяся пара: прошедший день — или сегодняшний, если её время уже истекло */
+  const ended = l => { const [s0, e0] = pairRange(l.n); return s0 == null ? isPastDay : (isPastDay || m >= e0); };
   const ls = d.lessons;
   let liveN = null, gapLive = false;
   ls.forEach(l => { const p = PAIRS[l.n]; if (p && m >= p[0] && m < p[1]) liveN = l.n; });
@@ -829,6 +1014,7 @@ function dayHTML(d, off) {
         <span class="text-[12.5px] text-white/45">${summary}</span>
         ${liveN !== null ? `<span class="chip live-chip"><span class="live-dot"></span>идёт ${liveN}-я пара</span>` : ''}
         ${gapLive ? `<span class="chip gap-chip"><i data-lucide="coffee"></i>сейчас перемена</span>` : ''}
+        ${isPastDay && ls.length ? `<span class="chip past-chip"><i data-lucide="history"></i>прошедший день</span>` : ''}
       </div>
     </div>`;
 
@@ -849,9 +1035,10 @@ function dayHTML(d, off) {
   let rows = '', delay = .08;
   ls.forEach((l, i) => {
     const live = l.n === liveN;
+    const past = ended(l);
     let pct = 0, elapsed = 0;
     if (live) { const p = PAIRS[l.n]; if (p) { elapsed = m - p[0]; pct = Math.min(100, Math.round(elapsed / (p[1] - p[0]) * 100)); } }
-    rows += lessonHTML(l, i === ls.length - 1, live, pct, elapsed, delay);
+    rows += lessonHTML(l, live, pct, elapsed, delay, past, past && isToday);
     delay += .07;
     if (i < ls.length - 1) {
       const a = PAIRS[l.n], b = PAIRS[ls[i + 1].n];
@@ -971,6 +1158,8 @@ function lessonDetailHTML(d, l, di) {
   const dateFull = `${d.wd}, ${d.day} ${d.mon}`;
   const m = nowMin();
   const live = s != null && di === todayRaw() && m >= s && m < e;
+  const past = di < todayRaw() || (di === todayRaw() && s != null && m >= e);
+  const att = ex.att && ATT_INFO[ex.att.t] ? ex.att : null;
 
   const gradeBlock = ex.grade ? `
     <div class="glass rounded-2xl p-4 det-item" style="animation-delay:.16s">
@@ -989,6 +1178,28 @@ function lessonDetailHTML(d, l, di) {
         <div>
           <div class="text-[10px] uppercase tracking-[0.18em] text-white/35 font-semibold">Оценка</div>
           <div class="text-[13.5px] text-white/45 mt-1">Оценки за это занятие пока нет</div>
+        </div>
+      </div>
+    </div>`;
+
+  const attBlock = att ? `
+    <div class="glass rounded-2xl p-4 det-item" style="animation-delay:.19s">
+      <div class="flex items-center gap-3">
+        <div class="att-pill ${ATT_INFO[att.t].cls}" style="width:46px;height:46px;border-radius:16px;font-size:20px">${att.t}</div>
+        <div class="min-w-0">
+          <div class="text-[10px] uppercase tracking-[0.18em] text-white/35 font-semibold">Посещаемость</div>
+          <div class="text-[14px] font-semibold mt-1">${attText(att)[0].toUpperCase() + attText(att).slice(1)}</div>
+          <div class="text-[12px] text-white/40 mt-0.5">Отмечено в журнале группы${att.t === 'О' && att.min ? ` · ${att.min} мин` : ''}</div>
+        </div>
+      </div>
+    </div>` : `
+    <div class="glass rounded-2xl p-4 det-item" style="animation-delay:.19s">
+      <div class="flex items-center gap-3">
+        <div class="att-pill" style="width:46px;height:46px;border-radius:16px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.4)"><i data-lucide="minus" style="width:19px;height:19px"></i></div>
+        <div class="min-w-0">
+          <div class="text-[10px] uppercase tracking-[0.18em] text-white/35 font-semibold">Посещаемость</div>
+          <div class="text-[13.5px] font-semibold mt-1 text-white/70">Отметок нет</div>
+          <div class="text-[12px] text-white/40 mt-0.5">${past ? 'Преподаватель не вносил отметку на это занятие' : 'Отметку поставят на паре'}</div>
         </div>
       </div>
     </div>`;
@@ -1029,6 +1240,7 @@ function lessonDetailHTML(d, l, di) {
           <div class="flex items-center gap-2 flex-wrap mb-2">
             <span class="chip ${tp.chip}">${tp.label}</span>
             <span data-live-chip class="chip live-chip" style="${live ? '' : 'display:none'}"><span class="live-dot"></span>сейчас идёт</span>
+            ${past ? '<span class="chip past-chip"><i data-lucide="check"></i>занятие завершено</span>' : ''}
           </div>
           <h1 class="font-display font-bold text-[18px] leading-snug">${l.title}</h1>
         </div>
@@ -1050,7 +1262,7 @@ function lessonDetailHTML(d, l, di) {
       </div>
     </div>
 
-    <div class="mt-3 space-y-3">${gradeBlock}${hwBlock}</div>
+    <div class="mt-3 space-y-3">${gradeBlock}${attBlock}${hwBlock}</div>
 
     <button type="button" class="btn-ghost w-full mt-4 det-item" style="animation-delay:.28s" id="lessonBack2">
       <i data-lucide="arrow-left" style="width:15px;height:15px"></i>Вернуться к расписанию
@@ -1072,12 +1284,12 @@ function openLesson(pairN) {
     scrollTo({ top: 0 });
   } else {
     diaryEl.classList.add('det-out');
-    setTimeout(() => {
+    step(() => {
       diaryEl.classList.add('hidden'); diaryEl.classList.remove('det-out');
       lessonScreen.classList.remove('hidden'); lessonScreen.classList.add('det-in');
       scrollTo({ top: 0 });
       setTimeout(() => lessonScreen.classList.remove('det-in'), 480);
-    }, 190);
+    });
   }
   bindLessonScreen();
 }
@@ -1089,11 +1301,11 @@ function closeLesson() {
     lessonScreen.classList.add('hidden'); diaryEl.classList.remove('hidden'); return;
   }
   lessonScreen.classList.add('det-out');
-  setTimeout(() => {
+  step(() => {
     lessonScreen.classList.add('hidden'); lessonScreen.classList.remove('det-out');
     diaryEl.classList.remove('hidden'); diaryEl.classList.add('det-back-in');
     setTimeout(() => diaryEl.classList.remove('det-back-in'), 480);
-  }, 190);
+  });
 }
 
 function bindLessonScreen() {
@@ -1156,34 +1368,81 @@ mainArea.addEventListener('touchend', e => {
    под пользователем. Данные обновляются при перезагрузке (F5). */
 
 /* ================= НИЖНЕЕ МЕНЮ ================= */
-const screens = { diary: $('#screenDiary'), account: $('#screenAccount'), lesson: $('#screenLesson'), settings: $('#screenSettings'), grades: $('#screenGrades') };
-const navBtns = { diary: $('#navDiaryBtn'), account: $('#navAccountBtn') };
+const screens = { diary: $('#screenDiary'), account: $('#screenAccount'), lesson: $('#screenLesson'), settings: $('#screenSettings'), grades: $('#screenGrades'), rating: $('#screenRating') };
+const navBtns = { diary: $('#navDiaryBtn'), rating: $('#navRatingBtn'), chats: $('#navChatsBtn'), account: $('#navAccountBtn') };
+const NAV_TABS = ['diary', 'rating', 'chats', 'account'];
+/* Экран урока живёт во вкладке «Дневник», успеваемость и настройки — в «Аккаунте» */
+const tabOf = name => (name === 'diary' || name === 'lesson' ? 'diary' : name === 'rating' ? 'rating' : 'account');
 const navInd = $('#navInd');
 let screen = 'diary';
+/* Переходы анимируются с задержкой: счётчик отменяет недотянувшую анимацию,
+   когда пользователь сразу нажимает другую кнопку. */
+var navSeq = 0;
+function step(fn) { const seq = navSeq; setTimeout(() => { if (seq === navSeq) fn(); }, 190); }
+const ANIM_CLASSES = ['det-in', 'det-out', 'det-back-in', 'view-in', 'view-out'];
 
 function setScreen(name) {
-  if (name === screen) return;
-  const out = screens[screen] || $('#screenLesson'), inn = screens[name];
+  navSeq++;
+  const out = screens[screen], inn = screens[name];
+  /* Тап по уже активной вкладке: просто доводим состояние к одному видимому экрану */
+  if (name === screen || !inn) {
+    Object.values(screens).forEach(el => { el.classList.remove(...ANIM_CLASSES); el.classList.add('hidden'); });
+    if (inn) inn.classList.remove('hidden');
+    scrollTo({ top: 0 });
+    return;
+  }
   screen = name;
-  navInd.style.transform = name === 'diary' ? 'translateX(0)' : 'translateX(100%)';
-  navBtns.diary.classList.toggle('active', name === 'diary');
-  navBtns.account.classList.toggle('active', name !== 'diary');
+  /* Тап по вкладке закрывает открытый подэкран: обратно в дневник — только кнопкой меню */
+  Object.values(screens).forEach(el => {
+    el.classList.remove(...ANIM_CLASSES);
+    if (el !== out && el !== inn) el.classList.add('hidden');
+  });
+  const slot = NAV_TABS.indexOf(tabOf(name));
+  navInd.style.transform = `translateX(${slot * 100}%)`;
+  NAV_TABS.forEach(key => navBtns[key].classList.toggle('active', key === tabOf(name)));
   if (reduced) {
     out.classList.add('hidden'); inn.classList.remove('hidden');
     scrollTo({ top: 0 }); return;
   }
   out.classList.add('view-out');
-  setTimeout(() => {
+  step(() => {
     out.classList.add('hidden'); out.classList.remove('view-out');
     inn.classList.remove('hidden'); inn.classList.add('view-in');
     scrollTo({ top: 0, behavior: 'smooth' });
     setTimeout(() => inn.classList.remove('view-in'), 480);
-  }, 200);
+  });
 }
-$('#navDiaryBtn').addEventListener('click', () => setScreen('diary'));
-$('#navAccountBtn').addEventListener('click', () => setScreen('account'));
+/* Кнопки нижнего меню: «Чаты» уводят на отдельную страницу переписки */
+function goTab(tab) {
+  if (tab === 'chats') { location.href = '/chat/'; return; }
+  setScreen(tab);
+}
+$('#navDiaryBtn').addEventListener('click', () => goTab('diary'));
+$('#navAccountBtn').addEventListener('click', () => goTab('account'));
+$('#navChatsBtn').addEventListener('click', () => goTab('chats'));
 
 /* ================= ПРОФИЛЬ ================= */
+const statusMarkup = (status, inAva) => {
+  if (!status || !status.value) return '';
+  const body = status.kind === 'media' ? `<img src="${esc(status.value)}" alt="">` : esc(status.value);
+  return inAva ? `<span class="pf-status">${body}</span>` : `<span class="pf-status-inline">${body}</span>`;
+};
+const verifiedMark = on => on ? `<span class="verified" title="Проверенный аккаунт"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>` : '';
+/* Аватар: картинка целиком заменяет инициалы, кружок статуса накладывается сверху */
+function paintAvatar(box, user) {
+  if (!box) return;
+  box.innerHTML = (user.avatar
+    ? `<img src="${esc(user.avatar)}" alt="">`
+    : `<span class="font-display font-bold tracking-wide">${esc(inits(user.fio || 'Пользователь'))}</span>`) + statusMarkup(user.status, true);
+}
+function paintBanner(banner, img, url) {
+  if (!banner || !img) return;
+  img.src = url || '';
+  img.classList.toggle('hidden', !url);
+}
+
+let PROFILE = null, DESIGN_CATALOG = [];
+
 function hydrateProfile(user) {
   const parts = String(user.fio || 'Пользователь').split(/\s+/);
   const last = parts[0] || 'Пользователь', first = parts[1] || '';
@@ -1191,8 +1450,171 @@ function hydrateProfile(user) {
   $('#accMeta').textContent = user.group
     ? `${user.login} · группа ${user.group} · очная`
     : `${user.login} · ${ROLE_NAMES[user.role] || user.role}`;
-  $('#accInitials').textContent = ((last[0] || 'П') + (first[0] || '')).toUpperCase();
+  paintAvatar($('#accAvatar'), user);
+  paintBanner($('#accBanner'), $('#accBannerImg'), user.banner);
+  $('#accVerified').innerHTML = verifiedMark(user.verified);
+  $('#accStatus').innerHTML = statusMarkup(user.status, false);
+  const bio = $('#accBio');
+  bio.textContent = user.bio || '';
+  bio.classList.toggle('hidden', !user.bio);
+  const name = (DESIGN_CATALOG.find(d => d.id === user.design) || {}).name || 'Аврора';
+  $('#catProfileMeta').textContent = name;
 }
+
+function pfSay(text, tone) {
+  const el = $('#pfNote');
+  if (!el) return;
+  el.textContent = text || '';
+  el.style.color = tone === 'bad' ? '#fda4af' : tone === 'ok' ? '#6ee7b7' : 'rgba(255,255,255,.45)';
+  clearTimeout(pfSay.timer);
+  if (text) pfSay.timer = setTimeout(() => { el.textContent = ''; }, 4500);
+}
+
+async function loadProfile() {
+  try {
+    const r = await fetch('/api/profile', { cache: 'no-store', credentials: 'same-origin' });
+    if (!r.ok) throw new Error('Профиль недоступен');
+    const d = await r.json();
+    DESIGN_CATALOG = d.designs || [];
+    applyProfile(d.profile);
+  } catch (e) { pfSay(e.message, 'bad'); }
+}
+
+function applyProfile(profile) {
+  if (!profile) return;
+  PROFILE = profile;
+  Object.assign(AUTH_USER, {
+    bio: profile.bio, avatar: profile.avatar, banner: profile.banner,
+    design: profile.design, status: profile.status, verified: profile.verified, designs: profile.designs,
+  });
+  hydrateProfile(AUTH_USER);
+  paintAvatar($('#pfAva'), AUTH_USER);
+  paintBanner($('#pfBanner'), $('#pfBannerImg'), profile.banner);
+  $('#pfBio').value = profile.bio || '';
+  $('#pfBioCount').textContent = `${(profile.bio || '').length} / 300`;
+  $('#pfEmoji').value = profile.status && profile.status.kind === 'emoji' ? profile.status.value : '';
+  $('#pfPhotoClear').classList.toggle('hidden', !profile.avatar && !profile.banner);
+  renderDesigns();
+}
+
+/* Оформление применяется сразу (localStorage) и сохраняется на сервере,
+   чтобы оно ждало пользователя на любом устройстве под его логином. */
+function renderDesigns() {
+  const box = $('#pfDesigns');
+  if (!box || !DESIGN_CATALOG.length) return;
+  const allowed = AUTH_USER.designs || [];
+  const current = window.SD_DESIGN ? SD_DESIGN.current() : (PROFILE && PROFILE.design) || 'aurora';
+  box.innerHTML = DESIGN_CATALOG.map(d => {
+    const open = allowed.includes(d.id);
+    return `
+      <button type="button" class="design-card ${d.id === current ? 'on' : ''} ${open ? '' : 'locked'}" data-design="${d.id}" ${open ? '' : 'disabled'}>
+        <span class="design-sw" style="background:linear-gradient(135deg,${d.colors[0]},${d.colors[1]})"></span>
+        <span class="flex-1 min-w-0">
+          <span class="block text-[13px] font-semibold">${esc(d.name)}</span>
+          <span class="block text-[11px] text-white/40 mt-0.5 leading-snug">${esc(d.hint)}</span>
+        </span>
+        ${d.exclusive && open ? '<span class="chip !text-[10px] shrink-0" style="color:#f5d0fe;background:rgba(217,70,239,.12);border-color:rgba(240,171,252,.3)">эксклюзив</span>' : ''}
+        ${open ? '' : '<i data-lucide="lock" style="width:15px;height:15px" class="text-white/35 shrink-0"></i>'}
+      </button>`;
+  }).join('');
+  icons();
+  $$('[data-design]', box).forEach(b => b.addEventListener('click', () => {
+    const id = b.dataset.design;
+    if (window.SD_DESIGN) SD_DESIGN.set(id);
+    $$('[data-design]', box).forEach(x => x.classList.toggle('on', x === b));
+    saveProfile({ design: id }, 'Оформление применено');
+  }));
+}
+
+async function saveProfile(patch, note) {
+  pfSay('Сохраняем…');
+  try {
+    const r = await fetch('/api/profile', {
+      method: 'PUT', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(patch)
+    });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(d.error || 'Сервер отклонил изменения');
+    applyProfile(d.profile);
+    pfSay(note || 'Сохранено', 'ok');
+  } catch (e) { pfSay(e.message, 'bad'); }
+}
+
+/* Картинку уменьшаем в браузере: на сервер уходит небольшой data URL, а не исходное фото. */
+function shrinkImage(file, kind) {
+  return new Promise((resolve, reject) => {
+    const still = file.type !== 'image/gif';
+    const max = kind === 'banner' ? 1280 : kind === 'avatar' ? 320 : 128;
+    const pass = () => {
+      const fr = new FileReader();
+      fr.onload = () => resolve(String(fr.result));
+      fr.onerror = () => reject(new Error('Не удалось прочитать файл'));
+      fr.readAsDataURL(file);
+    };
+    if (!still) return pass();
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      if (Math.max(img.width, img.height) <= max && file.size < 700 * 1024) return pass();
+      const scale = Math.min(1, max / Math.max(img.width || 1, img.height || 1));
+      const w = Math.max(1, Math.round((img.width || 1) * scale)), h = Math.max(1, Math.round((img.height || 1) * scale));
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      const mime = file.type === 'image/png' ? 'image/png' : 'image/webp';
+      let out = canvas.toDataURL(mime, .86);
+      if (out.indexOf('data:' + mime) !== 0) out = canvas.toDataURL('image/jpeg', .86);
+      resolve(out);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Файл не похож на картинку')); };
+    img.src = url;
+  });
+}
+
+async function pickImage(event, kind) {
+  const input = event.target, file = input.files && input.files[0];
+  input.value = '';
+  if (!file) return;
+  if (!/^image\/(png|jpeg|webp|gif)$/.test(file.type)) return pfSay('Нужен PNG, JPEG, WebP или GIF', 'bad');
+  if (file.size > 6 * 1024 * 1024) return pfSay('Файл больше 6 МБ — выберите другой', 'bad');
+  pfSay('Загружаем картинку…');
+  try {
+    const data = await shrinkImage(file, kind);
+    const r = await fetch('/api/profile/media', {
+      method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ kind, data })
+    });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(d.error || 'Сервер не принял картинку');
+    applyProfile(d.profile);
+    pfSay('Картинка на месте', 'ok');
+  } catch (e) { pfSay(e.message, 'bad'); }
+}
+
+$('#pfAvatarBtn').addEventListener('click', () => $('#pfAvatarInput').click());
+$('#pfBannerBtn').addEventListener('click', () => $('#pfBannerInput').click());
+$('#pfStatusBtn').addEventListener('click', () => $('#pfStatusInput').click());
+$('#pfAvatarInput').addEventListener('change', e => pickImage(e, 'avatar'));
+$('#pfBannerInput').addEventListener('change', e => pickImage(e, 'banner'));
+$('#pfStatusInput').addEventListener('change', e => pickImage(e, 'status'));
+$('#pfPhotoClear').addEventListener('click', () => saveProfile({ avatar: '', banner: '' }, 'Фото убраны'));
+$('#pfBio').addEventListener('input', e => { $('#pfBioCount').textContent = `${e.target.value.length} / 300`; });
+$('#pfBioSave').addEventListener('click', () => saveProfile({ bio: $('#pfBio').value }, 'Записали'));
+$('#pfEmoji').addEventListener('change', () => saveProfile({ status: { kind: 'emoji', value: $('#pfEmoji').value.trim() } }, 'Статус обновлён'));
+$('#pfStatusOff').addEventListener('click', () => saveProfile({ status: null }, 'Статус снят'));
+$('#pfCopyLink').addEventListener('click', async () => {
+  const link = `${location.origin}/chat/?user=${encodeURIComponent(AUTH_USER.login)}`;
+  try { await navigator.clipboard.writeText(link); pfSay('Ссылка скопирована', 'ok'); }
+  catch (e) { pfSay(link); }
+});
+function openProfileSettings() {
+  if (screen !== 'account') setScreen('account');
+  setTimeout(() => {
+    showHub(true); openSettings();
+    setTimeout(() => openCat('profile'), reduced ? 0 : 260);
+  }, reduced ? 0 : 280);
+}
+$('#accOpenProfile').addEventListener('click', openProfileSettings);
+
 
 /* Группа: шапка, экран аккаунта и заголовок вкладки берутся из данных сервера */
 function academicYear(date) {
@@ -1223,7 +1645,7 @@ function rebuildSubjects(grades) {
   const grouped = new Map();
   Object.entries(grades || {}).forEach(([key, grade]) => {
     const [day, pair, student] = key.split(':').map(Number);
-    if (AUTH_USER?.role === 'student' && student !== AUTH_USER.studentIndex) return;
+    if (student !== ownIndex()) return;
     const info = dayInfo(day);
     const lesson = info.lessons.find(item => Number(item.n) === pair);
     if (!lesson) return;
@@ -1428,28 +1850,230 @@ function openGrades() {
   const acc = $('#screenAccount');
   if (reduced) { acc.classList.add('hidden'); gradesScreenEl.classList.remove('hidden'); scrollTo({ top: 0 }); return; }
   acc.classList.add('det-out');
-  setTimeout(() => {
+  step(() => {
     acc.classList.add('hidden'); acc.classList.remove('det-out');
     gradesScreenEl.classList.remove('hidden'); gradesScreenEl.classList.add('det-in');
     scrollTo({ top: 0 });
     setTimeout(() => gradesScreenEl.classList.remove('det-in'), 480);
-  }, 190);
+  });
 }
 function closeGrades() {
   screen = 'account';
   const acc = $('#screenAccount');
   if (reduced) { gradesScreenEl.classList.add('hidden'); acc.classList.remove('hidden'); return; }
   gradesScreenEl.classList.add('det-out');
-  setTimeout(() => {
+  step(() => {
     gradesScreenEl.classList.add('hidden'); gradesScreenEl.classList.remove('det-out');
     acc.classList.remove('hidden'); acc.classList.add('det-back-in');
     setTimeout(() => acc.classList.remove('det-back-in'), 480);
-  }, 190);
+  });
 }
 $('#openGrades').addEventListener('click', openGrades);
 $('#gradesBack').addEventListener('click', closeGrades);
 /* средний балл в карточке аккаунта */
 $('#accAvg').textContent = '—';
+
+/* ================= РЕЙТИНГ ================= */
+let RATING = null, RATING_BUSY = false, RATING_ERROR = '';
+let ratingSort = 'score';
+const SORTS = {
+  score: { label: 'По баллу',        icon: 'trophy',          fn: (a, b) => (b.complete - a.complete) || (b.score ?? -1) - (a.score ?? -1) || a.name.localeCompare(b.name, 'ru') },
+  avg:   { label: 'По оценкам',      icon: 'star',            fn: (a, b) => (b.avg ?? -1) - (a.avg ?? -1) || a.name.localeCompare(b.name, 'ru') },
+  visit: { label: 'По посещаемости', icon: 'calendar-check',  fn: (a, b) => (b.visitScore ?? -1) - (a.visitScore ?? -1) || a.name.localeCompare(b.name, 'ru') },
+  name:  { label: 'По фамилии',      icon: 'users',           fn: (a, b) => a.name.localeCompare(b.name, 'ru') },
+};
+const scoreColor = v => v == null ? 'rgba(255,255,255,.3)' : v >= 85 ? '#6ee7b7' : v >= 65 ? '#c4b5fd' : v >= 45 ? '#fcd34d' : '#fda4af';
+const inits = name => String(name).split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+/* Цвет аватара детерминирован по индексу: один студент всегда выглядит одинаково в списке и на пьедестале */
+const avaColor = i => { const hues = [[99,102,241],[139,92,246],[192,38,211],[236,72,153],[245,158,11],[16,185,129],[56,189,248]]; const a = hues[i % hues.length], b = hues[(i + 3) % hues.length]; return `linear-gradient(135deg, rgb(${a.join(',')}), rgb(${b.join(',')}))`; };
+const visitWord = v => v == null ? 'посещаемость не учитывалась' : `${Math.round(v)}% посещаемости`;
+
+function rateBody(st) {
+  const total = st.gradeCount || 1;
+  const grades = [5, 4, 3, 2].map(g => {
+    const c = st.gradeCounts[g], p = Math.round(c / total * 100);
+    return `
+      <div class="flex items-center gap-2.5">
+        <span class="mini-grade" style="background:${gradeColor(g)}">${g}</span>
+        <div class="dist-bar flex-1"><div style="height:100%;width:${c ? Math.max(p, 4) : 0}%;border-radius:99px;background:${gradeColor(g)}"></div></div>
+        <span class="text-[11.5px] text-white/40 w-8 text-right tabular-nums">${c}</span>
+      </div>`;
+  }).join('');
+  const marks = ['У', 'Н', 'О', 'Б'].map(t => `
+    <span class="flex items-center gap-1.5">
+      <span class="att-pill ${ATT_INFO[t].cls}" style="width:20px;height:20px;border-radius:7px;font-size:10.5px">${t}</span>
+      <span class="text-[11.5px] text-white/45">${st.marks[t]}</span>
+    </span>`).join('');
+  return `
+    <div class="rate-body">
+      <div class="px-4 pb-4 pt-0.5 space-y-3.5">
+        ${st.gradeCount ? `
+        <div>
+          <div class="text-[11px] text-white/35 mb-2 flex items-center gap-1.5"><i data-lucide="star" style="width:12px;height:12px"></i>${st.gradeCount} ${plural(st.gradeCount, 'оценка', 'оценки', 'оценок')}</div>
+          <div class="space-y-1.5">${grades}</div>
+        </div>` : `
+        <div class="text-[11px] text-white/35 flex items-center gap-1.5"><i data-lucide="star" style="width:12px;height:12px"></i>оценок пока нет — балл считается только по посещаемости</div>`}
+        <div class="border-t border-white/[.06] pt-3">
+          <div class="text-[11px] text-white/35 mb-2 flex items-center gap-1.5"><i data-lucide="calendar-check" style="width:12px;height:12px"></i>отмечено пар: ${st.checkedLessons}${st.missed ? ` · пропусков и опозданий: ${st.missed}` : ''}</div>
+          <div class="flex items-center gap-3 flex-wrap">${marks}${st.lateMinutes ? `<span class="text-[11.5px] text-amber-300/70">опозданий на ${st.lateMinutes} мин</span>` : ''}</div>
+        </div>
+        <div class="flex items-center gap-2 text-[11.5px] text-white/45 flex-wrap">
+          <span>оценки: <b class="text-white/70 tabular-nums">${st.gradeScore == null ? '—' : st.gradeScore.toFixed(1)}</b></span>
+          <span>·</span>
+          <span>посещаемость: <b class="text-white/70 tabular-nums">${st.visitScore == null ? '—' : st.visitScore.toFixed(1)}</b></span>
+          <span>·</span>
+          <span>итог: <b class="tabular-nums" style="color:${scoreColor(st.score)}">${st.score == null ? '—' : st.score.toFixed(1)}</b></span>
+        </div>
+        ${st.login && st.index !== RATING.me ? `<a class="btn-ghost w-full !py-2.5 !mt-1" href="/chat/?user=${encodeURIComponent(st.login)}"><i data-lucide="user-round" style="width:15px;height:15px"></i>Профиль и чат</a>` : ''}
+      </div>
+    </div>`;
+}
+
+const rateAva = (st, cls) => `<span class="ava ${cls || ''}" style="background:${avaColor(st.index)}">${st.avatar ? `<img src="${esc(st.avatar)}" alt="">` : esc(inits(st.name))}</span>`;
+/* Галочка и эмодзи статуса — те же, что в чатах */
+const rateMarks = st => `${st.verified ? verifiedMark(true) : ''}${st.status ? `<span class="pf-status-inline">${esc(st.status)}</span>` : ''}`;
+
+function rateRow(st) {
+  const me = st.index === RATING.me;
+  return `
+    <div>
+      <button type="button" class="rate-row ${me ? 'me' : ''}" data-rate="${st.index}">
+        <span class="rank-badge ${st.place && st.place <= 3 ? `rank-medal rank-${st.place}` : st.place ? '' : 'rank-out'}">${st.place ?? '—'}</span>
+        ${rateAva(st)}
+        <span class="flex-1 min-w-0">
+          <span class="flex items-center gap-1.5">
+            <span class="text-[13.5px] font-semibold truncate">${esc(st.name)}</span>${rateMarks(st)}
+            ${me ? '<span class="text-[9.5px] font-bold uppercase tracking-wider text-white/80 bg-white/15 rounded-full px-1.5 py-0.5">вы</span>' : ''}
+          </span>
+          <span class="flex items-center gap-2 mt-1.5">
+            ${st.avg == null
+              ? '<span class="text-[11.5px] text-white/30">оценок нет</span>'
+              : `<span class="mini-grade" style="background:${gradeColor(Math.round(st.avg))}">${st.avg.toFixed(1)}</span><span class="text-[11.5px] text-white/35">${plural(st.gradeCount, 'оценка', 'оценки', 'оценок')}</span>`}
+            <span class="text-[11.5px] text-white/20">·</span>
+            <span class="text-[11.5px]" style="color:${st.visitScore == null ? 'rgba(255,255,255,.3)' : st.visitScore >= 90 ? '#6ee7b7' : st.visitScore >= 70 ? '#fcd34d' : '#fda4af'}">${visitWord(st.visitScore)}</span>
+          </span>
+        </span>
+        <span class="shrink-0 text-right mr-0.5">
+          <span class="block font-display font-bold text-[16px] leading-none tabular-nums" style="color:${scoreColor(st.score)}">${st.score == null ? '—' : st.score.toFixed(1)}</span>
+          <span class="block text-[9px] uppercase tracking-[0.14em] text-white/30 mt-1">балл</span>
+        </span>
+        <i data-lucide="chevron-right" class="rate-chev text-white/25 shrink-0" style="width:15px;height:15px"></i>
+      </button>
+      ${rateBody(st)}
+    </div>`;
+}
+
+function ratingEmpty(text, hint) {
+  return `
+    <div class="glass rounded-3xl py-12 px-6 flex flex-col items-center text-center det-item">
+      <div class="w-16 h-16 rounded-3xl grid place-items-center text-amber-300 mb-4" style="background:rgba(245,158,11,.12)">
+        <i data-lucide="trophy" style="width:26px;height:26px"></i>
+      </div>
+      <div class="font-display font-bold text-[17px] mb-1.5">${text}</div>
+      <p class="text-[13px] text-white/45 max-w-[280px] leading-relaxed">${hint}</p>
+    </div>`;
+}
+
+function renderRating() {
+  const body = $('#ratingBody');
+  if (RATING_BUSY) { body.innerHTML = ratingEmpty('Считаем рейтинг…', 'Складываем оценки и посещаемость группы.'); icons(); return; }
+  if (RATING_ERROR) { body.innerHTML = ratingEmpty('Рейтинг не загрузился', RATING_ERROR); icons(); return; }
+  if (!RATING) { body.innerHTML = ratingEmpty('Рейтинг появится позже', 'Как только преподаватель выставит первые оценки или отметит посещаемость, здесь появится таблица группы.'); icons(); return; }
+
+  const list = RATING.students.filter(s => s.score != null);
+  const leader = list.length ? list[0] : null;   /* массив уже отсортирован по месту */
+  $('#ratingCaption').textContent = RATING.group
+    ? `${RATING.group} · ${RATING.students.length} ${plural(RATING.students.length, 'студент', 'студента', 'студентов')}`
+    : 'группа ещё не назначена';
+
+  if (!RATING.students.length) {
+    body.innerHTML = ratingEmpty('Рейтинг строится по группе', 'Как только аккаунт будет привязан к группе, здесь появится сравнение успеваемости и посещаемости её студентов.');
+    icons();
+    return;
+  }
+  if (!list.length) {
+    body.innerHTML = ratingEmpty('Пока нечего сравнивать', 'Для рейтинга нужны оценки или отметки посещаемости — преподаватель ставит их в журнале и студии.');
+    icons();
+    return;
+  }
+
+  const me = RATING.students.find(s => s.index === RATING.me);
+  const hero = me ? `
+    <div class="glass rounded-3xl p-5 relative overflow-hidden det-item mb-3">
+      <div class="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-violet-400/50 to-transparent"></div>
+      <div class="flex items-center gap-4">
+        <div class="text-center shrink-0">
+          <div class="font-display font-bold text-[30px] leading-none">${me.place ?? '—'}</div>
+          <div class="text-[9.5px] uppercase tracking-[0.16em] text-white/35 mt-1">место</div>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="text-[13.5px] font-semibold truncate">${me.name}</div>
+          <div class="text-[11.5px] text-white/40 mt-1">${me.avg == null ? 'оценок нет' : `средний балл ${me.avg.toFixed(2)}`} · ${visitWord(me.visitScore)}</div>
+          <div class="score-bar mt-2.5"><div class="score-fill" data-w="${Math.round(me.score ?? 0)}" style="background:linear-gradient(90deg, var(--g1), var(--g2))"></div></div>
+        </div>
+        <div class="text-right shrink-0">
+          <div class="font-display font-bold text-[22px] leading-none" style="color:${scoreColor(me.score)}">${me.score.toFixed(1)}</div>
+          <div class="text-[9.5px] uppercase tracking-[0.14em] text-white/35 mt-1">ваш балл</div>
+        </div>
+      </div>
+      ${leader && me.index !== leader.index ? `
+        <p class="flex items-center gap-2 mt-3.5 text-[11.5px] text-white/40"><i data-lucide="flag" style="width:13px;height:13px" class="text-violet-300"></i>до лидера ${Math.max(0, Math.round((leader.score - me.score) * 10) / 10)} балла — ${leader.name.split(' ')[0]}</p>` : ''}
+      ${leader && me.index === leader.index ? `
+        <p class="flex items-center gap-2 mt-3.5 text-[11.5px] text-emerald-300/80"><i data-lucide="medal" style="width:13px;height:13px"></i>Вы лидер группы — так держать!</p>` : ''}
+    </div>` : `
+    <div class="grid grid-cols-3 gap-2.5 mb-3">
+      <div class="glass rounded-2xl p-3.5 det-item"><div class="text-[10.5px] text-white/40">Студентов</div><div class="font-display font-bold text-[18px] mt-1.5">${RATING.students.length}</div></div>
+      <div class="glass rounded-2xl p-3.5 det-item" style="animation-delay:.05s"><div class="text-[10.5px] text-white/40">Средний рейтинг</div><div class="font-display font-bold text-[18px] mt-1.5">${(list.reduce((a, s) => a + s.score, 0) / list.length).toFixed(1)}</div></div>
+      <div class="glass rounded-2xl p-3.5 det-item" style="animation-delay:.1s"><div class="text-[10.5px] text-white/40">Пар с отметками</div><div class="font-display font-bold text-[18px] mt-1.5">${list[0].checkedLessons}</div></div>
+    </div>`;
+
+  const podium = list.slice(0, 3).map((s, k) => `
+    <div class="glass podium-card det-item" style="animation-delay:${.06 * k}s">
+      <div class="rank-badge rank-medal rank-${s.place} mx-auto mb-2">${s.place}</div>
+      ${rateAva(s)}
+      <div class="text-[12px] font-semibold leading-snug truncate flex items-center justify-center gap-1">${esc(s.name.split(' ')[0] || s.name)}${rateMarks(s)}</div>
+      <div class="font-display font-bold text-[16px] mt-1 tabular-nums" style="color:${scoreColor(s.score)}">${s.score.toFixed(1)}</div>
+      <div class="text-[9.5px] uppercase tracking-[0.14em] text-white/30 mt-0.5">${['первое', 'второе', 'третье'][k] || ''} место</div>
+    </div>`).join('');
+
+  const sorted = [...RATING.students].sort(SORTS[ratingSort].fn);
+  body.innerHTML = `
+    ${hero}
+    <div class="grid grid-cols-3 gap-2.5 mb-4">${podium}</div>
+    <div class="sort-tabs" role="group" aria-label="Сортировка рейтинга">
+      ${Object.entries(SORTS).map(([key, s]) => `
+        <button type="button" class="sort-btn ${key === ratingSort ? 'active' : ''}" data-sort="${key}">
+          <i data-lucide="${s.icon}"></i>${s.label}
+        </button>`).join('')}
+    </div>
+    <div class="glass rounded-2xl divide-y divide-white/[0.06] overflow-hidden">${sorted.map(rateRow).join('')}</div>
+    <p class="text-[11px] text-white/30 text-center mt-3 leading-relaxed">Балл: 60 % успеваемость и 40 % посещаемость. Н и О снижают посещаемость сильнее У, больничный не снижает. Без оценок или без отметок балл считается только по тому, что есть, — такие студенты идут ниже.</p>`;
+
+  icons();
+  requestAnimationFrame(() => $$('.score-fill', body).forEach(f => f.style.transform = `scaleX(${(+f.dataset.w || 0) / 100})`));
+  $$('[data-sort]', body).forEach(b => b.addEventListener('click', () => { ratingSort = b.dataset.sort; renderRating(); }));
+  $$('[data-rate]', body).forEach(b => b.addEventListener('click', () => {
+    const open = b.classList.contains('open');
+    $$('[data-rate]', body).forEach(x => x.classList.remove('open'));
+    b.classList.toggle('open', !open);
+  }));
+}
+
+async function openRating(force) {
+  setScreen('rating');
+  if (!RATING || force) {
+    RATING_BUSY = true; RATING_ERROR = ''; renderRating();
+    try {
+      const r = await fetch('/api/rating', { cache: 'no-store' });
+      if (!r.ok) throw new Error('Не удалось получить данные рейтинга.');
+      RATING = await r.json();
+    } catch (e) { RATING_ERROR = e.message || 'Рейтинг недоступен.'; }
+    RATING_BUSY = false;
+  }
+  renderRating();
+}
+$('#navRatingBtn').addEventListener('click', () => openRating());
+$('#ratingRefresh').addEventListener('click', () => openRating(true));
 
 /* ================= НАСТРОЙКИ ================= */
 const setScreenEl = $('#screenSettings'), accScreenEl = $('#screenAccount');
@@ -1458,28 +2082,29 @@ function openSettings() {
   screen = 'settings';
   if (reduced) { accScreenEl.classList.add('hidden'); setScreenEl.classList.remove('hidden'); scrollTo({ top: 0 }); return; }
   accScreenEl.classList.add('det-out');
-  setTimeout(() => {
+  step(() => {
     accScreenEl.classList.add('hidden'); accScreenEl.classList.remove('det-out');
     setScreenEl.classList.remove('hidden'); setScreenEl.classList.add('det-in');
     scrollTo({ top: 0 });
     setTimeout(() => setScreenEl.classList.remove('det-in'), 480);
-  }, 190);
+  });
 }
 function closeSettings() {
   screen = 'account';
   if (reduced) { setScreenEl.classList.add('hidden'); accScreenEl.classList.remove('hidden'); return; }
   setScreenEl.classList.add('det-out');
-  setTimeout(() => {
+  step(() => {
     setScreenEl.classList.add('hidden'); setScreenEl.classList.remove('det-out');
     accScreenEl.classList.remove('hidden'); accScreenEl.classList.add('det-back-in');
     setTimeout(() => accScreenEl.classList.remove('det-back-in'), 480);
-  }, 190);
+  });
 }
 $('#openSettings').addEventListener('click', () => { showHub(true); openSettings(); });
 
 /* ---- Навигация внутри настроек: список категорий <-> категория ---- */
 const CAT_INFO = {
   notif: { name: 'Уведомления', desc: 'Оповещения, напоминания, тихий режим' },
+  profile: { name: 'Профиль', desc: 'Аватар, био, баннер и оформление' },
   look:  { name: 'Внешний вид', desc: 'Фон, плотность списка пар' },
   study: { name: 'Учёба', desc: 'Стартовый день, выходные' },
   about: { name: 'О приложении', desc: 'Версия и учебное заведение' },
@@ -1511,6 +2136,7 @@ function openCat(cat) {
     g.classList.add('sub-in');
     setTimeout(() => g.classList.remove('sub-in'), 420);
   }
+  if (cat === 'profile' && !DESIGN_CATALOG.length) loadProfile();
   scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
 }
 $$('.cat-card').forEach(c => c.addEventListener('click', () => openCat(c.dataset.cat)));
@@ -1522,7 +2148,7 @@ $('#settingsBack').addEventListener('click', () => {
 
 /* ================= PUSH-УВЕДОМЛЕНИЯ ================= */
 const swMaster = $('#swMaster'), catNotifMeta = $('#catNotifMeta'), pushStatusEl = $('#pushStatus'), pushTestBtn = $('#pushTest');
-const PUSH = { cfg: null, prefs: { schedule: true, grades: true, hw: true, events: false, quiet: true, remind: 30 } };
+const PUSH = { cfg: null, prefs: { schedule: true, grades: true, hw: true, events: false, chat: true, quiet: true, remind: 30 } };
 const pushSupported = () => 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
 const b64ToU8 = b => { const p = '='.repeat((4 - b.length % 4) % 4), r = atob((b + p).replace(/-/g, '+').replace(/_/g, '/')); return Uint8Array.from(r, c => c.charCodeAt(0)); };
 async function pushApi(method, url, body) {
@@ -1666,6 +2292,13 @@ const TOOLS = {
         ['zhurnal.html', 'clipboard-check', 'Журнал группы', 'Полный доступ', 'text-emerald-300']],
 };
 let AUTH_USER = null;
+/* Личные оценки и отметки: у куратора и преподавателя в ответах сервера лежат данные всей группы */
+function ownIndex() {
+  const v = AUTH_USER && AUTH_USER.studentIndex;
+  if (v === null || v === undefined || v === '') return null;
+  const n = Number(v);
+  return Number.isInteger(n) ? n : null;
+}
 function renderTools(user) {
   const box = $('#roleTools');
   const list = TOOLS[user.role] || [];
@@ -1682,6 +2315,27 @@ function renderTools(user) {
   $$('[data-href]', box).forEach(b => b.addEventListener('click', () => location.href = b.dataset.href));
   icons();
 }
+
+/* ================= ЧАТЫ: только бейдж =================
+   Сама переписка живёт на странице /chat (chat.html), здесь остаётся счётчик новых сообщений. */
+const esc = v => String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+let CHAT_UNREAD = 0;
+
+function renderChatBadge() {
+  const badge = $('#navChatBadge');
+  badge.textContent = CHAT_UNREAD > 9 ? '9+' : CHAT_UNREAD;
+  badge.classList.toggle('hidden', !CHAT_UNREAD);
+}
+/* Раз в минуту и сразу после входа в дневник — чтобы бейдж оживал без перезагрузки */
+async function pingChats() {
+  if (document.hidden) return;
+  try {
+    const r = await fetch('/api/chats/unread', { cache: 'no-store' });
+    const d = r.ok && await r.json();
+    if (d && Number.isFinite(d.unread)) { CHAT_UNREAD = d.unread; renderChatBadge(); }
+  } catch (e) { /* молча: бейдж не критичен */ }
+}
+setInterval(pingChats, 60000);
 
 /* ================= ПРОЧЕЕ ================= */
 $('#bellBtn').addEventListener('click', () => {
@@ -1704,9 +2358,12 @@ $('#logoutBtn').addEventListener('click', async () => {
     if (meResponse.status === 401) return location.replace('/login.html');
     if (!meResponse.ok) throw new Error('Не удалось загрузить профиль');
     AUTH_USER = (await meResponse.json()).user;
+    /* Оформление профиля включаем сразу после профиля пользователя: чужой эксклюзив сервер не выдаст */
+    if (window.SD_DESIGN) SD_DESIGN.allowed(AUTH_USER.designs || [], AUTH_USER.design);
     hydrateProfile(AUTH_USER);
     renderTools(AUTH_USER);
     loadPush();
+    pingChats();
 
     const r = await fetch('/api/state', { cache: 'no-store' });
     if (!r.ok) throw new Error('Не удалось загрузить дневник');
@@ -1728,17 +2385,28 @@ $('#logoutBtn').addEventListener('click', async () => {
       EXTRA[key] = EXTRA[key] || {};
       EXTRA[key].hw = { text: v.text, due: v.due, src: v.src || 'Выдано в студии' };
     });
+    const gradeMeta = d.gradeMeta || {};
     Object.entries(d.grades || {}).forEach(([k, v]) => {
       const [dd, pp, ii] = k.split(':');
-      if (AUTH_USER.role === 'student' && +ii !== AUTH_USER.studentIndex) return;
+      if (+ii !== ownIndex()) return;
       const key = `${dd}-${pp}`;
       EXTRA[key] = EXTRA[key] || {};
-      EXTRA[key].grade = v; EXTRA[key].gradeNote = 'Выставлено преподавателем';
+      const by = gradeMeta[k] && gradeMeta[k].byName;
+      EXTRA[key].grade = v; EXTRA[key].gradeNote = by ? `Выставил ${by}` : 'Выставлено преподавателем';
+    });
+    Object.entries(d.att || {}).forEach(([k, v]) => {
+      const [dd, pp, ii] = k.split(':');
+      if (+ii !== ownIndex() || !v || !ATT_INFO[v.t]) return;
+      const key = `${dd}-${pp}`;
+      EXTRA[key] = EXTRA[key] || {};
+      EXTRA[key].att = { t: v.t, min: Number(v.min) || 0 };
     });
     rebuildSubjects(d.grades || {});
     GROUP_STUDENTS = d.students || []; GROUP_STUDENT_INDICES = d.groupStudentIndices || []; GROUP_GRADES = d.grades || {}; GROUP_ATT = d.att || {};
     renderWeekStrip();
     selectDay(dayIdx, 0, true, true);
+    /* На страницу профиля заводят ссылки из чатов: /diary.html#profile */
+    if (location.hash === '#profile') setTimeout(openProfileSettings, reduced ? 0 : 420);
   } catch (error) {
     console.error(error);
   }

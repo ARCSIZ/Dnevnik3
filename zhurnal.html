@@ -449,14 +449,14 @@ function bind(){
     if(S.att[k]&&S.att[k].t===t){delete S.att[k];toast('Отметка снята')}
     else if(t==='О'){const v=prompt(`Опоздание «${STUDENTS[i]}» — на сколько минут?`,'10');if(v===null)return;S.att[k]={t:'О',min:Math.max(1,parseInt(v)||1)};toast(`${STUDENTS[i]} — опоздание`,'ok')}
     else{S.att[k]={t};toast(`${STUDENTS[i]} — ${t}`,'ok')}
-    save(S);api('att',S.att);render();}));
-  const clr=$('#clrAtt');clr&&clr.addEventListener('click',()=>{STUDENTS.forEach((_,i)=>delete S.att[gk(dayIdx,attPair,i)]);save(S);api('att',S.att);render();toast('Отметки сброшены')});
+    save(S);api('att',{[k]:S.att[k]??null});render();}));
+  const clr=$('#clrAtt');clr&&clr.addEventListener('click',()=>{const patch={};STUDENTS.forEach((_,i)=>{const k=gk(dayIdx,attPair,i);delete S.att[k];patch[k]=null});save(S);api('att',patch);render();toast('Отметки сброшены')});
 
   $$('[data-hwadd]').forEach(b=>b.addEventListener('click',()=>{
     const n=b.dataset.hwadd, t=$(`[data-hwtext="${n}"]`).value.trim();
     if(!t)return toast('Введите текст задания','err');
-    S.hw[hk(dayIdx,n)]={text:t,due:$(`[data-hwdue="${n}"]`).value.trim(),by:'Староста',src:'Выдано старостой'};save(S);api('hw',S.hw);toast('ДЗ добавлено','ok');render();}));
-  $$('[data-hwdel]').forEach(b=>b.addEventListener('click',()=>{delete S.hw[hk(dayIdx,b.dataset.hwdel)];save(S);api('hw',S.hw);toast('ДЗ удалено','ok');render()}));
+    S.hw[hk(dayIdx,n)]={text:t,due:$(`[data-hwdue="${n}"]`).value.trim(),by:'Староста',src:'Выдано старостой'};save(S);api('hw',{[hk(dayIdx,n)]:S.hw[hk(dayIdx,n)]});toast('ДЗ добавлено','ok');render();}));
+  $$('[data-hwdel]').forEach(b=>b.addEventListener('click',()=>{const k=hk(dayIdx,b.dataset.hwdel);delete S.hw[k];save(S);api('hw',{[k]:null});toast('ДЗ удалено','ok');render()}));
 
   $$('#body [data-f]').forEach(inp=>inp.addEventListener('change',()=>{
     const l=tpl(dayIdx).lessons.find(x=>x.n===+inp.dataset.n);if(!l)return;

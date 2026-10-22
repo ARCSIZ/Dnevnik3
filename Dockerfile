@@ -2,7 +2,7 @@ FROM node:20-alpine
 
 WORKDIR /app
 COPY package.json ./
-COPY index.html login.html diary.html studio.html zhurnal.html STplus.html server.js sw.js manifest.webmanifest icon-192.png icon-512.png apple-touch-icon.png og-image.png splash.js ./
+COPY index.html login.html diary.html chat.html studio.html zhurnal.html STplus.html server.js sw.js theme.css theme.js manifest.webmanifest icon-192.png icon-512.png apple-touch-icon.png og-image.png splash.js ./
 
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0

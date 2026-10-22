@@ -145,4 +145,47 @@
       document.dispatchEvent(new CustomEvent('sd:season', { detail: { active: active, mode: next } }));
     }
   };
+
+  /* ---------- Оформление профиля ----------
+     Выбор лежит в localStorage под ключом sd_design и применяется до отрисовки,
+     чтобы страница не «моргала» из фирменной темы в розовую. Сервер проверяет,
+     разрешено ли человеку это оформление; здесь только отрисовка. */
+  var DESIGN_KEY = 'sd_design';
+  var DESIGN_IDS = ['aurora', 'ocean', 'sunset', 'rose', 'crimson', 'gold', 'acid'];
+
+  function designStored() {
+    try {
+      var v = localStorage.getItem(DESIGN_KEY);
+      return DESIGN_IDS.indexOf(v) >= 0 ? v : 'aurora';
+    } catch (e) { return 'aurora'; }
+  }
+
+  function paintDesign(id) {
+    if (id === 'aurora') root.removeAttribute('data-design');
+    else root.setAttribute('data-design', id);
+  }
+
+  paintDesign(designStored());
+
+  window.SD_DESIGN = {
+    key: DESIGN_KEY,
+    ids: DESIGN_IDS,
+    current: designStored,
+    /* Разрешённые ids приходят с сервера: чужой эксклюзив не включается.
+       fallback — оформление из профиля, если на этом устройстве ещё ничего не выбирали. */
+    allowed: function (ids, fallback) {
+      var list = (ids || []).filter(function (id) { return DESIGN_IDS.indexOf(id) >= 0; });
+      var want = designStored();
+      var pick = list.indexOf(want) >= 0 ? want
+        : (list.indexOf(fallback) >= 0 ? fallback
+          : (list.indexOf('aurora') >= 0 ? 'aurora' : list[0] || 'aurora'));
+      paintDesign(pick);
+      return pick;
+    },
+    set: function (id) {
+      try { localStorage.setItem(DESIGN_KEY, DESIGN_IDS.indexOf(id) >= 0 ? id : 'aurora'); } catch (e) { /* приватный режим */ }
+      paintDesign(DESIGN_IDS.indexOf(id) >= 0 ? id : 'aurora');
+      document.dispatchEvent(new CustomEvent('sd:design', { detail: { design: id } }));
+    }
+  };
 })();

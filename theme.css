@@ -184,3 +184,139 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { outline: non
   .hw-bat, .hw-bat .hw-wing, .hw-fog, .hw-joan .hw-lantern { animation: none !important; }
   .hw-ember { display: none; }
 }
+
+/* ==========================================================================
+   Оформления профиля.
+   Выбирает пользователь, эксклюзивные выдаёт разработчик из Студии Плюс.
+   Правила идут ПОСЛЕ хэллоуинских, поэтому выбранное оформление сильнее
+   сезонного: человек поставил «Розовые тона» — значит весь портал в них.
+   ========================================================================== */
+html[data-design="ocean"] {
+  --g1: #0ea5e9; --g2: #22d3ee; --g1rgb: 14, 165, 233; --g2rgb: 34, 211, 238;
+  --glow: 56, 189, 248; --acc: 125, 211, 252; --acc-c: #7dd3fc; --night: #03080f;
+  --color-violet-300: #7dd3fc; --color-violet-400: #38bdf8; --color-violet-500: #0284c7;
+  --color-indigo-300: #67e8f9; --color-indigo-500: #0891b2; --color-purple-500: #0e7490;
+}
+html[data-design="sunset"] {
+  --g1: #fb7185; --g2: #fbbf24; --g1rgb: 251, 113, 133; --g2rgb: 251, 191, 36;
+  --glow: 251, 146, 60; --acc: 254, 202, 132; --acc-c: #fecda4; --night: #0d070a;
+  --color-violet-300: #fdba74; --color-violet-400: #fb923c; --color-violet-500: #f97316;
+  --color-indigo-300: #fda4af; --color-indigo-500: #e11d48; --color-purple-500: #be185d;
+}
+html[data-design="rose"] {
+  --g1: #f472b6; --g2: #e879f9; --g1rgb: 244, 114, 182; --g2rgb: 232, 121, 249;
+  --glow: 244, 114, 182; --acc: 251, 207, 232; --acc-c: #f9d5ec; --night: #100310;
+  --color-violet-300: #fbcfe8; --color-violet-400: #f9a8d4; --color-violet-500: #ec4899;
+  --color-indigo-300: #f5d0fe; --color-indigo-500: #c026d3; --color-purple-500: #a21caf;
+}
+html[data-design="crimson"] {
+  --g1: #dc2626; --g2: #7f1d1d; --g1rgb: 220, 38, 38; --g2rgb: 127, 29, 29;
+  --glow: 239, 68, 68; --acc: 252, 165, 165; --acc-c: #fca5a5; --night: #070203;
+  --color-violet-300: #fca5a5; --color-violet-400: #f87171; --color-violet-500: #ef4444;
+  --color-indigo-300: #fecaca; --color-indigo-500: #b91c1c; --color-purple-500: #991b1b;
+}
+html[data-design="gold"] {
+  --g1: #f5c451; --g2: #b8860b; --g1rgb: 245, 196, 81; --g2rgb: 184, 134, 11;
+  --glow: 245, 196, 81; --acc: 253, 230, 138; --acc-c: #fde68a; --night: #0b0903;
+  --color-violet-300: #fde68a; --color-violet-400: #fcd34d; --color-violet-500: #d4a017;
+  --color-indigo-300: #fef3c7; --color-indigo-500: #a16207; --color-purple-500: #854d0e;
+}
+html[data-design="acid"] {
+  --g1: #a3e635; --g2: #22c55e; --g1rgb: 163, 230, 53; --g2rgb: 34, 197, 94;
+  --glow: 163, 230, 53; --acc: 190, 242, 100; --acc-c: #bef264; --night: #050a05;
+  --color-violet-300: #d9f99d; --color-violet-400: #a3e635; --color-violet-500: #65a30d;
+  --color-indigo-300: #bbf7d0; --color-indigo-500: #16a34a; --color-purple-500: #15803d;
+}
+html[data-design="crimson"] body, html[data-design="rose"] body, html[data-design="sunset"] body { background: var(--night); }
+html[data-design] .blob.b1 { background: radial-gradient(circle, var(--g1) 0%, transparent 65%); }
+html[data-design] .blob.b2 { background: radial-gradient(circle, var(--g2) 0%, transparent 62%); }
+html[data-design] .grad-text { background-image: linear-gradient(92deg, var(--acc-c), var(--g1) 45%, var(--g2)); }
+html[data-design] .glass { border-color: rgba(var(--acc), .14); }
+
+/* ==========================================================================
+   Аватары, статусы и карточка профиля — общие для дневника и чатов.
+   ========================================================================== */
+.pf-ava { position: relative; flex-shrink: 0; border-radius: 15px; overflow: hidden; display: grid; place-items: center;
+  color: #fff; font-weight: 700; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22); }
+.pf-ava img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.pf-ava .pf-status { position: absolute; right: -2px; bottom: -2px; min-width: 15px; height: 15px; padding: 0 1px; border-radius: 99px;
+  display: grid; place-items: center; font-size: 9.5px; line-height: 1; background: #101018; border: 1px solid rgba(255, 255, 255, .16); overflow: hidden; }
+.pf-ava .pf-status img { position: static; width: 13px; height: 13px; }
+.pf-status-inline { display: inline-grid; place-items: center; min-width: 16px; height: 16px; padding: 0 1px; border-radius: 99px; overflow: hidden; font-size: 11px; vertical-align: -3px; }
+.pf-status-inline img { width: 16px; height: 16px; object-fit: cover; }
+.verified { display: inline-grid; place-items: center; width: 15px; height: 15px; border-radius: 99px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--g1), var(--g2)); box-shadow: 0 4px 10px -4px rgba(var(--glow), .9); }
+.verified svg { width: 10px; height: 10px; stroke: #fff; stroke-width: 3; fill: none; }
+.pf-banner { position: relative; height: 118px; border-radius: 22px 22px 0 0; overflow: hidden;
+  background: linear-gradient(120deg, rgba(var(--g1rgb), .6), rgba(var(--g2rgb), .45)); }
+.pf-banner img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.pf-name { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.pf-name .t { font-weight: 700; font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.design-card { display: flex; align-items: center; gap: 11px; width: 100%; text-align: left; padding: 11px 12px; border-radius: 16px; cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, .08); background: rgba(255, 255, 255, .03); transition: border-color .18s, background .18s, transform .14s; }
+.design-card:hover { border-color: rgba(var(--acc), .4); background: rgba(var(--acc), .08); }
+.design-card.on { border-color: var(--acc-c); background: rgba(var(--g1rgb), .14); box-shadow: inset 0 0 0 1px rgba(var(--acc), .3); }
+.design-card.locked { cursor: not-allowed; opacity: .55; }
+.design-sw { width: 40px; height: 40px; border-radius: 14px; flex-shrink: 0; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25); }
+.ava-lg { width: 88px; height: 88px; border-radius: 30px; font-size: 27px; }
+.ava-xl { width: 104px; height: 104px; border-radius: 34px; font-size: 32px; }
+
+/* ---------- Чаты: список, пузыри, поле ввода ---------- */
+.chat-row { width: 100%; text-align: left; display: flex; align-items: center; gap: 11px; padding: 12px 14px; cursor: pointer; transition: background .18s; }
+.chat-row:hover { background: rgba(255, 255, 255, .03); }
+.chat-row:active { background: rgba(255, 255, 255, .05); }
+.chat-row.pinned { background: rgba(var(--g1rgb), .09); box-shadow: inset 3px 0 0 var(--acc-c); }
+.chat-ava { width: 40px; height: 40px; border-radius: 15px; display: grid; place-items: center; flex-shrink: 0; color: #fff; font-weight: 700; font-size: 12.5px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22); overflow: hidden; position: relative; }
+.chat-ava img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.unread { min-width: 20px; height: 20px; padding: 0 6px; border-radius: 99px; display: grid; place-items: center; flex-shrink: 0;
+  font-size: 11px; font-weight: 800; color: #fff; background: linear-gradient(135deg, var(--g1), var(--g2)); box-shadow: 0 6px 14px -6px rgba(var(--glow), .8); }
+.nav-badge { position: absolute; top: 5px; right: 10px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 99px; display: grid; place-items: center;
+  font-size: 9.5px; font-weight: 800; color: #fff; background: #f43f5e; box-shadow: 0 4px 10px -4px rgba(244, 63, 94, .9); }
+.bubble { max-width: 84%; padding: 9px 13px; border-radius: 17px; font-size: 13.5px; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
+.bubble.me { background: linear-gradient(135deg, var(--g1), var(--g2)); color: #fff; border-bottom-right-radius: 7px; }
+.bubble.them { background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .08); border-bottom-left-radius: 7px; }
+.bubble.deleted { font-style: italic; color: rgba(255, 255, 255, .4); background: none; border: 1px dashed rgba(255, 255, 255, .16); }
+.msg-line { display: flex; flex-direction: column; gap: 1px; }
+.msg-line.me { align-items: flex-end; }
+.msg-line.them { align-items: flex-start; }
+.msg-meta { font-size: 9.5px; color: rgba(255, 255, 255, .26); padding: 0 4px; display: flex; align-items: center; gap: 5px; }
+.msg-tools { display: flex; gap: 3px; opacity: 0; transition: opacity .16s; }
+.msg-line:hover .msg-tools, .msg-line:focus-within .msg-tools { opacity: 1; }
+.msg-tools button { width: 20px; height: 20px; border-radius: 7px; border: none; display: grid; place-items: center; cursor: pointer;
+  background: rgba(255, 255, 255, .07); color: rgba(255, 255, 255, .55); }
+.msg-tools button:hover { background: rgba(var(--acc), .22); color: #fff; }
+@media (hover: none) { .msg-tools { opacity: 1; } }
+.day-sep { align-self: center; font-size: 10.5px; color: rgba(255, 255, 255, .35); background: rgba(255, 255, 255, .05); border-radius: 99px; padding: 3px 10px; }
+.composer {
+  position: fixed; left: 50%; transform: translateX(-50%);
+  bottom: var(--composer-bottom, calc(80px + env(safe-area-inset-bottom, 0px))); z-index: 45; width: min(94vw, 520px);
+  display: flex; align-items: flex-end; gap: 8px; padding: 7px 8px; border-radius: 20px;
+  box-shadow: 0 18px 40px -18px rgba(0, 0, 0, .8), inset 0 1px 0 rgba(255, 255, 255, .08);
+}
+.composer textarea { flex: 1; min-height: 22px; max-height: 104px; resize: none; background: none; border: none; outline: none;
+  color: #fff; font: inherit; font-size: 13.5px; line-height: 1.4; }
+.composer textarea::placeholder { color: rgba(255, 255, 255, .32); }
+.send-btn { width: 38px; height: 38px; border-radius: 13px; display: grid; place-items: center; flex-shrink: 0; border: none; cursor: pointer;
+  color: #fff; background: linear-gradient(135deg, var(--g1), var(--g2)); box-shadow: 0 8px 18px -8px rgba(var(--glow), .8); transition: transform .15s, opacity .2s; }
+.send-btn:disabled { opacity: .4; cursor: default; }
+.send-btn:not(:disabled):active { transform: scale(.9); }
+.contact-row { width: 100%; text-align: left; display: flex; align-items: center; gap: 10px; padding: 10px 14px; cursor: pointer; transition: background .18s; }
+.contact-row:hover { background: rgba(255, 255, 255, .04); }
+.contact-row:active { background: rgba(255, 255, 255, .06); }
+.icon-round { width: 34px; height: 34px; border-radius: 12px; display: grid; place-items: center; flex-shrink: 0; border: 1px solid rgba(255, 255, 255, .1);
+  background: rgba(255, 255, 255, .05); color: rgba(255, 255, 255, .72); cursor: pointer; transition: background .18s, transform .15s, color .18s; }
+.icon-round:hover { background: rgba(var(--acc), .16); color: #fff; }
+.icon-round:active { transform: scale(.92); }
+.icon-round.on { background: rgba(var(--g1rgb), .26); border-color: rgba(var(--acc), .45); color: #fff; }
+.emoji-pop { position: fixed; z-index: 60; width: min(94vw, 330px); left: 50%; transform: translateX(-50%);
+  border-radius: 18px; padding: 10px; display: grid; grid-template-columns: repeat(8, 1fr); gap: 3px; max-height: 236px; overflow-y: auto; }
+.emoji-pop button { font-size: 19px; line-height: 1.25; padding: 4px 0; border-radius: 10px; border: none; background: none; cursor: pointer; transition: background .14s, transform .14s; }
+.emoji-pop button:hover { background: rgba(var(--acc), .18); }
+.emoji-pop button:active { transform: scale(.86); }
+.sheet { position: fixed; inset: 0; z-index: 70; display: flex; align-items: flex-end; justify-content: center; background: rgba(4, 4, 10, .62);
+  backdrop-filter: blur(3px); opacity: 0; pointer-events: none; transition: opacity .24s; }
+.sheet.open { opacity: 1; pointer-events: auto; }
+.sheet-card { width: min(94vw, 430px); border-radius: 24px 24px 0 0; max-height: 88dvh; overflow-y: auto; transform: translateY(16px);
+  transition: transform .34s cubic-bezier(.16, 1, .3, 1); margin-bottom: 0; }
+.sheet.open .sheet-card { transform: translateY(0); }

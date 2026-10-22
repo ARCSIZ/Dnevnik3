@@ -157,9 +157,10 @@ const tpl=o=>WEEK[((o%7)+7)%7];
 const STUDENTS=[];
 
 /* ---------- Состояние сервера ---------- */
-let S={grades:{},att:{},hw:{}};
+let S={grades:{},att:{},hw:{},meta:{},hidden:{}};
 const save=()=>{};
 const gk=(d,p,i)=>`${d}:${p}:${i}`, hk=(d,p)=>`${d}:${p}`;
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 async function api(part,payload){
   const r=await fetch('/api/state/'+part,{method:'PUT',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
@@ -192,7 +193,7 @@ async function pullState(options = {}){
   if(r.status===401)return location.replace('/login.html');
   if(!r.ok)throw new Error('Не удалось загрузить данные');
   const d=await r.json();
-  S.grades=d.grades||{};S.att=d.att||{};S.hw=d.hw||{};
+  S.grades=d.grades||{};S.att=d.att||{};S.hw=d.hw||{};S.meta=d.gradeMeta||{};S.hidden=d.hiddenGrades||{};
   if(d.times){Object.keys(PAIRS).forEach(k=>delete PAIRS[k]);Object.assign(PAIRS,d.times)}
   if(d.start&&/^\d{4}-\d{2}-\d{2}$/.test(d.start)){const[yy,mm,dd]=d.start.split('-').map(Number);SCH_START=new Date(yy,mm-1,dd,12);if(!firstPull){firstPull=true;dayIdx=todayOff()}}
   if(d.sch)d.sch.forEach((x,i)=>{if(WEEK[i])WEEK[i].lessons=x.lessons||[]});
@@ -304,11 +305,12 @@ function renderHW(){
       </div>
     </div>`;
   icons();
+  const hwKey=hk(dayIdx,pairN);
   $('#hwSave').addEventListener('click',()=>{
     const t=$('#hwText').value.trim(); if(!t)return toast('Введите текст задания','err');
-    S.hw[hk(dayIdx,pairN)]={text:t,due:$('#hwDue').value.trim(),by:TEACHER_NAME,src:'Выдано преподавателем'};save(S);api('hw',S.hw);
+    S.hw[hwKey]={text:t,due:$('#hwDue').value.trim(),by:TEACHER_NAME,src:'Выдано преподавателем'};save(S);api('hw',{[hwKey]:S.hw[hwKey]});
     toast('Домашнее задание сохранено','ok');renderHW();});
-  const dl=$('#hwDel'); dl&&dl.addEventListener('click',()=>{delete S.hw[hk(dayIdx,pairN)];save(S);api('hw',S.hw);toast('Домашнее задание убрано','ok');renderHW()});
+  const dl=$('#hwDel'); dl&&dl.addEventListener('click',()=>{delete S.hw[hwKey];save(S);api('hw',{[hwKey]:null});toast('Домашнее задание убрано','ok');renderHW()});
 }
 
 /* ---------- Студенты ---------- */
@@ -319,31 +321,33 @@ function renderStudents(){
   if(pairN===null){box.innerHTML=`<div class="p-6 text-center text-[13px] text-white/40">Выберите пару, чтобы выставлять оценки и отметки.</div>`;return}
   const editable=ROLE==='dev'||(pairN===livePair()&&dayIdx===todayRaw());
   box.innerHTML=STUDENTS.map((n,i)=>{
-    const g=S.grades[gk(dayIdx,pairN,i)], a=S.att[gk(dayIdx,pairN,i)];
+    const key=gk(dayIdx,pairN,i), g=S.grades[key], a=S.att[key], gm=S.meta[key];
     const ini=n.split(' ').map(x=>x[0]).join('');
+    /* Оценка видна только тому, кто её выставил, и куратору группы — поэтому подсказываем авторство */
+    const foreign=!!g&&!!gm&&gm.by&&gm.by!==USER.login;
     return `<div class="st-row ls-item" style="animation-delay:${i*.025}s">
       <span class="av">${ini}</span>
       <span class="flex-1 min-w-[120px]">
-        <span class="block text-[13.5px] font-semibold leading-tight">${n}</span>
-        <span class="block text-[11px] text-white/35 mt-0.5">${a?`${ATT.find(x=>x[0]===a.t)[1]}${a.t==='О'&&a.min?` · ${a.min} мин`:''}`:'на занятии'}</span>
+        <span class="block text-[13.5px] font-semibold leading-tight">${esc(n)}</span>
+        <span class="block text-[11px] text-white/35 mt-0.5">${a?`${ATT.find(x=>x[0]===a.t)[1]}${a.t==='О'&&a.min?` · ${a.min} мин`:''}`:'на занятии'}${foreign?` · <span class="text-white/45">оценку выставил ${esc(gm.byName||'другой преподаватель')}</span>`:''}</span>
       </span>
-      <span class="flex gap-1.5 ${editable?'':'opacity-40'}">${[5,4,3,2].map(v=>`<button class="g-btn ${g===v?'on'+v:''}" data-g="${v}" data-i="${i}" ${editable?'':'disabled'}>${v}</button>`).join('')}</span>
+      <span class="flex gap-1.5 ${editable?'':'opacity-40'}">${[5,4,3,2].map(v=>`<button class="g-btn ${g===v?'on'+v:''}" data-g="${v}" data-i="${i}" title="${foreign?'оценку выставил '+esc(gm.byName||'другой преподаватель'):'оценка '+v}" ${editable?'':'disabled'}>${v}</button>`).join('')}</span>
       <span class="w-px h-7 bg-white/10 mx-0.5"></span>
       <span class="flex gap-1.5 ${editable?'':'opacity-40'}">${ATT.map(([t])=>`<button class="a-btn ${a&&a.t===t?'on'+t:''}" data-a="${t}" data-i="${i}" title="${ATT.find(x=>x[0]===t)[1]}" ${editable?'':'disabled'}>${t}</button>`).join('')}</span>
     </div>`}).join('');
   $$('#students .g-btn').forEach(b=>b.addEventListener('click',()=>{
     const i=+b.dataset.i,v=+b.dataset.g,k=gk(dayIdx,pairN,i);
-    if(S.grades[k]===v){delete S.grades[k];toast(`Оценка у «${STUDENTS[i]}» удалена`)}else{S.grades[k]=v;toast(`${STUDENTS[i]} — оценка ${v}`,'ok')}
-    save(S);api('grades',S.grades);renderStudents();}));
+    if(S.grades[k]===v){delete S.grades[k];delete S.meta[k];toast(`Оценка у «${STUDENTS[i]}» удалена`)}else{S.grades[k]=v;toast(`${STUDENTS[i]} — оценка ${v}`,'ok')}
+    save(S);api('grades',{[k]:S.grades[k]??null});renderStudents();}));
   $$('#students .a-btn').forEach(b=>b.addEventListener('click',()=>{
     const i=+b.dataset.i,t=b.dataset.a,k=gk(dayIdx,pairN,i);
     if(S.att[k]&&S.att[k].t===t){delete S.att[k];toast(`Отметка у «${STUDENTS[i]}» снята`)}
     else if(t==='О'){const v=prompt(`Опоздание «${STUDENTS[i]}» — на сколько минут?`,'10');if(v===null)return;const mn=Math.max(1,parseInt(v)||1);S.att[k]={t:'О',min:mn};toast(`${STUDENTS[i]} — опоздание ${mn} мин`,'ok')}
     else{S.att[k]={t};toast(`${STUDENTS[i]} — ${t}`,'ok')}
-    save(S);api('att',S.att);renderStudents();}));
+    save(S);api('att',{[k]:S.att[k]??null});renderStudents();}));
 }
-$('#allPresent').addEventListener('click',()=>{if(pairN===null)return;STUDENTS.forEach((_,i)=>delete S.att[gk(dayIdx,pairN,i)]);api('att',S.att);renderStudents();toast('Все отмечены присутствующими','ok')});
-$('#clearAll').addEventListener('click',()=>{if(pairN===null)return;STUDENTS.forEach((_,i)=>{delete S.att[gk(dayIdx,pairN,i)];delete S.grades[gk(dayIdx,pairN,i)]});api('att',S.att);api('grades',S.grades);renderStudents();toast('Оценки и отметки очищены')});
+$('#allPresent').addEventListener('click',()=>{if(pairN===null)return;const patch={};STUDENTS.forEach((_,i)=>{const k=gk(dayIdx,pairN,i);delete S.att[k];patch[k]=null});api('att',patch);renderStudents();toast('Все отмечены присутствующими','ok')});
+$('#clearAll').addEventListener('click',()=>{if(pairN===null)return;const attPatch={},grPatch={};STUDENTS.forEach((_,i)=>{const k=gk(dayIdx,pairN,i);delete S.att[k];delete S.grades[k];delete S.meta[k];attPatch[k]=null;grPatch[k]=null});api('att',attPatch);api('grades',grPatch);renderStudents();toast('Оценки и отметки очищены')});
 $('#toDiary').addEventListener('click',()=>location.href='diary.html');
 
 function renderAll(){renderDayPick();renderPairs();renderHW();renderStudents()}

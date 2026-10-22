@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="stylesheet" href="/theme.css">
+<script src="/theme.js"></script>
+<script src="/splash.js"></script>
+<title>Чаты · Электронный дневник</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#07070d">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Unbounded:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  html { -webkit-tap-highlight-color: transparent; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #07070d; color: #ecedf5; overflow-x: hidden; min-height: 100dvh; }
+  .font-display { font-family: 'Unbounded', sans-serif; }
+  html, body, * { scrollbar-width: none; }
+  *::-webkit-scrollbar { display: none; }
+
+  .bg-scene { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+  .blob { position: absolute; border-radius: 9999px; filter: blur(90px); opacity: .5; animation: drift 24s ease-in-out infinite alternate; }
+  .b1 { width: 480px; height: 480px; left: -150px; top: -170px; background: radial-gradient(circle, #6a55f8 0%, transparent 65%); }
+  .b2 { width: 520px; height: 520px; right: -190px; top: 26%; background: radial-gradient(circle, #a24fe0 0%, transparent 62%); animation-duration: 30s; animation-delay: -9s; }
+  .b3 { width: 420px; height: 420px; left: 18%; bottom: -240px; background: radial-gradient(circle, #3e63f2 0%, transparent 65%); opacity: .34; }
+  @keyframes drift { from { transform: translate(0,0) scale(1); } to { translate: 60px -40px; transform: scale(1.12); } }
+  .grid-lines { position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 20%, black 10%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 20%, black 10%, transparent 75%); }
+
+  .glass { background: linear-gradient(160deg, rgba(255,255,255,.055), rgba(255,255,255,.02)); border: 1px solid rgba(255,255,255,.09);
+    backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); box-shadow: 0 24px 64px -28px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.07); }
+  .grad-text { background: linear-gradient(92deg, var(--acc-c), #c084fc 45%, #818cf8); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  .fade-up { animation: fadeUp .7s cubic-bezier(.16,1,.3,1) both; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  .d1 { animation-delay: .05s; } .d2 { animation-delay: .11s; } .d3 { animation-delay: .17s; }
+
+  .icon-btn { width: 38px; height: 38px; border-radius: 13px; display: grid; place-items: center; flex-shrink: 0; cursor: pointer;
+    border: 1px solid rgba(255,255,255,.09); background: rgba(255,255,255,.045); color: rgba(255,255,255,.68); transition: background .18s, color .18s, transform .14s; }
+  .icon-btn:hover { background: rgba(var(--acc), .15); color: #fff; }
+  .icon-btn:active { transform: scale(.92); }
+  .icon-btn svg { width: 18px; height: 18px; }
+
+  .field { width: 100%; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08); border-radius: 14px;
+    padding: 11px 14px; color: #fff; font-size: 13px; outline: none; transition: border-color .2s, background .2s; }
+  .field:focus { border-color: rgba(var(--acc), .45); background: rgba(255,255,255,.07); }
+  .btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 11px 18px; border-radius: 15px; border: none; cursor: pointer;
+    font-size: 13px; font-weight: 600; color: #fff; background: linear-gradient(135deg, var(--g1), var(--g2));
+    box-shadow: 0 14px 30px -14px rgba(var(--glow), .9), inset 0 1px 0 rgba(255,255,255,.22); transition: transform .15s, filter .2s; }
+  .btn-primary:hover { filter: brightness(1.08); }
+  .btn-primary:active { transform: scale(.97); }
+  .btn-ghost { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 11px 16px; border-radius: 15px; cursor: pointer;
+    font-size: 12.5px; font-weight: 600; color: rgba(255,255,255,.72); background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.09); transition: background .18s, color .18s; }
+  .btn-ghost:hover { background: rgba(var(--acc), .14); color: #fff; }
+
+  .topbar { position: sticky; top: 0; z-index: 40; padding: calc(env(safe-area-inset-top, 0px) + 10px) 0 10px;
+    background: linear-gradient(180deg, rgba(7,7,13,.92), rgba(7,7,13,.62)); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+  .view { display: none; }
+  .view.on { display: block; }
+
+  .thread-wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+  button.pf-ava { border: none; padding: 0; cursor: pointer; }
+  .ava-lg { width: 88px; height: 88px; border-radius: 30px; font-size: 27px; }
+  .ava-xl { width: 104px; height: 104px; border-radius: 34px; font-size: 32px; }
+  .chip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 99px; font-size: 10.5px; font-weight: 600;
+    background: rgba(var(--g1rgb), .16); color: var(--acc-c); border: 1px solid rgba(var(--acc), .22); }
+  .row-line { display: flex; align-items: center; gap: 11px; width: 100%; text-align: left; padding: 12px 14px; cursor: pointer; border: none; background: none; color: inherit;
+    transition: background .18s; }
+  .row-line:hover { background: rgba(255,255,255,.035); }
+  .toast { position: fixed; left: 50%; bottom: calc(104px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 12px); z-index: 80;
+    padding: 10px 16px; border-radius: 14px; font-size: 12.5px; opacity: 0; pointer-events: none; transition: opacity .24s, transform .24s;
+    background: rgba(16,16,26,.94); border: 1px solid rgba(var(--acc), .3); box-shadow: 0 18px 40px -18px rgba(0,0,0,.9); }
+  .toast.on { opacity: 1; transform: translate(-50%, 0); }
+  @media (prefers-reduced-motion: reduce) { .fade-up, .blob { animation: none; } }
+</style>
+</head>
+<body>
+<div class="bg-scene" aria-hidden="true">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  <div class="grid-lines"></div>
+</div>
+
+<main class="relative z-10 w-full max-w-[520px] mx-auto px-4 min-h-dvh">
+  <header class="topbar">
+    <div class="flex items-center gap-2.5" id="barList">
+      <div class="flex-1 min-w-0">
+        <h1 class="font-display font-bold text-[21px] leading-none">Чаты</h1>
+        <div class="text-[11.5px] text-white/40 mt-1.5 truncate" id="listCaption">загружаем список…</div>
+      </div>
+      <button class="icon-btn" id="btnRoom" title="Создать группу" aria-label="Создать группу"><i data-lucide="users-round"></i></button>
+      <button class="icon-btn" id="btnNew" title="Начать переписку" aria-label="Начать переписку"><i data-lucide="pen-square"></i></button>
+      <button class="icon-btn" id="btnMe" title="Мой профиль" aria-label="Мой профиль"><i data-lucide="user-round"></i></button>
+      <button class="icon-btn" id="btnDiary" title="В дневник" aria-label="В дневник"><i data-lucide="notebook-pen"></i></button>
+    </div>
+
+    <div class="flex items-center gap-2.5 hidden" id="barThread">
+      <button class="icon-btn" id="btnBack" title="Назад к чатам" aria-label="Назад"><i data-lucide="arrow-left"></i></button>
+      <button class="chat-ava" id="headAva" title="Открыть профиль" aria-label="Профиль собеседника"></button>
+      <div class="flex-1 min-w-0">
+        <div class="pf-name"><span class="t text-[14px]" id="headTitle">Чат</span><span id="headBadge"></span></div>
+        <div class="text-[11px] text-white/38 truncate mt-0.5" id="headSub">загружаем…</div>
+      </div>
+      <button class="icon-btn" id="btnPin" title="Закрепить чат" aria-label="Закрепить"><i data-lucide="pin"></i></button>
+      <button class="icon-btn" id="btnInfo" title="О чате" aria-label="О чате"><i data-lucide="info"></i></button>
+    </div>
+  </header>
+
+  <!-- ============ СПИСОК ЧАТОВ ============ -->
+  <section class="view on" id="viewList">
+    <div id="chatPicker" class="glass rounded-2xl overflow-hidden mb-4 hidden fade-up">
+      <div class="p-3 border-b border-white/[.06]">
+        <input id="chatSearch" class="field" placeholder="Кому написать или что найти…" autocomplete="off">
+      </div>
+      <div id="chatContacts" class="max-h-[300px] overflow-y-auto divide-y divide-white/[.05]"></div>
+    </div>
+
+    <div class="mb-4 fade-up d1">
+      <input id="listFilter" class="field" placeholder="Поиск по чатам…" autocomplete="off">
+    </div>
+
+    <div id="chatsBody" class="fade-up d2"></div>
+
+    <div id="blockedBlock" class="mt-5 hidden fade-up d3">
+      <div class="flex items-center gap-2 mb-2 px-1">
+        <i data-lucide="shield-off" style="width:14px;height:14px" class="text-rose-300/70"></i>
+        <span class="text-[11.5px] font-semibold text-white/45 uppercase tracking-wider">Заблокированные</span>
+      </div>
+      <div class="glass rounded-2xl divide-y divide-white/[.06] overflow-hidden" id="blockedBody"></div>
+    </div>
+
+    <p class="text-[11px] text-white/25 text-center mt-6 leading-relaxed">Адрес чата выглядит как <span class="text-white/40">/chat/код</span> — его можно скопировать из строки браузера или кнопкой «Копировать ссылку» внутри чата.</p>
+  </section>
+
+  <!-- ============ ДИАЛОГ ============ -->
+  <section class="view thread-wrap" id="viewThread">
+    <div id="threadBody" class="flex flex-col gap-2 pt-2"></div>
+  </section>
+</main>
+
+<!-- поле ввода показано только внутри диалога -->
+<div class="composer glass hidden" id="chatComposer" style="--composer-bottom: calc(16px + env(safe-area-inset-bottom, 0px))">
+  <button class="icon-round" id="btnEmoji" title="Эмодзи" aria-label="Эмодзи"><i data-lucide="smile"></i></button>
+  <textarea id="chatInput" rows="1" placeholder="Сообщение…" maxlength="2000"></textarea>
+  <button class="send-btn" id="chatSend" aria-label="Отправить" disabled><i data-lucide="send"></i></button>
+</div>
+<div class="emoji-pop glass hidden" id="emojiPop"></div>
+
+<!-- карточка профиля -->
+<div class="sheet" id="profileSheet">
+  <div class="sheet-card glass" id="profileCard"></div>
+</div>
+
+<!-- создание группы -->
+<div class="sheet" id="roomSheet">
+  <div class="sheet-card glass p-5">
+    <div class="flex items-center justify-between mb-1">
+      <h2 class="font-display font-bold text-[18px]">Новая группа</h2>
+      <button class="icon-btn" id="roomClose" aria-label="Закрыть"><i data-lucide="x"></i></button>
+    </div>
+    <p class="text-[12px] text-white/40 mb-4">Комнату видите только вы и те, кого вы выберете. Участвовать могут люди из ваших групп и те, кому вы уже пишете.</p>
+    <input id="roomTitle" class="field mb-3" placeholder="Название комнаты" maxlength="80">
+    <input id="roomSearch" class="field mb-3" placeholder="Выберите участников…" autocomplete="off">
+    <div id="roomPeople" class="max-h-[260px] overflow-y-auto glass rounded-2xl divide-y divide-white/[.05] mb-4"></div>
+    <div class="flex gap-2">
+      <button class="btn-ghost flex-1" id="roomCancel">Отмена</button>
+      <button class="btn-primary flex-1" id="roomCreate"><i data-lucide="users-round" style="width:16px;height:16px"></i>Создать</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+const icons = () => window.lucide && lucide.createIcons();
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+/* Сообщения и имена приходят с сервера текстом — перед вставкой в HTML всегда экранируем. */
+const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const two = n => String(n).padStart(2, '0');
+const MONTHS = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+const hhmm = ts => { const d = new Date(ts); return `${two(d.getHours())}:${two(d.getMinutes())}`; };
+const dayWord = ts => {
+  const d = new Date(ts), n = new Date();
+  if (d.toDateString() === n.toDateString()) return 'сегодня';
+  const y = new Date(n); y.setDate(y.getDate() - 1);
+  if (d.toDateString() === y.toDateString()) return 'вчера';
+  return `${d.getDate()} ${MONTHS[d.getMonth()]}`;
+};
+const firstName = fio => String(fio || '').split(/\s+/)[0] || '';
+function plural(n, one, few, many) {
+  const k = n % 100, d = n % 10;
+  if (k > 10 && k < 20) return many;
+  if (d === 1) return one;
+  if (d >= 2 && d <= 4) return few;
+  return many;
+}
+const inits = name => String(name || '').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+const hashOf = s => { let h = 0; for (let i = 0; i < String(s).length; i++) h = (h * 31 + String(s).charCodeAt(i)) >>> 0; return h; };
+const HUES = [[99, 102, 241], [139, 92, 246], [192, 38, 211], [236, 72, 153], [245, 158, 11], [16, 185, 129], [56, 189, 248]];
+const avaColor = i => { const a = HUES[i % HUES.length], b = HUES[(i + 3) % HUES.length]; return `linear-gradient(135deg, rgb(${a.join(',')}), rgb(${b.join(',')}))`; };
+const chatAvaColor = key => avaColor(hashOf(key));
+let toastTimer = null;
+function toast(text) {
+  const el = $('#toast'); el.textContent = text; el.classList.add('on');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('on'), 2600);
+}
+async function api(path, options) {
+  const r = await fetch(path, Object.assign({ credentials: 'same-origin', cache: 'no-store' }, options));
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(d.error || 'Запрос не прошёл.');
+  return d;
+}
+
+let ME = null, DATA = null, THREAD = null, THREAD_ID = null, pollTimer = null, sending = false;
+let lastDay = '';
+
+/* ---------- аватар и подпись пользователя ---------- */
+function avaMarkup(target, size) {
+  const cls = size === 'lg' ? 'pf-ava ava-lg' : size === 'xl' ? 'pf-ava ava-xl' : 'pf-ava';
+  const style = size === 'lg' || size === 'xl' ? '' : 'width:40px;height:40px;font-size:12.5px;';
+  const bg = target.avatar ? '' : `background:${target.color || chatAvaColor(target.login || target.title || '')};`;
+  const inner = target.avatar ? `<img src="${esc(target.avatar)}" alt="">` : esc(target.text || inits(target.fio || target.title));
+  return `<span class="${cls}" style="${style}${bg}">${inner}${statusMarkup(target.status, true)}</span>`;
+}
+function statusMarkup(status, inAva) {
+  if (!status || !status.value) return '';
+  const body = status.kind === 'media' ? `<img src="${esc(status.value)}" alt="">` : esc(status.value);
+  return inAva ? `<span class="pf-status">${body}</span>` : `<span class="pf-status-inline">${body}</span>`;
+}
+const verifiedMark = on => on ? `<span class="verified" title="Проверенный аккаунт"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>` : '';
+
+/* ---------- СПИСОК ---------- */
+function chatRow(c) {
+  const preview = c.last
+    ? (c.last.mine ? 'Вы: ' : c.kind !== 'direct' ? `${esc(firstName(c.last.name))}: ` : '') + esc(c.last.text)
+    : c.kind === 'group' ? 'общий чат группы' : c.kind === 'room' ? 'комната группы участников' : 'диалог без сообщений';
+  const ava = c.peer
+    ? avaMarkup({ avatar: c.peer.avatar, status: c.peer.status, login: c.peer.login, text: inits(c.title) })
+    : `<span class="chat-ava" style="background:${chatAvaColor(c.rawId)}">${esc(inits(c.title))}</span>`;
+  return `
+    <button type="button" class="chat-row ${c.pinned ? 'pinned' : ''}" data-chat="${esc(c.id)}">
+      ${ava}
+      <span class="flex-1 min-w-0">
+        <span class="flex items-center justify-between gap-2">
+          <span class="pf-name flex-1 min-w-0"><span class="t text-[13.5px]">${esc(c.title)}</span>${c.peer ? verifiedMark(c.peer.verified) : ''}${c.pinned ? `<i data-lucide="pin" style="width:12px;height:12px" class="text-white/30 shrink-0"></i>` : ''}</span>
+          <span class="text-[10.5px] text-white/30 shrink-0 tabular-nums">${c.last ? hhmm(c.last.ts) : ''}</span>
+        </span>
+        <span class="flex items-center justify-between gap-2 mt-1">
+          <span class="text-[12px] ${c.unread ? 'text-white/70' : 'text-white/40'} truncate">${preview}</span>
+          ${c.unread ? `<span class="unread">${c.unread}</span>` : ''}
+        </span>
+      </span>
+    </button>`;
+}
+function renderList() {
+  const body = $('#chatsBody'), caption = $('#listCaption');
+  if (!DATA) { caption.textContent = 'загружаем список…'; body.innerHTML = emptyCard('messages-square', 'Загружаем чаты…', 'Секунда — достаем переписку.'); icons(); return; }
+  const q = ($('#listFilter').value || '').trim().toLocaleLowerCase('ru');
+  const list = (DATA.chats || []).filter(c => !q || c.title.toLocaleLowerCase('ru').includes(q) || ((c.last && c.last.text) || '').toLocaleLowerCase('ru').includes(q));
+  const unread = (DATA.chats || []).reduce((n, c) => n + (c.unread || 0), 0);
+  caption.textContent = list.length
+    ? `${list.length} ${plural(list.length, 'чат', 'чата', 'чатов')}${unread ? ` · ${unread} ${plural(unread, 'новое', 'новых', 'новых')}` : ''}`
+    : 'личных переписок пока нет';
+  body.innerHTML = list.length
+    ? `<div class="glass rounded-2xl divide-y divide-white/[0.06] overflow-hidden">${list.map(chatRow).join('')}</div>`
+    : emptyCard('messages-square', 'Пока не с кем переписываться', 'Общий чат группы появится сам, когда аккаунт привязан к группе. Личный диалог — кнопкой сверху.');
+  const blocked = DATA.blocked || [];
+  $('#blockedBlock').classList.toggle('hidden', !blocked.length);
+  $('#blockedBody').innerHTML = blocked.map(b => `
+    <div class="flex items-center gap-3 px-3.5 py-2.5">
+      <span class="chat-ava" style="width:32px;height:32px;border-radius:12px;font-size:11px;background:${chatAvaColor(b.login)}">${esc(inits(b.fio))}</span>
+      <span class="flex-1 min-w-0"><span class="block text-[13px] font-semibold truncate">${esc(b.fio)}</span><span class="block text-[11px] text-white/35 mt-0.5">${esc(b.roleLabel)}</span></span>
+      <button class="btn-ghost !py-1.5 !px-3 !text-[11.5px]" data-unblock="${esc(b.login)}">Разблокировать</button>
+    </div>`).join('');
+  icons();
+  $$('[data-chat]', body).forEach(el => el.addEventListener('click', () => go(el.dataset.chat)));
+  $$('[data-unblock]', $('#blockedBody')).forEach(el => el.addEventListener('click', () => block(el.dataset.unblock, false)));
+}
+function emptyCard(icon, title, hint) {
+  return `
+    <div class="glass rounded-3xl py-12 px-6 flex flex-col items-center text-center">
+      <div class="w-16 h-16 rounded-3xl grid place-items-center text-violet-300 mb-4" style="background:rgba(var(--g1rgb),.12)">
+        <i data-lucide="${icon}" style="width:26px;height:26px"></i>
+      </div>
+      <div class="font-display font-bold text-[17px] mb-1.5">${esc(title)}</div>
+      <p class="text-[13px] text-white/45 max-w-[290px] leading-relaxed">${esc(hint)}</p>
+    </div>`;
+}
+function renderContacts() {
+  const box = $('#chatContacts');
+  if (!DATA) { box.innerHTML = ''; return; }
+  const q = ($('#chatSearch').value || '').trim().toLocaleLowerCase('ru');
+  const people = (DATA.contacts || []).filter(p => !q
+    || p.fio.toLocaleLowerCase('ru').includes(q) || (p.group || '').toLocaleLowerCase('ru').includes(q)
+    || (p.subj || '').toLocaleLowerCase('ru').includes(q) || (p.roleLabel || '').toLocaleLowerCase('ru').includes(q));
+  box.innerHTML = people.length ? people.map(p => `
+    <button type="button" class="contact-row" data-contact="${esc(p.login)}">
+      ${p.avatar ? `<span class="pf-ava" style="width:34px;height:34px;font-size:11px;background:${chatAvaColor(p.login)}"><img src="${esc(p.avatar)}" alt=""></span>`
+        : `<span class="chat-ava" style="width:34px;height:34px;border-radius:13px;font-size:11px;background:${chatAvaColor(p.login)}">${esc(inits(p.fio))}</span>`}
+      <span class="flex-1 min-w-0">
+        <span class="pf-name"><span class="t text-[13px]">${esc(p.fio)}</span>${verifiedMark(p.verified)}</span>
+        <span class="block text-[11px] text-white/40 mt-0.5 truncate">${[p.roleLabel, p.group, p.subj].filter(Boolean).map(esc).join(' · ')}</span>
+      </span>
+      <i data-lucide="${p.chatId ? 'messages-square' : 'plus'}" style="width:15px;height:15px" class="${p.chatId ? 'text-violet-300' : 'text-white/30'} shrink-0"></i>
+    </button>`).join('')
+    : '<div class="px-4 py-6 text-[12.5px] text-white/35 text-center">Никого не нашли — попробуйте короче запрос</div>';
+  icons();
+  $$('[data-contact]', box).forEach(el => el.addEventListener('click', () => openDirect(el.dataset.contact)));
+}
+async function loadList() {
+  try { DATA = await api('/api/chats'); }
+  catch (e) { DATA = null; $('#listCaption').textContent = e.message; }
+  renderList();
+}
+
+/* ---------- ПЕРЕКЛЮЧЕНИЕ ВИДОВ И АДРЕС ---------- */
+function show(which) {
+  $('#viewList').classList.toggle('on', which === 'list');
+  $('#viewThread').classList.toggle('on', which === 'thread');
+  $('#barList').classList.toggle('hidden', which !== 'list');
+  $('#barThread').classList.toggle('hidden', which !== 'thread');
+  /* Поле ввода живёт только внутри диалога */
+  $('#chatComposer').classList.toggle('hidden', which !== 'thread');
+  if (which !== 'thread') stopPoll(); else startPoll();
+}
+function pathOf(code) { return code ? `/chat/${code}` : '/chat'; }
+function go(code) {
+  if (location.pathname !== pathOf(code)) history.pushState({ code }, '', pathOf(code));
+  if (code) openThread(code); else { show('list'); closeProfile(); loadList(); }
+}
+function openDirect(login) {
+  api('/api/chats', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ to: login }) })
+    .then(d => { $('#chatPicker').classList.add('hidden'); go(d.id); })
+    .catch(e => toast(e.message));
+}
+
+/* ---------- ДИАЛОГ ---------- */
+function smallAva(target, size) {
+  const bg = target.avatar ? '' : `background:${chatAvaColor(target.login || '')};`;
+  return `<button type="button" class="pf-ava" data-open-profile="${esc(target.login || '')}" style="width:${size}px;height:${size}px;border-radius:${Math.round(size / 3)}px;font-size:${Math.round(size / 3.2)}px;${bg}">
+    ${target.avatar ? `<img src="${esc(target.avatar)}" alt="">` : esc(inits(target.fio))}</button>`;
+}
+function threadBubble(m) {
+  if (m.system) return `<div class="day-sep mt-2">${esc(m.text)}</div>`;
+  if (m.deleted) return `<div class="msg-line ${m.mine ? 'me' : 'them'}"><div class="bubble deleted">сообщение удалено</div></div>`;
+  const direct = THREAD.chat.kind === 'direct';
+  const who = m.mine || direct ? '' : `${esc(firstName(m.fio || m.name))} · `;
+  return `
+    <div class="msg-line ${m.mine ? 'me' : 'them'}" data-msg="${esc(m.id)}">
+      <div class="flex items-end gap-2 ${m.mine ? 'flex-row-reverse' : ''}">
+        ${m.mine || direct ? '' : smallAva({ avatar: m.avatar, login: m.by, fio: m.fio || m.name }, 26)}
+        <div class="bubble ${m.mine ? 'me' : 'them'}">${esc(m.text)}</div>
+        ${m.canManage ? `<span class="msg-tools"><button data-edit="${esc(m.id)}" title="Изменить"><i data-lucide="pencil" style="width:11px;height:11px"></i></button><button data-del="${esc(m.id)}" title="Удалить"><i data-lucide="trash-2" style="width:11px;height:11px"></i></button></span>` : ''}
+      </div>
+      <div class="msg-meta">${who}${hhmm(m.ts)}${m.edited ? ' · изменено' : ''}</div>
+    </div>`;
+}
+function renderThread(stick = true) {
+  const box = $('#threadBody');
+  if (!THREAD) return;
+  const chat = THREAD.chat;
+  $('#headTitle').textContent = chat.title;
+  $('#headSub').textContent = chat.subtitle || '';
+  $('#headBadge').innerHTML = chat.peer ? verifiedMark(chat.peer.verified) : '';
+  const ava = $('#headAva');
+  if (chat.peer && chat.peer.avatar) ava.innerHTML = `<img src="${esc(chat.peer.avatar)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:15px">`;
+  else { ava.style.background = chatAvaColor(chat.rawId); ava.innerHTML = esc(inits(chat.title)); }
+  ava.classList.add('chat-ava');
+  $('#btnPin').classList.toggle('on', !!chat.pinned);
+  const msgs = THREAD.messages || [];
+  lastDay = '';
+  box.innerHTML = msgs.length
+    ? msgs.map(m => {
+        const day = new Date(m.ts).toDateString();
+        const sep = day === lastDay ? '' : (lastDay = day, `<div class="day-sep mt-3">${dayWord(m.ts)}</div>`);
+        return sep + threadBubble(m);
+      }).join('') + (msgs.length < THREAD.total ? `<p class="text-[10.5px] text-white/25 text-center mt-3">Показаны последние ${msgs.length} сообщений из ${THREAD.total}</p>` : '')
+    : emptyCard('pen-line', 'Сообщений пока нет', chat.kind === 'group'
+        ? 'Это чат группы — напишите первым, его увидят одногруппники, куратор и преподаватели ваших предметов.'
+        : 'Начните диалог: собеседник получит сообщение, даже если дневник закрыт, а уведомления включены.');
+  icons();
+  $$('[data-del]', box).forEach(el => el.addEventListener('click', () => manageMessage('DELETE', el.dataset.del)));
+  $$('[data-edit]', box).forEach(el => el.addEventListener('click', () => editMessage(el.dataset.edit)));
+  $$('[data-open-profile]', box).forEach(el => el.addEventListener('click', () => showProfile(el.dataset.openProfile)));
+  if (stick) requestAnimationFrame(() => scrollTo({ top: document.body.scrollHeight, behavior: reduced ? 'auto' : 'smooth' }));
+  $('#chatSend').disabled = !$('#chatInput').value.trim() || sending;
+}
+async function openThread(code) {
+  THREAD_ID = code; THREAD = null;
+  show('thread');
+  $('#threadBody').innerHTML = '<div class="text-[12.5px] text-white/35 text-center py-10">Загружаем переписку…</div>';
+  try { THREAD = await api('/api/chat/' + encodeURIComponent(code)); }
+  catch (e) {
+    $('#headSub').textContent = '';
+    $('#threadBody').innerHTML = `<div class="text-[12.5px] text-rose-300/80 text-center py-10">${esc(e.message)}</div>`;
+    return;
+  }
+  renderThread();
+  if (DATA) DATA.chats.forEach(c => { if (c.id === code) c.unread = 0; });
+}
+function stopPoll() { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } }
+function startPoll() { stopPoll(); pollTimer = setInterval(pollThread, 5000); }
+async function pollThread() {
+  if (!THREAD || document.hidden || sending || $('#viewThread').classList.contains('on') === false) return;
+  const after = THREAD.messages.length ? THREAD.messages[THREAD.messages.length - 1].ts : 0;
+  try {
+    const d = await api('/api/chat/' + encodeURIComponent(THREAD_ID) + '?after=' + after);
+    if (d.messages && d.messages.length) {
+      const atBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 90;
+      THREAD.messages = THREAD.messages.concat(d.messages).slice(-300);
+      renderThread(atBottom);
+    }
+  } catch (e) { /* сеть моргнула — попробуем на следующем тике */ }
+}
+async function sendChat() {
+  const input = $('#chatInput'), text = input.value.trim();
+  if (!text || !THREAD_ID || sending) return;
+  sending = true; $('#chatSend').disabled = true;
+  try {
+    const d = await api('/api/chat/' + encodeURIComponent(THREAD_ID), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) });
+    input.value = ''; grow();
+    THREAD.messages.push(d.message);
+    renderThread();
+  } catch (e) { toast(e.message); }
+  sending = false; grow();
+}
+async function manageMessage(method, msgId) {
+  if (method === 'DELETE' && !confirm('Удалить сообщение?')) return;
+  try {
+    const d = await api(`/api/chat/${encodeURIComponent(THREAD_ID)}/message/${msgId}`, { method });
+    const i = THREAD.messages.findIndex(m => m.id === msgId);
+    if (i >= 0) THREAD.messages[i] = d.message;
+    renderThread(false);
+  } catch (e) { toast(e.message); }
+}
+function editMessage(msgId) {
+  const m = THREAD.messages.find(x => x.id === msgId);
+  if (!m) return;
+  const text = prompt('Текст сообщения', m.text);
+  if (text == null || !text.trim()) return;
+  api(`/api/chat/${encodeURIComponent(THREAD_ID)}/message/${msgId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) })
+    .then(d => { const i = THREAD.messages.findIndex(x => x.id === msgId); THREAD.messages[i] = d.message; renderThread(false); })
+    .catch(e => toast(e.message));
+}
+const grow = () => {
+  const input = $('#chatInput');
+  input.style.height = 'auto';
+  input.style.height = Math.min(104, input.scrollHeight) + 'px';
+  $('#chatSend').disabled = !input.value.trim() || sending;
+};
+
+/* ---------- ЗАКРЕПИТЬ / БЛОКИРОВКА / ССЫЛКА ---------- */
+function togglePin() {
+  if (!THREAD) return;
+  const next = !THREAD.chat.pinned;
+  api(`/api/chat/${encodeURIComponent(THREAD_ID)}/pin`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pinned: next }) })
+    .then(() => { THREAD.chat.pinned = next; $('#btnPin').classList.toggle('on', next); toast(next ? 'Чат закреплён' : 'Чат откреплён'); if (DATA) DATA.chats.forEach(c => { if (c.id === THREAD_ID) c.pinned = next; }); })
+    .catch(e => toast(e.message));
+}
+async function block(login, silent) {
+  const blocked = (DATA && DATA.blocked || []).some(b => b.login === login);
+  try {
+    const d = await api('/api/block', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ login, unblock: blocked }) });
+    if (!silent) toast(d.blocked ? 'Пользователь заблокирован' : 'Пользователь разблокирован');
+    DATA = null; await loadList();
+    if (d.blocked) closeProfile();
+  } catch (e) { toast(e.message); }
+}
+function copyLink() {
+  const link = location.origin + pathOf(THREAD_ID);
+  const done = () => toast('Ссылка на чат скопирована');
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(link).then(done, () => prompt('Скопируйте ссылку', link));
+  else prompt('Скопируйте ссылку', link);
+}
+
+/* ---------- КАРТОЧКА ПРОФИЛЯ ---------- */
+const ROLE_FORM = { student: 'студент', starosta: 'староста', teacher: 'преподаватель', curator: 'куратор', admin: 'дежурный администратор', dev: 'разработчик' };
+function profileCard(source, extra, opts) {
+  const prof = source.profile || source;
+  const mine = prof.login === (ME && ME.login);
+  const bio = prof.bio ? `<p class="text-[12.5px] text-white/60 leading-relaxed mt-2 whitespace-pre-wrap">${esc(prof.bio)}</p>` : '';
+  return `
+    <div class="pf-banner">${prof.banner ? `<img src="${esc(prof.banner)}" alt="">` : ''}</div>
+    <div class="p-5 -mt-9">
+      <div class="flex items-end gap-3 mb-3">
+        ${avaMarkup({ avatar: prof.avatar, status: prof.status, login: prof.login, text: inits(prof.fio) }, 'lg')}
+        <div class="flex-1 min-w-0 pb-1">
+          <div class="pf-name"><span class="t text-[16px]">${esc(prof.fio)}</span>${verifiedMark(prof.verified)}</div>
+          <div class="text-[11.5px] text-white/40 mt-1">${esc(ROLE_FORM[prof.role] || prof.role)}${prof.group ? ' · ' + esc(prof.group) : ''}</div>
+        </div>
+        <button class="icon-btn" id="pfClose" aria-label="Закрыть"><i data-lucide="x"></i></button>
+      </div>
+      ${prof.subj ? `<div class="chip mb-1">предмет: ${esc(prof.subj)}</div>` : ''}
+      ${bio}
+      ${extra || ''}
+      <div class="flex flex-wrap gap-2 mt-4">
+        ${mine ? `<button class="btn-primary flex-1" id="pfEdit"><i data-lucide="sparkles" style="width:15px;height:15px"></i>Настроить оформление</button>` : ''}
+        <button class="btn-ghost" id="pfCopy"><i data-lucide="link" style="width:14px;height:14px"></i>Ссылка профиля</button>
+        ${mine ? '' : `<button class="btn-ghost" id="pfBlock">${opts && opts.blocked ? 'Разблокировать' : 'Заблокировать'}</button>`}
+      </div>
+      <p class="text-[10.5px] text-white/22 mt-3">Логин: ${esc(prof.login)}</p>
+    </div>`;
+}
+async function showProfile(login) {
+  const sheet = $('#profileSheet'), card = $('#profileCard');
+  if (login === (ME && ME.login)) {
+    card.innerHTML = profileCard({ profile: ME });
+  } else {
+    card.innerHTML = '<div class="p-8 text-center text-[12.5px] text-white/40">Загружаем профиль…</div>';
+    try {
+      const d = await api('/api/profile/' + encodeURIComponent(login));
+      card.innerHTML = profileCard(d, d.canChat
+        ? `<div class="flex gap-2 mt-3"><button class="btn-primary flex-1" id="pfChat">Написать сообщение</button></div>`
+        : `<p class="text-[11.5px] text-white/30 mt-3">Диалог с этим человеком недоступен — у вас нет общей группы.</p>`, d);
+      const chatBtn = $('#pfChat', card);
+      if (chatBtn) chatBtn.addEventListener('click', () => { closeProfile(); openDirect(login); });
+    } catch (e) { card.innerHTML = `<div class="p-8 text-center text-[12.5px] text-rose-300/80">${esc(e.message)}</div>`; }
+  }
+  sheet.classList.add('open');
+  icons();
+  $('#pfClose', card).addEventListener('click', closeProfile);
+  const edit = $('#pfEdit', card);
+  if (edit) edit.addEventListener('click', () => { location.href = '/diary.html#profile'; });
+  $('#pfCopy', card).addEventListener('click', () => {
+    const link = location.origin + '/chat/?user=' + encodeURIComponent(login);
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(link).then(() => toast('Ссылка скопирована'), () => prompt('Скопируйте ссылку', link));
+    else prompt('Скопируйте ссылку', link);
+  });
+  const blockBtn = $('#pfBlock', card);
+  if (blockBtn) blockBtn.addEventListener('click', () => block(login));
+}
+function closeProfile() { $('#profileSheet').classList.remove('open'); }
+
+/* ---------- КОМНАТА ---------- */
+const roomPicked = new Set();
+function renderRoomPeople() {
+  const box = $('#roomPeople');
+  const q = ($('#roomSearch').value || '').trim().toLocaleLowerCase('ru');
+  const people = (DATA && DATA.contacts || []).filter(p => !q
+    || p.fio.toLocaleLowerCase('ru').includes(q) || (p.group || '').toLocaleLowerCase('ru').includes(q) || (p.roleLabel || '').toLocaleLowerCase('ru').includes(q));
+  box.innerHTML = people.length ? people.map(p => `
+    <button type="button" class="row-line" data-pick="${esc(p.login)}">
+      <span class="chat-ava" style="width:32px;height:32px;border-radius:12px;font-size:11px;background:${chatAvaColor(p.login)}">${esc(inits(p.fio))}</span>
+      <span class="flex-1 min-w-0"><span class="block text-[13px] font-semibold truncate">${esc(p.fio)}</span><span class="block text-[11px] text-white/35 mt-0.5">${esc(p.roleLabel)}${p.group ? ' · ' + esc(p.group) : ''}</span></span>
+      <span class="icon-round ${roomPicked.has(p.login) ? 'on' : ''}" style="width:24px;height:24px;border-radius:9px"><i data-lucide="${roomPicked.has(p.login) ? 'check' : 'plus'}" style="width:13px;height:13px"></i></span>
+    </button>`).join('') : '<div class="px-4 py-6 text-[12.5px] text-white/35 text-center">Никого не нашли</div>';
+  icons();
+  $$('[data-pick]', box).forEach(el => el.addEventListener('click', () => {
+    const login = el.dataset.pick;
+    if (roomPicked.has(login)) roomPicked.delete(login); else roomPicked.add(login);
+    renderRoomPeople();
+  }));
+}
+function openRoom() {
+  if (!DATA) loadList();
+  roomPicked.clear();
+  $('#roomTitle').value = ''; $('#roomSearch').value = '';
+  renderRoomPeople();
+  $('#roomSheet').classList.add('open');
+  setTimeout(() => $('#roomTitle').focus(), 120);
+}
+function createRoom() {
+  const title = $('#roomTitle').value.trim();
+  if (!roomPicked.size) return toast('Выберите хотя бы одного участника');
+  api('/api/rooms', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title, members: [...roomPicked] }) })
+    .then(d => { $('#roomSheet').classList.remove('open'); toast('Комната создана'); go(d.id); })
+    .catch(e => toast(e.message));
+}
+
+/* ---------- ЭМОДЗИ ---------- */
+const EMOJIS = ['😀','😁','😂','🤣','😊','😉','😍','🥳','😎','🤗','🤔','😴','😅','🙂','🙃','😇','🥺','😭','😡','🤯','😱','🤒','🤕','👍','👎','👏','🙏','💪','🤝','✍️','📚','📖','📝','📌','⏰','🔔','✅','❌','⚠️','🏆','🥇','🎯','🎓','🎉','🎂','❤️','🔥','💡','📱','💻','🩺','💉','🧾','🚑','☕','🍕','🌙','☀️','🎧','👀','💬'];
+function renderEmoji() {
+  $('#emojiPop').innerHTML = EMOJIS.map(e => `<button type="button" data-emoji="${e}">${e}</button>`).join('');
+  $$('[data-emoji]', $('#emojiPop')).forEach(b => b.addEventListener('click', () => {
+    const input = $('#chatInput'), start = input.selectionStart ?? input.value.length;
+    input.value = input.value.slice(0, start) + b.dataset.emoji + input.value.slice(input.value_end ?? start);
+    input.focus();
+    input.selectionStart = input.selectionEnd = start + b.dataset.emoji.length;
+    grow();
+  }));
+}
+
+/* ---------- События ---------- */
+$('#btnNew').addEventListener('click', () => {
+  const panel = $('#chatPicker');
+  panel.classList.toggle('hidden');
+  if (!panel.classList.contains('hidden')) { renderContacts(); setTimeout(() => $('#chatSearch').focus(), 80); }
+});
+$('#btnRoom').addEventListener('click', openRoom);
+$('#btnDiary').addEventListener('click', () => { location.href = '/diary.html'; });
+$('#btnBack').addEventListener('click', () => go(null));
+$('#btnMe').addEventListener('click', () => showProfile(ME && ME.login));
+$('#btnPin').addEventListener('click', togglePin);
+$('#btnInfo').addEventListener('click', () => {
+  if (!THREAD) return;
+  const c = THREAD.chat;
+  if (c.peer) showProfile(c.peer.login);
+  else {
+    const names = (THREAD.members || []).slice(0, 30).map(m => `<button type="button" class="row-line" data-open-profile="${esc(m.login)}">
+      <span class="chat-ava" style="width:30px;height:30px;border-radius:11px;font-size:10.5px;background:${chatAvaColor(m.login)}">${m.avatar ? `<img src="${esc(m.avatar)}" alt="">` : esc(inits(m.fio))}</span>
+      <span class="flex-1 min-w-0 text-left"><span class="pf-name"><span class="t text-[12.5px]">${esc(m.fio)}</span>${verifiedMark(m.verified)}</span><span class="block text-[10.5px] text-white/35">${esc(m.roleLabel)}</span></span></button>`).join('');
+    $('#profileCard').innerHTML = `<div class="p-5">
+        <div class="flex items-center justify-between mb-1"><h2 class="font-display font-bold text-[17px]">${esc(c.title)}</h2><button class="icon-btn" id="pfClose" aria-label="Закрыть"><i data-lucide="x"></i></button></div>
+        <p class="text-[12px] text-white/40 mb-3">${c.kind === 'room' ? 'Комната, которую создали участники. Видна только её составу.' : 'Общий чат группы: его видят все, кто привязан к группе, плюс куратор и преподаватели предметов.'} Участников: ${c.count}</p>
+        <div class="glass rounded-2xl divide-y divide-white/[.06] overflow-hidden mb-3" style="background:rgba(255,255,255,.03)">${names}</div>
+        <div class="flex gap-2"><button class="btn-ghost flex-1" id="pfLink"><i data-lucide="link" style="width:14px;height:14px"></i>Копировать ссылку</button></div>
+      </div>`;
+    $('#profileSheet').classList.add('open'); icons();
+    $('#pfClose', $('#profileCard')).addEventListener('click', closeProfile);
+    $('#pfLink', $('#profileCard')).addEventListener('click', copyLink);
+    $$('[data-open-profile]', $('#profileCard')).forEach(el => el.addEventListener('click', () => showProfile(el.dataset.openProfile)));
+  }
+});
+$('#listFilter').addEventListener('input', renderList);
+$('#chatSearch').addEventListener('input', renderContacts);
+$('#chatInput').addEventListener('input', grow);
+$('#chatInput').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); } });
+$('#chatSend').addEventListener('click', sendChat);
+$('#btnEmoji').addEventListener('click', () => {
+  const pop = $('#emojiPop');
+  pop.classList.toggle('hidden');
+  if (!pop.classList.contains('hidden')) { renderEmoji(); pop.style.bottom = (document.querySelector('#chatComposer').getBoundingClientRect().height + 24) + 'px'; }
+});
+$('#roomClose').addEventListener('click', () => $('#roomSheet').classList.remove('open'));
+$('#roomCancel').addEventListener('click', () => $('#roomSheet').classList.remove('open'));
+$('#roomCreate').addEventListener('click', createRoom);
+$('#roomSearch').addEventListener('input', renderRoomPeople);
+$('#profileSheet').addEventListener('click', e => { if (e.target.id === 'profileSheet') closeProfile(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeProfile(); $('#emojiPop').classList.add('hidden'); $('#roomSheet').classList.remove('open'); }
+});
+window.addEventListener('popstate', e => go(e.state && e.state.code));
+document.addEventListener('visibilitychange', () => { if (!document.hidden && THREAD) pollThread(); });
+
+/* ---------- СТАРТ ---------- */
+(async function boot() {
+  try {
+    const d = await api('/api/me');
+    ME = d.user;
+    if (window.SD_DESIGN) SD_DESIGN.allowed(ME.designs || [], ME.design);
+  } catch (e) { return location.replace('/login.html?next=' + encodeURIComponent(location.pathname)); }
+  await loadList();
+  const code = decodeURIComponent(location.pathname.split('/').filter(Boolean)[1] || '');
+  const wantedUser = new URLSearchParams(location.search).get('user');
+  if (wantedUser) { go(null); showProfile(wantedUser); }
+  else if (code && /^[a-z0-9]{4,24}$/i.test(code)) go(code);
+  else go(null);
+  setInterval(async () => {
+    if (document.hidden || $('#viewThread').classList.contains('on')) return;
+    try { const d = await api('/api/chats/unread'); if (d.ok) document.title = d.unread ? `(${d.unread}) Чаты · Электронный дневник` : 'Чаты · Электронный дневник'; } catch (e) {}
+  }, 45000);
+})();
+</script>
+</body>
+</html>
