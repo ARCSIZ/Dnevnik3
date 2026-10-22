@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<script src="/splash.js"></script>
+<title>Вход · Электронный дневник</title>
+<meta name="description" content="Электронный дневник колледжа: оценки, расписание, домашние задания и уведомления в одном месте.">
+<meta name="theme-color" content="#07070d">
+<link rel="icon" type="image/png" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Электронный дневник">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:title" content="Вход · Электронный дневник">
+<meta property="og:description" content="Оценки, расписание, домашние задания и уведомления колледжа в одном месте.">
+<meta property="og:url" content="__ORIGIN__/login.html">
+<meta property="og:image" content="__ORIGIN__/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Электронный дневник">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Вход · Электронный дневник">
+<meta name="twitter:description" content="Оценки, расписание, домашние задания и уведомления колледжа в одном месте.">
+<meta name="twitter:image" content="__ORIGIN__/og-image.png">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Unbounded:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --acc1: #7c6cff;
+    --acc2: #b06cff;
+  }
+  html { -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #07070d;
+    color: #ecedf5;
+    overflow-x: hidden;
+  }
+  .font-display { font-family: 'Unbounded', sans-serif; }
+
+  /* ---------- Фон ---------- */
+  .bg-scene { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+  .parallax-layer { position: absolute; inset: 0; transition: transform .7s cubic-bezier(.2,.8,.2,1); will-change: transform; }
+  .blob { position: absolute; border-radius: 9999px; filter: blur(90px); opacity: .55; animation: drift 22s ease-in-out infinite alternate; will-change: transform; }
+  .b1 { width: 520px; height: 520px; left: -120px; top: -140px; background: radial-gradient(circle, #6a55f8 0%, transparent 65%); }
+  .b2 { width: 620px; height: 620px; right: -180px; top: 10%; background: radial-gradient(circle, #a24fe0 0%, transparent 62%); animation-duration: 28s; animation-delay: -9s; }
+  .b3 { width: 460px; height: 460px; left: 30%; bottom: -200px; background: radial-gradient(circle, #3e63f2 0%, transparent 65%); animation-duration: 32s; animation-delay: -16s; opacity: .4; }
+  @keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(70px,-50px) scale(1.15); } }
+  .grid-lines {
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 75% 65% at 50% 38%, black 15%, transparent 78%);
+    -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 38%, black 15%, transparent 78%);
+  }
+  .noise {
+    position: absolute; inset: 0; opacity: .05; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ---------- Карточки ---------- */
+  .glass {
+    background: linear-gradient(160deg, rgba(255,255,255,.055), rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.09);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: 0 24px 64px -24px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.07);
+  }
+  .card-glow { position: absolute; inset: -60px; z-index: -1; background: radial-gradient(ellipse at 50% 0%, rgba(124,108,255,.22), transparent 65%); filter: blur(30px); border-radius: 9999px; }
+
+  /* ---------- Поля ввода ---------- */
+  .field { position: relative; }
+  .field-input {
+    width: 100%; border-radius: 14px;
+    background: rgba(255,255,255,.045);
+    border: 1px solid rgba(255,255,255,.1);
+    padding: 24px 16px 8px; font-size: 16px; color: #fff;
+    outline: none; transition: border-color .2s, background .2s, box-shadow .2s;
+    caret-color: #a78bfa;
+  }
+  .field:focus-within .field-input {
+    border-color: rgba(167,139,250,.6);
+    background: rgba(255,255,255,.07);
+    box-shadow: 0 0 0 4px rgba(124,108,255,.14);
+  }
+  .field-input.invalid { border-color: rgba(251,113,133,.65); }
+  .field:focus-within .field-input.invalid { box-shadow: 0 0 0 4px rgba(251,113,133,.12); }
+  .field-label {
+    position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+    font-size: 15px; color: rgba(255,255,255,.38); pointer-events: none;
+    transition: all .18s cubic-bezier(.4,0,.2,1);
+  }
+  .field-input:focus ~ .field-label, .field-input:not(:placeholder-shown) ~ .field-label {
+    top: 15px; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: rgba(167,139,250,.95);
+  }
+  .field-eye {
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    width: 38px; height: 38px; display: grid; place-items: center; border-radius: 10px;
+    color: rgba(255,255,255,.4); transition: all .15s;
+  }
+  .field-eye:hover { color: #fff; background: rgba(255,255,255,.07); }
+  .field-eye:active { transform: translateY(-50%) scale(.9); }
+  input:-webkit-autofill { -webkit-text-fill-color: #fff; caret-color: #fff; transition: background-color 99999s ease-in-out 0s; }
+
+  .mini-input {
+    width: 100%; border-radius: 12px; background: rgba(255,255,255,.045);
+    border: 1px solid rgba(255,255,255,.1); padding: 13px 0; text-align: center;
+    font-size: 16px; font-weight: 600; color: #fff; outline: none;
+    transition: border-color .2s, box-shadow .2s, background .2s; caret-color: #a78bfa;
+  }
+  .mini-input::placeholder { color: rgba(255,255,255,.22); font-weight: 500; }
+  .mini-input:focus { border-color: rgba(167,139,250,.6); background: rgba(255,255,255,.07); box-shadow: 0 0 0 4px rgba(124,108,255,.14); }
+  .mini-input.invalid { border-color: rgba(251,113,133,.65); }
+
+  /* ---------- Кнопки ---------- */
+  .btn-primary {
+    position: relative; width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+    border-radius: 14px; padding: 15px 20px; font-weight: 600; font-size: 15px; color: #fff;
+    background: linear-gradient(135deg, #6d5bff, #a855f7);
+    box-shadow: 0 10px 28px -10px rgba(124,108,255,.55), inset 0 1px 0 rgba(255,255,255,.22);
+    transition: transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .25s, filter .25s;
+    user-select: none; cursor: pointer; border: none;
+  }
+  .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 16px 36px -10px rgba(124,108,255,.7), inset 0 1px 0 rgba(255,255,255,.28); filter: brightness(1.06); }
+  .btn-primary:active:not(:disabled) { transform: translateY(0) scale(.972); transition-duration: .06s; }
+  .btn-primary:disabled { opacity: .6; cursor: not-allowed; }
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 6px; color: rgba(255,255,255,.55);
+    font-size: 13.5px; font-weight: 500; transition: color .15s; cursor: pointer; background: none; border: none;
+  }
+  .btn-ghost:hover { color: #fff; }
+  .icon-btn {
+    width: 38px; height: 38px; display: grid; place-items: center; border-radius: 12px;
+    color: rgba(255,255,255,.55); border: 1px solid rgba(255,255,255,.08);
+    background: rgba(255,255,255,.03); transition: all .18s; cursor: pointer;
+  }
+  .icon-btn:hover { color: #fff; background: rgba(255,255,255,.08); transform: translateX(-2px); }
+  .icon-btn:active { transform: scale(.92); }
+
+  /* ---------- Табы ---------- */
+  .tab-wrap { position: relative; display: flex; border-radius: 14px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.07); padding: 4px; }
+  .tab-ind { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 10px; background: rgba(255,255,255,.1); box-shadow: 0 4px 14px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.12); transition: transform .38s cubic-bezier(.22,1.2,.36,1); }
+  .tab-btn { position: relative; z-index: 1; flex: 1; padding: 10px 0; border-radius: 10px; font-size: 14px; font-weight: 600; color: rgba(255,255,255,.45); transition: color .25s, transform .1s; cursor: pointer; background: none; border: none; }
+  .tab-btn:active { transform: scale(.97); }
+  .tab-btn.active { color: #fff; }
+
+  /* ---------- Шаги регистрации ---------- */
+  .reg-step { display: none; }
+  .reg-step.active { display: block; }
+  .enter-fwd { animation: enterFwd .5s cubic-bezier(.16,1,.3,1) both; }
+  .enter-back { animation: enterBack .5s cubic-bezier(.16,1,.3,1) both; }
+  .leaving { display: block; position: absolute; inset: 0; pointer-events: none; }
+  .leave-fwd { animation: leaveFwd .22s cubic-bezier(.4,0,1,1) both; }
+  .leave-back { animation: leaveBack .22s cubic-bezier(.4,0,1,1) both; }
+  @keyframes enterFwd { from { opacity: 0; transform: translateX(34px); } to { opacity: 1; transform: none; } }
+  @keyframes enterBack { from { opacity: 0; transform: translateX(-34px); } to { opacity: 1; transform: none; } }
+  @keyframes leaveFwd { to { opacity: 0; transform: translateX(-26px); } }
+  @keyframes leaveBack { to { opacity: 0; transform: translateX(26px); } }
+
+  .view-out { animation: viewOut .22s cubic-bezier(.4,0,1,1) both; }
+  .view-in { animation: viewIn .45s cubic-bezier(.16,1,.3,1) both; }
+  @keyframes viewOut { to { opacity: 0; transform: translateY(14px); } }
+  @keyframes viewIn { from { opacity: 0; transform: translateY(-14px); } to { opacity: 1; transform: none; } }
+
+  /* ---------- Прогресс ---------- */
+  .pseg { height: 4px; flex: 1; border-radius: 99px; background: rgba(255,255,255,.08); overflow: hidden; }
+  .pseg::after { content: ''; display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--acc1), var(--acc2)); transform: scaleX(0); transform-origin: left; transition: transform .55s cubic-bezier(.16,1,.3,1); }
+  .pseg.on::after { transform: scaleX(1); }
+
+  .step-error { align-items: flex-start; gap: 8px; font-size: 13px; color: #fda4af; }
+  .step-error:not(.hidden) { display: flex; animation: errIn .3s ease both; }
+  @keyframes errIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+  @keyframes shakeX { 0%,100% { transform: translateX(0); } 18% { transform: translateX(-7px); } 38% { transform: translateX(6px); } 58% { transform: translateX(-4px); } 78% { transform: translateX(3px); } }
+  .shake { animation: shakeX .42s cubic-bezier(.36,.07,.19,.97) both; }
+
+  /* ---------- Выбор роли ---------- */
+  .role-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+    padding: 10px 4px; border-radius: 13px; cursor: pointer;
+    border: 1px solid rgba(255,255,255,.08); background: rgba(255,255,255,.03);
+    color: rgba(255,255,255,.5); font-size: 11.5px; font-weight: 600;
+    transition: all .18s cubic-bezier(.34,1.4,.64,1);
+  }
+  .role-btn svg { width: 16px; height: 16px; }
+  .role-btn:hover { color: #fff; border-color: rgba(167,139,250,.4); transform: translateY(-2px); }
+  .role-btn:active { transform: scale(.94); }
+  .role-btn.active {
+    color: #fff; border-color: transparent;
+    background: linear-gradient(140deg, #6d5bff, #a855f7);
+    box-shadow: 0 8px 20px -8px rgba(124,108,255,.7), inset 0 1px 0 rgba(255,255,255,.22);
+  }
+
+  /* ---------- Сила пароля ---------- */
+  #strengthWrap { display: none; }
+  #strengthWrap.show { display: block; animation: errIn .25s ease both; }
+  .str-bar { height: 4px; flex: 1; border-radius: 99px; background: rgba(255,255,255,.08); transition: background .35s ease, transform .35s cubic-bezier(.34,1.56,.64,1); }
+
+  /* ---------- Группа ---------- */
+  .group-card {
+    width: 100%; display: flex; align-items: center; gap: 14px; text-align: left;
+    border-radius: 16px; padding: 16px; cursor: pointer;
+    border: 1px solid rgba(255,255,255,.09); background: rgba(255,255,255,.03);
+    transition: border-color .2s, background .2s, transform .15s;
+  }
+  .group-card:not(.locked):hover { border-color: rgba(167,139,250,.45); background: rgba(124,108,255,.07); transform: translateY(-1px); }
+  .group-card:not(.locked):active { transform: scale(.985); }
+  .group-card.selected { border-color: rgba(167,139,250,.7); background: rgba(124,108,255,.12); box-shadow: 0 0 0 4px rgba(124,108,255,.12); }
+  .group-card.locked { opacity: .45; cursor: not-allowed; }
+  .radio-dot { width: 20px; height: 20px; border-radius: 9999px; border: 2px solid rgba(255,255,255,.25); display: grid; place-items: center; transition: all .2s; flex-shrink: 0; }
+  .radio-dot::after { content: ''; width: 8px; height: 8px; border-radius: 9999px; background: #fff; transform: scale(0); transition: transform .25s cubic-bezier(.34,1.56,.64,1); }
+  .group-card.selected .radio-dot { border-color: #a78bfa; background: #7c6cff; }
+  .group-card.selected .radio-dot::after { transform: scale(1); }
+
+  /* ---------- Спиннер ---------- */
+  .spinner { width: 17px; height: 17px; border-radius: 9999px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; animation: spin .65s linear infinite; flex-shrink: 0; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ---------- Тосты ---------- */
+  #toasts { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); z-index: 80; display: flex; flex-direction: column; align-items: center; gap: 10px; width: min(92vw, 480px); pointer-events: none; }
+  .toast {
+    display: flex; align-items: center; gap: 10px; padding: 11px 18px; border-radius: 9999px;
+    background: rgba(17,17,27,.92); border: 1px solid rgba(255,255,255,.1);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 14px 40px -10px rgba(0,0,0,.6); font-size: 13.5px; font-weight: 500;
+    opacity: 0; transform: translateY(14px) scale(.95); transition: all .35s cubic-bezier(.22,1.2,.36,1);
+  }
+  .toast.show { opacity: 1; transform: none; }
+
+  /* ---------- Левая панель ---------- */
+  .rot-mask { display: inline-block; overflow: hidden; vertical-align: bottom; }
+  #rotWord { display: inline-block; transition: transform .28s ease, opacity .28s ease; will-change: transform; }
+  #rotWord.rot-out { transform: translateY(-115%); opacity: 0; }
+  #rotWord.rot-in { animation: rotIn .36s cubic-bezier(.16,1,.3,1) both; }
+  @keyframes rotIn { from { transform: translateY(115%); opacity: 0; } to { transform: none; opacity: 1; } }
+  .grad-text { background: linear-gradient(92deg, #a78bfa, #c084fc 45%, #818cf8); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  .floaty { animation: floaty 7s ease-in-out infinite; }
+  @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+  .floaty-slow { animation: floaty 9s ease-in-out infinite reverse; }
+
+  .fade-up { animation: fadeUp .8s cubic-bezier(.16,1,.3,1) both; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+  .d1 { animation-delay: .08s; } .d2 { animation-delay: .16s; } .d3 { animation-delay: .24s; } .d4 { animation-delay: .32s; } .d5 { animation-delay: .42s; }
+
+  /* ---------- Успех ---------- */
+  .check-circle { stroke-dasharray: 166; stroke-dashoffset: 166; }
+  .check-mark { stroke-dasharray: 48; stroke-dashoffset: 48; }
+  .success-play .check-circle { animation: draw .65s .15s cubic-bezier(.65,0,.45,1) forwards; }
+  .success-play .check-mark { animation: draw .4s .7s cubic-bezier(.65,0,.45,1) forwards; }
+  .success-play .pulse-ring { animation: pulseRing 1s .2s cubic-bezier(.2,.8,.2,1) both; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  @keyframes pulseRing { from { transform: scale(.6); opacity: .8; } to { transform: scale(1.6); opacity: 0; } }
+  .confetti { position: absolute; left: 50%; top: 26%; width: 7px; height: 7px; border-radius: 2px; pointer-events: none; }
+  .success-play .confetti { animation: burst 1s cubic-bezier(.16,.8,.3,1) .55s both; }
+  @keyframes burst { 0% { transform: translate(0,0) rotate(0) scale(1); opacity: 1; } 100% { transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(.6); opacity: 0; } }
+
+  /* ---------- Скрыть все скролл-бары ---------- */
+  html, body, * { scrollbar-width: none; }
+  *::-webkit-scrollbar { width: 0; height: 0; display: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .blob, .floaty, .floaty-slow { animation: none !important; }
+    * { transition-duration: .01ms !important; animation-duration: .01ms !important; animation-delay: 0s !important; }
+  }
+</style>
+</head>
+<body class="antialiased">
+
+  <!-- ======= ФОН ======= -->
+  <div class="bg-scene">
+    <div class="parallax-layer" id="paraLayer">
+      <div class="blob b1"></div>
+      <div class="blob b2"></div>
+      <div class="blob b3"></div>
+    </div>
+    <div class="grid-lines"></div>
+    <div class="noise"></div>
+  </div>
+
+  <!-- ======= МОБИЛЬНАЯ ШАПКА ======= -->
+  <header class="relative z-10 flex items-center justify-between px-5 pt-5 pb-1 lg:hidden">
+    <div class="flex items-center gap-2.5">
+      <div class="w-9 h-9 rounded-xl grid place-items-center bg-gradient-to-br from-[#6d5bff] to-[#a855f7] shadow-lg shadow-violet-500/30">
+        <i data-lucide="notebook-pen" class="text-white" style="width:18px;height:18px"></i>
+      </div>
+      <div>
+        <div class="font-display text-[13px] leading-none font-bold">Дневник</div>
+        <div class="text-[11px] text-white/40 mt-1">электронный портал</div>
+      </div>
+    </div>
+    <div class="flex items-center gap-1.5 text-[11px] text-white/40 border border-white/10 rounded-full px-3 py-1.5 bg-white/[0.03]">
+      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> онлайн
+    </div>
+  </header>
+
+  <!-- ======= ОСНОВНАЯ СЕТКА ======= -->
+  <main class="relative z-10 mx-auto max-w-[1200px] px-5 lg:px-10">
+    <div class="grid lg:grid-cols-[1.05fr_1fr] gap-10 lg:gap-6 items-center min-h-[100dvh] lg:min-h-screen py-8 lg:py-0">
+
+      <!-- ======= ЛЕВАЯ ПАНЕЛЬ (ПК) ======= -->
+      <section class="hidden lg:flex flex-col justify-center gap-10 pr-10">
+        <div class="flex items-center gap-3 fade-up">
+          <div class="w-11 h-11 rounded-2xl grid place-items-center bg-gradient-to-br from-[#6d5bff] to-[#a855f7] shadow-xl shadow-violet-500/30">
+            <i data-lucide="notebook-pen" class="text-white" style="width:22px;height:22px"></i>
+          </div>
+          <div>
+            <div class="font-display font-bold text-[17px] leading-none">Дневник</div>
+            <div class="text-xs text-white/40 mt-1.5">электронный портал студента</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="fade-up d1 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 text-[12px] text-white/55 font-medium mb-6">
+            <i data-lucide="sparkles" style="width:13px;height:13px" class="text-violet-300"></i>
+            Портал студента · 2026/27 учебный год
+          </div>
+          <h1 class="fade-up d2 font-display font-bold text-[44px] xl:text-[52px] leading-[1.12] tracking-tight">
+            Учёба —<br>
+            <span class="rot-mask"><span id="rotWord" class="grad-text">под контролем</span></span>
+          </h1>
+          <p class="fade-up d3 mt-6 max-w-[440px] text-[15px] leading-relaxed text-white/50">
+            Войдите, чтобы видеть расписание, оценки и домашние задания группы 02-СД-25-о — с телефона или компьютера, в любое время.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 max-w-[480px]">
+          <div class="fade-up d3 glass rounded-2xl p-4 flex items-start gap-3">
+            <div class="w-9 h-9 rounded-xl bg-violet-500/15 text-violet-300 grid place-items-center shrink-0"><i data-lucide="calendar-days" style="width:17px;height:17px"></i></div>
+            <div><div class="text-[13.5px] font-semibold">Расписание</div><div class="text-[12px] text-white/40 mt-0.5">изменения в реальном времени</div></div>
+          </div>
+          <div class="fade-up d4 glass rounded-2xl p-4 flex items-start gap-3">
+            <div class="w-9 h-9 rounded-xl bg-fuchsia-500/15 text-fuchsia-300 grid place-items-center shrink-0"><i data-lucide="trending-up" style="width:17px;height:17px"></i></div>
+            <div><div class="text-[13.5px] font-semibold">Оценки</div><div class="text-[12px] text-white/40 mt-0.5">средний балл и динамика</div></div>
+          </div>
+          <div class="fade-up d4 glass rounded-2xl p-4 flex items-start gap-3">
+            <div class="w-9 h-9 rounded-xl bg-indigo-500/15 text-indigo-300 grid place-items-center shrink-0"><i data-lucide="clipboard-check" style="width:17px;height:17px"></i></div>
+            <div><div class="text-[13.5px] font-semibold">Задания</div><div class="text-[12px] text-white/40 mt-0.5">дедлайны и статусы</div></div>
+          </div>
+          <div class="fade-up d5 glass rounded-2xl p-4 flex items-start gap-3">
+            <div class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-300 grid place-items-center shrink-0"><i data-lucide="bell" style="width:17px;height:17px"></i></div>
+            <div><div class="text-[13.5px] font-semibold">Уведомления</div><div class="text-[12px] text-white/40 mt-0.5">важное — сразу</div></div>
+          </div>
+        </div>
+
+        <!-- Декоративная карточка расписания -->
+        <div class="relative max-w-[480px] fade-up d5">
+          <div class="floaty glass rounded-3xl p-5 relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-violet-400/50 to-transparent"></div>
+            <div class="flex items-center justify-between mb-5">
+              <div class="flex items-center gap-2 text-[13px] text-white/60">
+                <i data-lucide="calendar-days" style="width:15px;height:15px" class="text-violet-300"></i>
+                Учебная неделя
+              </div>
+              <span class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-violet-500/15 text-violet-300 border border-violet-400/20">02-СД-25-о</span>
+            </div>
+            <div class="rounded-2xl bg-white/[0.035] border border-white/[0.06] py-8 px-5 flex flex-col items-center text-center">
+              <div class="w-11 h-11 rounded-2xl grid place-items-center bg-violet-500/15 text-violet-300 mb-3">
+                <i data-lucide="calendar-plus" style="width:20px;height:20px"></i>
+              </div>
+              <div class="text-[13.5px] font-semibold">Расписание пока не заполнено</div>
+              <div class="text-[12px] text-white/35 mt-1">Данные появятся после публикации расписания</div>
+            </div>
+          </div>
+          <div class="floaty-slow absolute -top-5 -right-4 glass rounded-2xl px-4 py-3 flex items-center gap-2.5 rotate-3">
+            <div class="text-[11.5px] leading-tight"><div class="font-semibold">Чистый старт</div><div class="text-white/40">без тестовых данных</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======= ПРАВАЯ ПАНЕЛЬ (ФОРМА) ======= -->
+      <section class="flex flex-col items-center justify-center">
+        <div class="relative w-full max-w-[440px] fade-up d1">
+          <div class="card-glow"></div>
+          <div class="glass rounded-[28px] p-6 sm:p-8 relative overflow-hidden">
+            <div class="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-violet-400/40 to-transparent"></div>
+
+            <!-- Табы -->
+            <div class="tab-wrap mb-7" role="tablist">
+              <div class="tab-ind" id="tabIndicator"></div>
+              <button type="button" class="tab-btn active" id="tabLogin" role="tab">Вход</button>
+              <button type="button" class="tab-btn" id="tabRegister" role="tab">Регистрация</button>
+            </div>
+
+            <!-- ================= ВХОД ================= -->
+            <div id="loginView">
+              <h2 class="font-display font-bold text-[21px] mb-1.5">С возвращением</h2>
+              <p class="text-[13.5px] text-white/45 mb-6">Введите логин и пароль, чтобы открыть дневник.</p>
+
+              <form id="loginForm" novalidate class="space-y-3.5">
+                <div class="field">
+                  <input id="lLogin" name="login" type="text" placeholder=" " autocomplete="username" enterkeyhint="next" class="field-input">
+                  <label for="lLogin" class="field-label">Логин</label>
+                </div>
+                <div class="field">
+                  <input id="lPass" name="password" type="password" placeholder=" " autocomplete="current-password" enterkeyhint="done" class="field-input pr-12">
+                  <label for="lPass" class="field-label">Пароль</label>
+                  <button type="button" class="field-eye toggle-pass" data-target="lPass" aria-label="Показать пароль"><i data-lucide="eye" style="width:17px;height:17px"></i></button>
+                </div>
+
+                <button type="submit" class="btn-primary" id="loginBtn">
+                  <span class="btn-content flex items-center gap-2">Войти <i data-lucide="arrow-right" style="width:16px;height:16px"></i></span>
+                </button>
+              </form>
+
+              <div class="hidden rounded-xl border border-rose-400/25 bg-rose-400/10 px-4 py-3 text-[13px] text-rose-200 mt-4" id="loginError">
+                <div class="flex items-start gap-2.5">
+                  <i data-lucide="circle-alert" class="shrink-0 mt-0.5" style="width:15px;height:15px"></i>
+                  <span id="loginErrorText">Неверный логин или пароль.</span>
+                </div>
+              </div>
+              <div class="mt-4 flex items-center gap-2 rounded-xl border border-white/[0.07] bg-white/[0.03] px-3.5 py-2.5 text-[12px] text-white/40 leading-snug">
+                <i data-lucide="shield-check" class="text-violet-300 shrink-0" style="width:13px;height:13px"></i>
+                Роль и доступ определяются сервером по вашему аккаунту
+              </div>
+            </div>
+
+            <!-- ================= РЕГИСТРАЦИЯ ================= -->
+            <div id="registerView" class="hidden">
+              <!-- Шапка шагов -->
+              <div class="flex items-center justify-between mb-3">
+                <button type="button" class="icon-btn invisible" id="stepBack" aria-label="Назад"><i data-lucide="arrow-left" style="width:16px;height:16px"></i></button>
+                <div id="stepCaption" class="text-[10.5px] uppercase tracking-[0.22em] text-white/35 font-semibold">Шаг 1 из 3</div>
+                <div class="w-[38px]"></div>
+              </div>
+              <div class="flex gap-1.5 mb-5" id="progressSegs">
+                <div class="pseg on"></div><div class="pseg"></div><div class="pseg"></div>
+              </div>
+              <h2 class="font-display font-bold text-[21px] mb-6" id="stepTitle">Учётные данные</h2>
+
+              <div class="relative" id="stepsWrap">
+
+                <!-- ШАГ 1: логин/пароль -->
+                <section class="reg-step active" data-step="1">
+                  <form id="formStep1" novalidate class="space-y-3.5">
+                    <div class="field">
+                      <input id="rLogin" name="login" type="text" placeholder=" " autocomplete="username" enterkeyhint="next" class="field-input">
+                      <label for="rLogin" class="field-label">Логин</label>
+                    </div>
+                    <div class="field">
+                      <input id="rPass" name="password" type="password" placeholder=" " autocomplete="new-password" enterkeyhint="next" class="field-input pr-12">
+                      <label for="rPass" class="field-label">Пароль</label>
+                      <button type="button" class="field-eye toggle-pass" data-target="rPass" aria-label="Показать пароль"><i data-lucide="eye" style="width:17px;height:17px"></i></button>
+                    </div>
+                    <div id="strengthWrap" class="-mt-1 px-0.5">
+                      <div class="flex gap-1.5 mb-1.5">
+                        <span class="str-bar"></span><span class="str-bar"></span><span class="str-bar"></span>
+                      </div>
+                      <div class="text-[11px] text-white/35" id="strLabel"></div>
+                    </div>
+                    <div class="field">
+                      <input id="rPass2" name="password_confirm" type="password" placeholder=" " autocomplete="new-password" enterkeyhint="done" class="field-input pr-12">
+                      <label for="rPass2" class="field-label">Повторите пароль</label>
+                      <button type="button" class="field-eye toggle-pass" data-target="rPass2" aria-label="Показать пароль"><i data-lucide="eye" style="width:17px;height:17px"></i></button>
+                    </div>
+                    <p class="step-error hidden" id="err1"></p>
+                    <button type="submit" class="btn-primary" id="btnStep1">
+                      <span class="btn-content flex items-center gap-2">Продолжить <i data-lucide="arrow-right" style="width:16px;height:16px"></i></span>
+                    </button>
+                  </form>
+                </section>
+
+                <!-- ШАГ 2: личные данные -->
+                <section class="reg-step" data-step="2">
+                  <form id="formStep2" novalidate class="space-y-3.5">
+                    <div class="field">
+                      <input id="rLast" name="lastname" type="text" placeholder=" " autocomplete="family-name" enterkeyhint="next" class="field-input">
+                      <label for="rLast" class="field-label">Фамилия</label>
+                    </div>
+                    <div class="field">
+                      <input id="rFirst" name="firstname" type="text" placeholder=" " autocomplete="given-name" enterkeyhint="next" class="field-input">
+                      <label for="rFirst" class="field-label">Имя</label>
+                    </div>
+                    <div class="field">
+                      <input id="rMid" name="middlename" type="text" placeholder=" " autocomplete="additional-name" enterkeyhint="next" class="field-input">
+                      <label for="rMid" class="field-label">Отчество</label>
+                    </div>
+                    <div>
+                      <div class="text-[10.5px] uppercase tracking-[0.14em] text-white/35 font-semibold mb-2 ml-1">Дата рождения</div>
+                      <div class="flex gap-2.5">
+                        <input id="dobDay" type="text" inputmode="numeric" placeholder="ДД" maxlength="2" class="mini-input" aria-label="День рождения">
+                        <input id="dobMonth" type="text" inputmode="numeric" placeholder="ММ" maxlength="2" class="mini-input" aria-label="Месяц рождения">
+                        <input id="dobYear" type="text" inputmode="numeric" placeholder="ГГГГ" maxlength="4" class="mini-input" aria-label="Год рождения">
+                      </div>
+                    </div>
+                    <p class="step-error hidden" id="err2"></p>
+                    <button type="submit" class="btn-primary" id="btnStep2">
+                      <span class="btn-content flex items-center gap-2">Продолжить <i data-lucide="arrow-right" style="width:16px;height:16px"></i></span>
+                    </button>
+                  </form>
+                </section>
+
+                <!-- ШАГ 3: группа -->
+                <section class="reg-step" data-step="3">
+                  <form id="formStep3" novalidate class="space-y-3">
+                    <div id="availableGroups" class="space-y-2"><p class="text-[12px] text-white/40">Загрузка списка групп…</p></div>
+                    <p class="step-error hidden" id="err3"></p>
+                    <div class="pt-2">
+                      <button type="submit" class="btn-primary" id="btnStep3">
+                        <span class="btn-content flex items-center gap-2">Создать аккаунт <i data-lucide="check" style="width:16px;height:16px"></i></span>
+                      </button>
+                    </div>
+                  </form>
+                </section>
+
+                <!-- УСПЕХ -->
+                <section class="reg-step" id="successStep">
+                  <div class="relative" id="successInner">
+                    <div id="confettiWrap" class="absolute inset-0 overflow-visible pointer-events-none"></div>
+                    <div class="relative w-24 h-24 mx-auto mb-5">
+                      <div class="pulse-ring absolute inset-0 rounded-full border-2 border-emerald-400/50"></div>
+                      <svg viewBox="0 0 64 64" class="w-24 h-24">
+                        <circle class="check-circle" cx="32" cy="32" r="26.5" fill="none" stroke="url(#gOk)" stroke-width="3.5" stroke-linecap="round"/>
+                        <path class="check-mark" d="M21 33.5 L28.5 41 L43 25" fill="none" stroke="#34d399" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <defs><linearGradient id="gOk" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#34d399"/><stop offset="1" stop-color="#2dd4bf"/></linearGradient></defs>
+                      </svg>
+                    </div>
+                    <div class="text-center mb-6">
+                      <div class="font-display font-bold text-[19px] mb-1.5">Добро пожаловать, <span id="sumFirstName"></span></div>
+                      <p class="text-[13px] text-white/45">Аккаунт создан — теперь можно открыть дневник.</p>
+                    </div>
+                    <div class="rounded-2xl border border-white/10 bg-white/[0.03] divide-y divide-white/[0.06] mb-6 overflow-hidden">
+                      <div class="flex items-center justify-between px-4 py-3"><span class="text-[12px] text-white/40">ФИО</span><span class="text-[13px] font-medium text-right" id="sumName"></span></div>
+                      <div class="flex items-center justify-between px-4 py-3"><span class="text-[12px] text-white/40">Логин</span><span class="text-[13px] font-medium" id="sumLogin"></span></div>
+                      <div class="flex items-center justify-between px-4 py-3"><span class="text-[12px] text-white/40">Группа</span><span class="text-[13px] font-semibold text-violet-300" id="sumGroup"></span></div>
+                    </div>
+                    <button type="button" class="btn-primary" id="btnSuccess">
+                      <span class="flex items-center gap-2"><i data-lucide="graduation-cap" style="width:17px;height:17px"></i>Войти в дневник</span>
+                    </button>
+                  </div>
+                </section>
+
+              </div>
+            </div>
+
+            <!-- подвал карточки -->
+            <div class="mt-7 pt-5 border-t border-white/[0.06] flex items-center justify-between text-[11px] text-white/25">
+              <span>© 2026 Электронный дневник</span>
+              <span class="flex items-center gap-1.5"><i data-lucide="shield-check" style="width:12px;height:12px"></i>защищённое соединение</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div id="toasts"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+/* ================= УТИЛИТЫ ================= */
+const $  = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const icons = () => window.lucide && lucide.createIcons();
+icons();
+
+async function apiRequest(url, options = {}) {
+  const response = await fetch(url, {
+    ...options,
+    credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json', ...(options.headers || {}) }
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.error || 'Не удалось выполнить запрос');
+  return data;
+}
+
+/* ================= ТОСТЫ ================= */
+const toastsEl = $('#toasts');
+function toast(msg, type = 'info', ms = 4200) {
+  const map = { info: ['mail', 'text-violet-300'], success: ['check', 'text-emerald-300'], error: ['circle-alert', 'text-rose-300'] };
+  const [ic, cls] = map[type] || map.info;
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = `<span class="${cls} shrink-0 flex"><i data-lucide="${ic}" style="width:15px;height:15px"></i></span><span class="text-white/85">${msg}</span>`;
+  toastsEl.appendChild(el); icons();
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')));
+  setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 400); }, ms);
+}
+
+/* ================= ПАРАЛЛАКС ФОНА ================= */
+if (matchMedia('(pointer:fine)').matches && !reduced) {
+  const layer = $('#paraLayer');
+  addEventListener('mousemove', e => {
+    const x = e.clientX / innerWidth - .5, y = e.clientY / innerHeight - .5;
+    layer.style.transform = `translate3d(${x * 26}px, ${y * 26}px, 0)`;
+  });
+}
+
+/* ================= РОТАТОР СЛОВ ================= */
+const rotWords = ['под контролем', 'в одном окне', 'без сюрпризов', 'всегда под рукой'];
+const rotEl = $('#rotWord');
+if (rotEl && !reduced) {
+  let ri = 0;
+  setInterval(() => {
+    rotEl.classList.add('rot-out');
+    setTimeout(() => {
+      ri = (ri + 1) % rotWords.length;
+      rotEl.textContent = rotWords[ri];
+      rotEl.classList.remove('rot-out');
+      rotEl.classList.add('rot-in');
+      setTimeout(() => rotEl.classList.remove('rot-in'), 380);
+    }, 280);
+  }, 2800);
+}
+
+/* ================= ПЕРЕКЛЮЧЕНИЕ ВХОД/РЕГИСТРАЦИЯ ================= */
+const views = { login: $('#loginView'), register: $('#registerView') };
+const tabBtns = { login: $('#tabLogin'), register: $('#tabRegister') };
+const tabInd = $('#tabIndicator');
+let mode = 'login';
+function setMode(m) {
+  if (m === mode) return;
+  const out = views[mode], inn = views[m];
+  mode = m;
+  tabInd.style.transform = m === 'register' ? 'translateX(100%)' : 'translateX(0)';
+  tabBtns.login.classList.toggle('active', m === 'login');
+  tabBtns.register.classList.toggle('active', m === 'register');
+  out.classList.add('view-out');
+  setTimeout(() => {
+    out.classList.add('hidden'); out.classList.remove('view-out');
+    inn.classList.remove('hidden'); inn.classList.add('view-in');
+    setTimeout(() => inn.classList.remove('view-in'), 480);
+  }, reduced ? 0 : 220);
+}
+$('#tabLogin').addEventListener('click', () => setMode('login'));
+$('#tabRegister').addEventListener('click', () => setMode('register'));
+
+/* ================= ПОКАЗ/СКРЫТИЕ ПАРОЛЯ ================= */
+$$('.toggle-pass').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const inp = $('#' + btn.dataset.target);
+    const show = inp.type === 'password';
+    inp.type = show ? 'text' : 'password';
+    btn.style.transform = 'translateY(-50%) scale(.82)';
+    setTimeout(() => btn.style.transform = '', 120);
+    btn.innerHTML = `<i data-lucide="${show ? 'eye-off' : 'eye'}" style="width:17px;height:17px"></i>`;
+    icons();
+  });
+});
+
+/* ================= ОШИБКИ ================= */
+function showErr(boxId, msg, ...fields) {
+  const box = $('#' + boxId);
+  box.innerHTML = `<i data-lucide="circle-alert" class="shrink-0 mt-px" style="width:14px;height:14px"></i><span>${msg}</span>`;
+  box.classList.remove('hidden'); icons();
+  fields.forEach(f => f && f.classList.add('invalid'));
+  const stepEl = box.closest('.reg-step') || box.closest('form');
+  stepEl.classList.remove('shake'); void stepEl.offsetWidth; stepEl.classList.add('shake');
+}
+function hideErr(boxId) {
+  const box = $('#' + boxId);
+  box.classList.add('hidden');
+  const stepEl = box.closest('.reg-step') || document;
+  $$('.invalid', stepEl).forEach(f => f.classList.remove('invalid'));
+}
+document.addEventListener('input', e => {
+  if (e.target.classList && e.target.classList.contains('invalid')) e.target.classList.remove('invalid');
+});
+function shakeEl(el) { el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); }
+
+/* ================= КНОПКА С ЗАГРУЗКОЙ ================= */
+function setLoading(btn, on, text = '') {
+  const c = $('.btn-content', btn);
+  if (on) {
+    btn.dataset.orig = c.innerHTML;
+    btn.disabled = true;
+    c.innerHTML = `<span class="spinner"></span>${text ? `<span>${text}</span>` : ''}`;
+  } else {
+    btn.disabled = false;
+    if (btn.dataset.orig) c.innerHTML = btn.dataset.orig;
+    icons();
+  }
+}
+
+/* ================= РЕГИСТРАЦИЯ: НАВИГАЦИЯ ПО ШАГАМ ================= */
+const regTitles = ['Учётные данные', 'Личные данные', 'Выбор группы'];
+const segs = $$('#progressSegs .pseg');
+let step = 1;
+const regData = { login: '', password: '', first: '', last: '', mid: '', dob: '', group: '' };
+
+function updateRegHeader() {
+  const done = step >= 4;
+  $('#stepCaption').textContent = done ? 'Готово' : `Шаг ${step} из 3`;
+  $('#stepTitle').textContent = done ? 'Аккаунт создан' : regTitles[step - 1];
+  $('#stepBack').classList.toggle('invisible', step === 1 || done);
+  segs.forEach((s, i) => s.classList.toggle('on', done ? true : i < step));
+}
+function activeStepEl() { return $$('.reg-step').find(el => el.classList.contains('active')); }
+function targetStepEl(n) { return n >= 4 ? $('#successStep') : $(`.reg-step[data-step="${n}"]`); }
+
+function goStep(n) {
+  const cur = activeStepEl(), nxt = targetStepEl(n);
+  if (cur === nxt) { updateRegHeader(); return; }
+  const back = n < step;
+  step = n;
+  if (reduced) {
+    cur.classList.remove('active'); nxt.classList.add('active');
+    finishEnter(nxt); updateRegHeader(); return;
+  }
+  $('#stepsWrap').style.minHeight = cur.offsetHeight + 'px';
+  cur.classList.add('leaving', back ? 'leave-back' : 'leave-fwd');
+  setTimeout(() => {
+    cur.classList.remove('active', 'leaving', 'leave-fwd', 'leave-back');
+    nxt.classList.add('active', back ? 'enter-back' : 'enter-fwd');
+    updateRegHeader();
+    setTimeout(() => {
+      nxt.classList.remove('enter-fwd', 'enter-back');
+      $('#stepsWrap').style.minHeight = '';
+      finishEnter(nxt);
+    }, 520);
+  }, 230);
+}
+function finishEnter(el) {
+  if (el.id === 'successStep') playSuccess(el);
+  const first = $('input', el);
+  if (first && matchMedia('(pointer:fine)').matches) first.focus();
+}
+
+$('#stepBack').addEventListener('click', () => {
+  if (step > 1 && step < 4) goStep(step - 1);
+});
+
+/* ================= ШАГ 1 ================= */
+const rLogin = $('#rLogin'), rPass = $('#rPass'), rPass2 = $('#rPass2');
+$('#formStep1').addEventListener('submit', e => {
+  e.preventDefault();
+  hideErr('err1');
+  const login = rLogin.value.trim(), p1 = rPass.value, p2 = rPass2.value;
+  if (login.length < 3 || !/^[A-Za-z0-9_.-]+$/.test(login))
+    return showErr('err1', 'Логин — минимум 3 символа: латиница, цифры, «.», «-», «_»', rLogin);
+  if (p1.length < 8)
+    return showErr('err1', 'Пароль должен содержать минимум 8 символов', rPass);
+  if (p1 !== p2)
+    return showErr('err1', 'Пароли не совпадают — проверьте ввод', rPass2);
+  const btn = $('#btnStep1');
+  setLoading(btn, true, 'Проверяем…');
+  setTimeout(() => {
+    setLoading(btn, false);
+    regData.login = login;
+    regData.password = p1;
+    goStep(2);
+  }, 620);
+});
+
+/* ------- Индикатор силы пароля ------- */
+const strWrap = $('#strengthWrap'), strBars = $$('.str-bar'), strLabel = $('#strLabel');
+const STR_COLORS = ['#fb7185', '#fbbf24', '#34d399'];
+const STR_LABELS = ['Слабый пароль — добавьте длины и цифр', 'Средний пароль — неплохо', 'Надёжный пароль'];
+function updateStrength() {
+  const v = rPass.value;
+  let s = 0;
+  if (v.length >= 6) s++;
+  if (v.length >= 8 && /\d/.test(v)) s++;
+  if (v.length >= 10 && /\d/.test(v) && /[A-ZА-ЯЁ]/.test(v) && /[^A-Za-zА-Яа-яЁё0-9_\s]/.test(v)) s++;
+  const lvl = v.length ? Math.max(1, s) : 0;
+  strWrap.classList.toggle('show', v.length > 0);
+  strBars.forEach((b, i) => {
+    b.style.background = i < lvl ? STR_COLORS[lvl - 1] : '';
+    b.style.transform = i < lvl ? 'scaleY(1.5)' : '';
+  });
+  strLabel.textContent = lvl ? STR_LABELS[lvl - 1] : '';
+  strLabel.style.color = lvl ? STR_COLORS[lvl - 1] : '';
+}
+rPass.addEventListener('input', updateStrength);
+updateStrength();
+
+/* ================= ШАГ 2 ================= */
+const rLast = $('#rLast'), rFirst = $('#rFirst'), rMid = $('#rMid');
+const dD = $('#dobDay'), dM = $('#dobMonth'), dY = $('#dobYear');
+
+[[dD, dM, 2], [dM, dY, 2], [dY, null, 4]].forEach(([inp, next, len]) => {
+  inp.addEventListener('input', () => {
+    inp.value = inp.value.replace(/\D/g, '').slice(0, len);
+    if (inp.value.length === len && next) next.focus();
+  });
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Backspace' && !inp.value) {
+      const prev = { dobMonth: dD, dobYear: dM }[inp.id];
+      if (prev) prev.focus();
+    }
+  });
+});
+
+const nameRe = /^[А-Яа-яЁёA-Za-z]+([-\s][А-Яа-яЁёA-Za-z]+)*$/;
+$('#formStep2').addEventListener('submit', e => {
+  e.preventDefault();
+  hideErr('err2');
+  const l = rLast.value.trim(), f = rFirst.value.trim(), m = rMid.value.trim();
+  if (!nameRe.test(l)) return showErr('err2', 'Укажите фамилию (только буквы)', rLast);
+  if (!nameRe.test(f)) return showErr('err2', 'Укажите имя (только буквы)', rFirst);
+  if (!nameRe.test(m)) return showErr('err2', 'Укажите отчество (только буквы)', rMid);
+  const d = +dD.value, mo = +dM.value, y = +dY.value;
+  const nowY = new Date().getFullYear();
+  const validDate = dD.value && dM.value && dY.value.length === 4 &&
+    y >= 1940 && y <= nowY - 5 && mo >= 1 && mo <= 12 &&
+    d >= 1 && d <= new Date(y, mo, 0).getDate();
+  if (!validDate) return showErr('err2', 'Введите корректную полную дату рождения', dD, dM, dY);
+  const btn = $('#btnStep2');
+  setLoading(btn, true);
+  setTimeout(() => {
+    setLoading(btn, false);
+    Object.assign(regData, { last: l, first: f, mid: m, dob: `${dD.value}.${dM.value}.${dY.value}` });
+    goStep(3);
+  }, 500);
+});
+
+/* ================= ШАГ 3 ================= */
+let selectedGroup = '';
+(async function loadRegistrationGroups(){
+  const host = $('#availableGroups');
+  try {
+    const response = await fetch('/api/groups', {cache:'no-store'});
+    const groups = await response.json();
+    if (!response.ok || !Array.isArray(groups)) throw new Error('Не удалось загрузить группы');
+    host.innerHTML = groups.map((g,i)=>`<button type="button" class="group-card" data-group="${String(g.id).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')}" style="animation-delay:${i*.03}s">
+      <span class="w-11 h-11 rounded-xl grid place-items-center bg-gradient-to-br from-[#6d5bff] to-[#a855f7] text-white shrink-0"><i data-lucide="users" style="width:19px;height:19px"></i></span>
+      <span class="flex-1 min-w-0"><span class="block font-semibold text-[15px]">${g.name}</span><span class="block text-[12px] text-white/40 mt-0.5">${g.specialty || 'Учебная группа'} · ${g.course || 1} курс</span></span><span class="radio-dot"></span></button>`).join('') || '<p class="text-[12px] text-white/40">Пока нет доступных групп.</p>';
+    if (window.lucide) lucide.createIcons();
+    $$('.group-card').forEach(card => card.addEventListener('click', () => {
+      hideErr('err3'); $$('.group-card').forEach(c=>c.classList.remove('selected')); card.classList.add('selected'); selectedGroup=card.dataset.group;
+    }));
+  } catch(e) { host.innerHTML='<p class="text-[12px] text-rose-300">Не удалось загрузить группы. Обновите страницу.</p>'; }
+})();
+/* legacy handler intentionally omitted: cards are populated from the server */
+if (false) $$('.group-card').forEach(card => {
+  card.addEventListener('click', () => {
+    hideErr('err3');
+    if (card.dataset.locked) {
+      shakeEl(card);
+      toast('Эта группа пока недоступна для регистрации', 'error');
+      return;
+    }
+    $$('.group-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    selectedGroup = card.dataset.group;
+  });
+});
+$('#formStep3').addEventListener('submit', async e => {
+  e.preventDefault();
+  hideErr('err3');
+  if (!selectedGroup) return showErr('err3', 'Выберите группу, чтобы продолжить');
+  const btn = $('#btnStep3');
+  setLoading(btn, true, 'Создаём аккаунт…');
+  regData.group = selectedGroup;
+  try {
+    await apiRequest('/api/register', {
+      method: 'POST',
+      body: JSON.stringify({
+        login: regData.login, password: regData.password,
+        last: regData.last, first: regData.first, mid: regData.mid,
+        dob: regData.dob, group: regData.group
+      })
+    });
+    setLoading(btn, false);
+    goStep(4);
+  } catch (error) {
+    setLoading(btn, false);
+    showErr('err3', error.message);
+  }
+});
+
+/* ================= УСПЕХ ================= */
+function playSuccess(panel) {
+  $('#sumFirstName').textContent = regData.first || 'студент';
+  $('#sumName').textContent = `${regData.last} ${regData.first} ${regData.mid}`.trim().replace(/\s+/g, ' ');
+  $('#sumLogin').textContent = regData.login;
+  $('#sumGroup').textContent = regData.group;
+  panel.classList.remove('success-play'); void panel.offsetWidth;
+  panel.classList.add('success-play');
+  const wrap = $('#confettiWrap');
+  wrap.innerHTML = '';
+  if (!reduced) {
+    const colors = ['#a78bfa', '#c084fc', '#34d399', '#818cf8', '#fbbf24'];
+    for (let i = 0; i < 16; i++) {
+      const c = document.createElement('span');
+      c.className = 'confetti';
+      const ang = (i / 16) * Math.PI * 2 + Math.random() * .5;
+      const dist = 70 + Math.random() * 70;
+      c.style.setProperty('--dx', `${Math.cos(ang) * dist}px`);
+      c.style.setProperty('--dy', `${Math.sin(ang) * dist - 30}px`);
+      c.style.setProperty('--rot', `${Math.random() * 540 - 270}deg`);
+      c.style.background = colors[i % colors.length];
+      wrap.appendChild(c);
+    }
+    setTimeout(() => wrap.innerHTML = '', 2200);
+  }
+}
+$('#btnSuccess').addEventListener('click', () => {
+  window.location.href = 'diary.html';
+});
+
+/* ================= ВХОД ================= */
+$('#loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const form = e.target;
+  const lg = $('#lLogin'), ps = $('#lPass');
+  const errorBox = $('#loginError');
+  errorBox.classList.add('hidden');
+  [lg, ps].forEach(f => f.classList.remove('invalid'));
+  if (!lg.value.trim()) { lg.classList.add('invalid'); shakeEl(form); return lg.focus(); }
+  if (!ps.value) { ps.classList.add('invalid'); shakeEl(form); return ps.focus(); }
+  const btn = $('#loginBtn');
+  setLoading(btn, true, 'Входим…');
+  try {
+    const data = await apiRequest('/api/login', {
+      method: 'POST', body: JSON.stringify({ login: lg.value.trim(), password: ps.value })
+    });
+    window.location.href = data.user.home;
+  } catch (error) {
+    setLoading(btn, false);
+    $('#loginErrorText').textContent = error.message;
+    errorBox.classList.remove('hidden');
+    lg.classList.add('invalid'); ps.classList.add('invalid');
+    shakeEl(form);
+  }
+});
+
+updateRegHeader();
+</script>
+</body>
+</html>

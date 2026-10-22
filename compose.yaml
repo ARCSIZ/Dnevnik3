@@ -1,0 +1,15 @@
+services:
+  diary:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    environment:
+      DEV_LOGIN: ${DEV_LOGIN}
+      DEV_PASWORD: ${DEV_PASWORD}
+      DATA_FILE: /app/data/data.json
+    volumes:
+      - diary_data:/app/data
+
+volumes:
+  diary_data:

@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<script src="/splash.js"></script>
+<title>Журнал · 02-СД-25-о</title>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Unbounded:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  html { -webkit-tap-highlight-color: transparent; }
+  html, body, * { scrollbar-width: none; }
+  *::-webkit-scrollbar { width:0;height:0;display:none; }
+  body { font-family:'Inter',system-ui,sans-serif;background:#07070d;color:#ecedf5;overflow-x:hidden;min-height:100dvh; }
+  .font-display { font-family:'Unbounded',sans-serif; }
+  .bg-scene { position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none; }
+  .blob { position:absolute;border-radius:9999px;filter:blur(90px);opacity:.5;animation:drift 24s ease-in-out infinite alternate; }
+  .b1 { width:520px;height:520px;left:-150px;top:-170px;background:radial-gradient(circle,#10b981 0%,transparent 65%);opacity:.32; }
+  .b2 { width:560px;height:560px;right:-190px;top:25%;background:radial-gradient(circle,#6a55f8 0%,transparent 62%);animation-delay:-9s; }
+  @keyframes drift { from{transform:translate(0,0) scale(1)} to{transform:translate(60px,-40px) scale(1.12)} }
+  .grid-lines { position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);background-size:56px 56px;mask-image:radial-gradient(ellipse 80% 60% at 50% 15%,black 10%,transparent 75%);-webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 15%,black 10%,transparent 75%); }
+  .glass { background:linear-gradient(160deg,rgba(255,255,255,.055),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.09);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 24px 64px -28px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.07); }
+  .fade-up { animation:fadeUp .7s cubic-bezier(.16,1,.3,1) both; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+  .ls-item { animation:fadeUp .5s cubic-bezier(.16,1,.3,1) both; }
+  .icon-btn { width:38px;height:38px;display:grid;place-items:center;border-radius:12px;color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);transition:all .18s;cursor:pointer; }
+  .icon-btn:hover { color:#fff;background:rgba(255,255,255,.08); } .icon-btn:active { transform:scale(.9); }
+  .btn { display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 16px;border-radius:14px;font-size:13.5px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all .18s; }
+  .btn:active { transform:scale(.97); }
+  .btn-p { color:#fff;background:linear-gradient(135deg,#6d5bff,#a855f7);box-shadow:0 10px 26px -12px rgba(124,108,255,.8),inset 0 1px 0 rgba(255,255,255,.22); }
+  .btn-p:hover { filter:brightness(1.07);transform:translateY(-1px); }
+  .btn-g { color:rgba(255,255,255,.75);border-color:rgba(255,255,255,.1);background:rgba(255,255,255,.04); }
+  .btn-g:hover { color:#fff;background:rgba(255,255,255,.08); }
+  .btn-d { color:#fda4af;border-color:rgba(253,164,175,.22);background:rgba(244,63,94,.08); }
+  .btn-d:hover { background:rgba(244,63,94,.15); }
+  .chip { display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:4px 10px;border-radius:9999px;border:1px solid;white-space:nowrap; }
+  .chip svg { width:12px;height:12px; }
+  .c-g { color:#6ee7b7;background:rgba(52,211,153,.1);border-color:rgba(110,231,183,.3); }
+  .c-s { color:rgba(255,255,255,.4);background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.09); }
+  .c-a { color:#fcd34d;background:rgba(245,158,11,.1);border-color:rgba(252,211,77,.25); }
+  /* Горизонтальная прокрутка без обрезки при наведении */
+  .hscroll { overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;margin:-6px -6px;padding:6px 6px; }
+  .hscroll > * { scroll-snap-align:center; }
+  .tabs { position:relative;display:flex;border-radius:15px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.07);padding:4px;gap:3px; }
+  .tab { flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:6px;padding:9.5px 14px;border-radius:11px;font-size:12.5px;font-weight:600;color:rgba(255,255,255,.45);background:none;border:none;cursor:pointer;white-space:nowrap;transition:color .22s,background .22s,box-shadow .22s,transform .16s; }
+  .tab svg { width:14px;height:14px;flex-shrink:0; }
+  .tab.on { color:#fff;background:linear-gradient(135deg,rgba(109,91,255,.9),rgba(168,85,247,.9));box-shadow:0 6px 18px -6px rgba(124,108,255,.6); }
+  .tab:active { transform:scale(.96); }
+  @media (min-width:600px) { .tab { flex:1; } }
+  .day-cell { flex:0 0 auto;width:54px;padding:8px 3px;border-radius:14px;cursor:pointer;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);color:rgba(255,255,255,.55);text-align:center;transition:all .18s; }
+  .day-cell:hover { color:#fff;border-color:rgba(167,139,250,.35);transform:translateY(-2px); }
+  .day-cell.on { background:linear-gradient(140deg,#6d5bff,#a855f7);border-color:transparent;color:#fff;box-shadow:0 10px 26px -12px rgba(124,108,255,.7); }
+  .pill { padding:8px 12px;border-radius:12px;font-size:12.5px;font-weight:600;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04);color:rgba(255,255,255,.6);cursor:pointer;transition:all .18s;white-space:nowrap; }
+  .pill:hover { color:#fff;background:rgba(255,255,255,.09); } .pill:active { transform:scale(.95); }
+  .pill.on { background:linear-gradient(135deg,#6d5bff,#a855f7);border-color:transparent;color:#fff; }
+  .a-btn { position:relative;width:34px;height:34px;border-radius:11px;font-size:12.5px;font-weight:800;color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04);cursor:pointer;transition:all .18s cubic-bezier(.34,1.5,.64,1); }
+  .a-btn:hover { color:#fff;background:rgba(255,255,255,.1);transform:translateY(-1px); } .a-btn:active { transform:scale(.88); }
+  .a-btn.on { color:#fff;transform:translateY(-1px) scale(1.06);font-weight:800; }
+  .a-btn.on::after { content:'';position:absolute;right:-2px;top:-2px;width:7px;height:7px;border-radius:99px;background:currentColor;box-shadow:0 0 0 2px #0b0b14; }
+  .a-btn.onU { background:linear-gradient(135deg,#0ea5e9,#38bdf8);border-color:transparent;box-shadow:0 7px 18px -6px rgba(56,189,248,.85); }
+  .a-btn.onN { background:linear-gradient(135deg,#f43f5e,#e11d48);border-color:transparent;box-shadow:0 7px 18px -6px rgba(244,63,94,.85); }
+  .a-btn.onO { background:linear-gradient(135deg,#f59e0b,#f97316);border-color:transparent;box-shadow:0 7px 18px -6px rgba(245,158,11,.85); }
+  .a-btn.onB { background:linear-gradient(135deg,#10b981,#14b8a6);border-color:transparent;box-shadow:0 7px 18px -6px rgba(16,185,129,.85); }
+  .st-row { display:flex;align-items:center;gap:10px;padding:11px 13px;flex-wrap:wrap;transition:background .18s,box-shadow .18s; }
+  .st-row:hover { background:rgba(255,255,255,.025); }
+  .st-row.markedU { box-shadow:inset 3px 0 0 #38bdf8;background:rgba(56,189,248,.05); }
+  .st-row.markedN { box-shadow:inset 3px 0 0 #f43f5e;background:rgba(244,63,94,.05); }
+  .st-row.markedO { box-shadow:inset 3px 0 0 #f59e0b;background:rgba(245,158,11,.05); }
+  .st-row.markedB { box-shadow:inset 3px 0 0 #10b981;background:rgba(16,185,129,.05); }
+  .srv { position:fixed;right:14px;top:14px;z-index:70;font-size:10.5px;font-weight:700;padding:5px 10px;border-radius:99px;border:1px solid;letter-spacing:.04em; }
+  .srv.on { color:#6ee7b7;background:rgba(16,185,129,.12);border-color:rgba(110,231,183,.3); }
+  .srv.off { color:rgba(255,255,255,.4);background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1); }
+  .av { width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:12px;font-weight:700;flex-shrink:0;background:linear-gradient(135deg,#065f46,#0d9488);color:#fff; }
+  .inp { width:100%;border-radius:13px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.1);padding:11px 13px;font-size:13.5px;color:#fff;outline:none;transition:all .2s;caret-color:#a78bfa; }
+  .inp:focus { border-color:rgba(167,139,250,.6);background:rgba(255,255,255,.07);box-shadow:0 0 0 4px rgba(124,108,255,.14); }
+  .inp::placeholder { color:rgba(255,255,255,.25); }
+  select.inp { appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%23ffffff88' stroke-width='2'%3E%3Cpath d='M3 5l4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center; }
+  select.inp option { background:#15151f; }
+  textarea.inp { resize:vertical;min-height:80px; }
+  .sec-title { display:flex;align-items:center;gap:7px;font-size:10.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.38);margin:0 4px 9px; }
+  .sec-title svg { width:13px;height:13px; }
+  #toasts { position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:80;display:flex;flex-direction:column;align-items:center;gap:10px;width:min(92vw,460px);pointer-events:none; }
+  .toast { display:flex;align-items:center;gap:10px;padding:11px 18px;border-radius:9999px;background:rgba(17,17,27,.94);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(14px);font-size:13.5px;font-weight:500;opacity:0;transform:translateY(14px) scale(.95);transition:all .35s cubic-bezier(.22,1.2,.36,1); }
+  .toast.show { opacity:1;transform:none; }
+  .view { animation:fadeUp .45s cubic-bezier(.16,1,.3,1) both; }
+  @media (prefers-reduced-motion: reduce) { * { animation-duration:.01ms !important;transition-duration:.01ms !important } }
+</style>
+</head>
+<body class="antialiased">
+<div class="bg-scene"><div class="blob b1"></div><div class="blob b2"></div><div class="grid-lines"></div></div>
+
+<header class="relative z-10 mx-auto w-full max-w-[760px] px-5 pt-6 pb-2 flex items-center justify-between fade-up">
+  <div class="flex items-center gap-3 min-w-0">
+    <button class="icon-btn" id="toDiary" aria-label="В дневник"><i data-lucide="arrow-left" style="width:17px;height:17px"></i></button>
+    <div class="min-w-0">
+      <div class="font-display text-[15px] font-bold leading-none">Журнал группы</div>
+      <div class="text-[11.5px] text-white/40 mt-1.5 truncate" id="whoAmI">—</div>
+    </div>
+  </div>
+  <div class="flex items-center gap-2 shrink-0">
+    <span class="chip c-g" id="roleChip"><i data-lucide="clipboard-check"></i>староста</span>
+    <button class="icon-btn" id="refreshBtn" title="Обновить данные" aria-label="Обновить данные"><i data-lucide="refresh-cw" style="width:16px;height:16px"></i></button>
+  </div>
+</header>
+
+<main class="relative z-10 mx-auto w-full max-w-[760px] px-5 pb-24">
+  <div class="hscroll mt-4 fade-up">
+    <div class="tabs" id="tabs" style="min-width:max-content">
+      <button class="tab on" data-t="att"><i data-lucide="user-check"></i><span>Посещаемость</span></button>
+      <button class="tab" data-t="hw"><i data-lucide="book-marked"></i><span>ДЗ</span></button>
+      <button class="tab" data-t="sch"><i data-lucide="calendar-cog"></i><span>Расписание</span></button>
+      <button class="tab" data-t="ev"><i data-lucide="party-popper"></i><span>Мероприятия</span></button>
+      <button class="tab" data-t="time"><i data-lucide="clock"></i><span>Время пар</span></button>
+    </div>
+  </div>
+
+  <div class="glass rounded-2xl p-3 mt-3 fade-up">
+    <div class="hscroll"><div class="flex gap-1.5" id="dayPick" style="min-width:max-content"></div></div>
+  </div>
+
+  <div id="body" class="mt-4"></div>
+</main>
+<div id="toasts"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const icons=()=>window.lucide&&lucide.createIcons(); icons();
+function toast(msg,type='info'){const m={info:['info','text-violet-300'],ok:['check','text-emerald-300'],err:['circle-alert','text-rose-300']}[type]||['info','text-violet-300'];
+  const el=document.createElement('div');el.className='toast';el.innerHTML=`<span class="${m[1]} flex"><i data-lucide="${m[0]}" style="width:15px;height:15px"></i></span><span class="text-white/85">${msg}</span>`;
+  $('#toasts').appendChild(el);icons();requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('show')));
+  setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),400)},3200);}
+
+let PAIRS={};
+const fmt=m=>String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+const toMin=s=>{const m=/^(\d{1,2}):(\d{2})$/.exec((s||'').trim());return m?Math.min(1439,+m[1]*60+ +m[2]):null};
+const NK='';
+function emptyWeek(){
+ const names=['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'],short=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+ return names.map((wd,i)=>({wd,s:short[i],lessons:[]}))
+}
+const MONTHS=['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+const MAX_DAY=3650;
+let SCH_START=new Date(2026,9,19,12); /* уточняется сервером (поле start) */
+const dayDate=o=>{const d=new Date(SCH_START);d.setDate(d.getDate()+o);return d};
+const todayOff=()=>{const t=new Date();t.setHours(12,0,0,0);return Math.max(0,Math.round((t-SCH_START)/86400000))};
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const BASE=emptyWeek();
+const STUDENTS=[];
+
+let S={grades:{},att:{},hw:{},sch:null,ev:null,times:null};
+const save=()=>{};
+const persistTimes=()=>api('times',PAIRS);
+
+/* ---------- Серверная синхронизация ---------- */
+async function api(part,payload){
+  const r=await fetch('/api/state/'+part,{method:'PUT',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok){
+    toast(d.error||'Изменение отклонено сервером','err');
+    /* Ничего не перерисовываем: пользователь может продолжать ввод текста. */
+    return false;
+  }
+  return true;
+}
+
+/* ---------- Защита от потери ввода ----------
+   Серверные данные больше не подтягиваются автоматически: только при загрузке
+   страницы или по явному действию пользователя. Если в форме есть несохранённый
+   текст, перерисовка пропускается. */
+function isDirtyField(el){
+  if(el.disabled || el.type === 'checkbox' || el.type === 'radio') return false;
+  if(el.tagName === 'SELECT'){
+    const opt = el.options[el.selectedIndex];
+    return document.activeElement === el || !!(opt && !opt.defaultSelected);
+  }
+  return document.activeElement === el || String(el.value || '') !== String(el.defaultValue || '');
+}
+function hasUnsavedInput(){
+  return $$('input, textarea, select', $('#body')).some(isDirtyField);
+}
+let firstPull=false;
+async function pullState(options = {}){
+  const { force = false } = options;
+  try{
+    if(!force && hasUnsavedInput()) return; // не трогаем форму, пока идёт ввод
+    const r=await fetch('/api/state',{credentials:'same-origin',cache:'no-store'});
+    if(r.status===401)return location.replace('/login.html');
+    if(!r.ok)throw new Error('Не удалось загрузить журнал');
+    const d=await r.json();
+    S.grades=d.grades||{};S.att=d.att||{};S.hw=d.hw||{};
+    if(d.times)PAIRS=d.times;
+    if(d.start&&/^\d{4}-\d{2}-\d{2}$/.test(d.start)){const[yy,mm,dd]=d.start.split('-').map(Number);SCH_START=new Date(yy,mm-1,dd,12);if(!firstPull){firstPull=true;dayIdx=todayOff()}}
+    if(d.sch){S.sch=d.sch;WEEK.length=0;JSON.parse(JSON.stringify(d.sch)).forEach(x=>WEEK.push({wd:x.wd,s:x.s,lessons:x.lessons||[]}))}
+    if(d.ev){Object.keys(EVENTS).forEach(k=>delete EVENTS[k]);Object.assign(EVENTS,d.ev)}
+    if(d.students){STUDENTS.length=0;d.students.forEach(x=>STUDENTS.push(x))}
+    render();
+  }catch(e){toast(e.message||'Ошибка синхронизации','err')}
+}
+const gk=(d,p,i)=>`${d}:${p}:${i}`, hk=(d,p)=>`${d}:${p}`;
+const WEEK=JSON.parse(JSON.stringify(BASE));
+const EVENTS={};
+const persistSch=()=>api('sch',WEEK); const persistEv=()=>api('ev',EVENTS);
+
+let ROLE='starosta';
+const NAMES={starosta:'староста',curator:'куратор',admin:'дежурный администратор',dev:'разработчик'};
+let canAtt=false,canSch=false,user=null;
+
+let tab='att', dayIdx=todayOff();
+const tpl=o=>WEEK[((o%7)+7)%7];
+function dayInfo(o){const t=tpl(o),dt=dayDate(o);return{wd:t.wd,s:t.s,day:dt.getDate(),mon:MONTHS[dt.getMonth()],lessons:t.lessons}}
+$$('.tab').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.t;$$('.tab').forEach(x=>x.classList.toggle('on',x===b));render()}));
+function renderDayPick(){
+  const base=Math.floor(dayIdx/7)*7, t=todayOff();
+  let h=`<button class="day-cell" data-wk="-1" aria-label="Предыдущая неделя"><div class="text-[15px] font-bold mt-2.5">‹</div></button>`;
+  for(let k=0;k<7;k++){const o=base+k,d=dayInfo(o);
+    h+=`<button class="day-cell ${o===dayIdx?'on':''}" data-d="${o}"><div class="text-[10px] uppercase opacity-70">${d.s}</div><div class="text-[15px] font-bold mt-0.5">${d.day}</div><div class="text-[9px] opacity-60">${o===t?'сегодня':d.mon}</div></button>`}
+  h+=`<button class="day-cell" data-wk="1" aria-label="Следующая неделя"><div class="text-[15px] font-bold mt-2.5">›</div></button>`;
+  h+=`<button class="day-cell" data-today="1"><div class="text-[11px] font-semibold mt-2.5">Сегодня</div></button>`;
+  $('#dayPick').innerHTML=h;
+}
+$('#dayPick').addEventListener('click',e=>{
+  const b=e.target.closest('.day-cell');if(!b)return;
+  if(b.dataset.d!==undefined)dayIdx=+b.dataset.d;
+  else if(b.dataset.wk)dayIdx=Math.min(MAX_DAY,Math.max(0,dayIdx+7*(+b.dataset.wk)));
+  else if(b.dataset.today)dayIdx=todayOff();
+  else return;
+  render();
+});
+$('#toDiary').addEventListener('click',()=>location.href='diary.html');
+
+const ATT=[['У','уважительная'],['Н','неуважительная'],['О','опоздание'],['Б','больничный']];
+
+function render(){
+  renderDayPick();
+  const d=dayInfo(dayIdx), box=$('#body');
+  if(tab==='att')box.innerHTML=viewAtt(d);
+  if(tab==='hw')box.innerHTML=viewHW(d);
+  if(tab==='sch')box.innerHTML=viewSch(d);
+  if(tab==='ev')box.innerHTML=viewEv(d);
+  if(tab==='time')box.innerHTML=viewTime();
+  box.firstElementChild&&box.firstElementChild.classList.add('view');
+  icons(); bind();
+}
+
+/* ---------- Посещаемость ---------- */
+let attPair=null;
+function viewAtt(d){
+  if(!canAtt)return `<div class="glass rounded-2xl p-6 text-center text-[13px] text-white/45">У вашей роли нет доступа к отметкам посещаемости.</div>`;
+  if(!d.lessons.length)return `<div class="glass rounded-2xl p-8 text-center"><div class="text-[14px] font-semibold mb-1">Занятий нет</div><p class="text-[12.5px] text-white/40">${d.wd}, ${d.day} ${d.mon} — выходной день.</p></div>`;
+  if(attPair===null||!d.lessons.some(l=>l.n===attPair))attPair=d.lessons[0].n;
+  const l=d.lessons.find(x=>x.n===attPair);
+  const stat={У:0,Н:0,О:0,Б:0};STUDENTS.forEach((_,i)=>{const a=S.att[gk(dayIdx,attPair,i)];if(a)stat[a.t]++});
+  const here=STUDENTS.length-Object.values(stat).reduce((a,b)=>a+b,0);
+  return `<div>
+    <div class="flex gap-1.5 overflow-x-auto pb-1 mb-3">${d.lessons.map(x=>`<button class="pill ${x.n===attPair?'on':''}" data-pair="${x.n}">${x.n} пара · ${fmt(PAIRS[x.n][0])}</button>`).join('')}</div>
+    <div class="glass rounded-2xl p-4 mb-3">
+      <div class="text-[14px] font-semibold leading-snug">${l.title}</div>
+      <div class="text-[12px] text-white/40 mt-1">${l.teacher} · ${l.room} · ${fmt(PAIRS[l.n][0])}–${fmt(PAIRS[l.n][1])}</div>
+      <div class="flex gap-1.5 mt-3 flex-wrap">
+        <span class="chip c-g">на занятии: ${here}</span>
+        ${Object.entries(stat).filter(([,v])=>v).map(([k,v])=>`<span class="chip c-a">${k}: ${v}</span>`).join('')}
+      </div>
+    </div>
+    <div class="flex items-center justify-between mb-2">
+      <div class="sec-title !mb-0"><i data-lucide="users"></i>${STUDENTS.length} студентов</div>
+      <button class="btn btn-g !py-1.5 !px-3 !text-[12px]" id="clrAtt"><i data-lucide="eraser" style="width:13px;height:13px"></i>Сбросить</button>
+    </div>
+    <div class="glass rounded-2xl divide-y divide-white/[0.06] overflow-hidden">
+      ${STUDENTS.map((n,i)=>{const a=S.att[gk(dayIdx,attPair,i)];const g=S.grades[gk(dayIdx,attPair,i)];
+        return `<div class="st-row ls-item ${a?'marked'+a.t:''}" style="animation-delay:${i*.02}s">
+          <span class="av">${n.split(' ').map(x=>x[0]).join('')}</span>
+          <span class="flex-1 min-w-[120px]">
+            <span class="block text-[13.5px] font-semibold leading-tight">${n}</span>
+            <span class="block text-[11px] text-white/35 mt-0.5">${a?ATT.find(x=>x[0]===a.t)[1]+(a.t==='О'&&a.min?` · ${a.min} мин`:''):'присутствует'}</span>
+          </span>
+          <span class="flex gap-1.5">${ATT.map(([t])=>`<button class="a-btn ${a&&a.t===t?'on on'+t:''}" data-a="${t}" data-i="${i}">${t}</button>`).join('')}</span>
+        </div>`}).join('')}
+    </div>
+    <p class="text-[11px] text-white/25 text-center mt-3">У — уважительная · Н — неуважительная · О — опоздание (с минутами) · Б — больничный</p>
+  </div>`;
+}
+
+/* ---------- ДЗ ---------- */
+function viewHW(d){
+  if(!d.lessons.length)return `<div class="glass rounded-2xl p-8 text-center text-[13px] text-white/45">В этот день занятий нет.</div>`;
+  return `<div class="space-y-3">${d.lessons.map(l=>{
+    const h=S.hw[hk(dayIdx,l.n)], byTeacher=h&&h.byRole==='teacher';
+    return `<div class="glass rounded-2xl p-4">
+      <div class="flex items-start justify-between gap-2 mb-2">
+        <div class="min-w-0"><div class="text-[13.5px] font-semibold leading-snug">${l.n} пара · ${l.title}</div>
+        <div class="text-[11.5px] text-white/40 mt-1">${l.teacher}</div></div>
+        ${h?`<span class="chip ${byTeacher?'c-a':'c-g'} shrink-0">${byTeacher?'от преподавателя':'от старосты'}</span>`:'<span class="chip c-s shrink-0">нет ДЗ</span>'}
+      </div>
+      ${h?`<p class="text-[13px] leading-relaxed rounded-xl bg-white/[0.04] p-3">${h.text}${h.due?`<span class="block text-[11.5px] text-white/40 mt-1.5">срок: ${h.due}</span>`:''}</p>
+        ${byTeacher?`<p class="text-[11.5px] text-white/35 mt-2 flex items-center gap-1.5"><i data-lucide="lock" style="width:12px;height:12px"></i>Задание выдал преподаватель — изменять нельзя</p>`
+        :`<button class="btn btn-d w-full mt-2.5" data-hwdel="${l.n}"><i data-lucide="trash-2" style="width:15px;height:15px"></i>Удалить ДЗ</button>`}`
+      :`<textarea class="inp" data-hwtext="${l.n}" placeholder="Текст домашнего задания…"></textarea>
+        <div class="flex gap-2 mt-2">
+          <input class="inp flex-1" data-hwdue="${l.n}" placeholder="Срок, напр. к 3 ноября">
+          <button class="btn btn-p" data-hwadd="${l.n}"><i data-lucide="plus" style="width:15px;height:15px"></i>Выдать</button>
+        </div>`}
+    </div>`}).join('')}</div>`;
+}
+
+/* ---------- Расписание ---------- */
+function viewSch(d){
+  if(!canSch)return `<div class="glass rounded-2xl p-6 text-center text-[13px] text-white/45">Нет прав на изменение расписания.</div>`;
+  return `<div>
+    <div class="sec-title"><i data-lucide="calendar-cog"></i>${d.wd}, ${d.day} ${d.mon}</div>
+    <p class="text-[12px] text-white/40 -mt-1 mb-3 leading-relaxed">Типовая неделя: правки действуют на каждый день недели «${d.wd}» — расписание продолжается само, начиная с ${SCH_START.toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'}).replace(/\s*г\.$/,'')}.</p>
+    <div class="space-y-2.5">
+      ${d.lessons.length?d.lessons.map(l=>`
+        <div class="glass rounded-2xl p-3.5 ls-item">
+          <div class="flex items-center gap-2 mb-2.5">
+            <span class="chip c-s">${l.n} пара · ${fmt(PAIRS[l.n][0])}–${fmt(PAIRS[l.n][1])}</span>
+            <button class="btn btn-d !py-1.5 !px-2.5 !text-[12px] ml-auto" data-del="${l.n}"><i data-lucide="trash-2" style="width:13px;height:13px"></i></button>
+          </div>
+          <input class="inp mb-2" data-f="title" data-n="${l.n}" value="${esc(l.title)}" placeholder="Предмет">
+          <div class="grid grid-cols-2 gap-2">
+            <input class="inp" data-f="teacher" data-n="${l.n}" value="${esc(l.teacher)}" placeholder="Преподаватель">
+            <input class="inp" data-f="room" data-n="${l.n}" value="${esc(l.room)}" placeholder="Кабинет">
+          </div>
+          <div class="grid grid-cols-2 gap-2 mt-2">
+            <input class="inp" data-f="place" data-n="${l.n}" value="${esc(l.place)}" placeholder="Корпус">
+            <select class="inp" data-f="type" data-n="${l.n}">
+              <option value="prac" ${l.type==='prac'?'selected':''}>Практика</option>
+              <option value="lec" ${l.type==='lec'?'selected':''}>Лекция</option>
+            </select>
+          </div>
+        </div>`).join('')
+      :`<div class="glass rounded-2xl p-6 text-center text-[13px] text-white/40">Пар нет — можно добавить ниже.</div>`}
+    </div>
+    <div class="glass rounded-2xl p-4 mt-3">
+      <div class="sec-title"><i data-lucide="plus"></i>Добавить пару</div>
+      <div class="grid grid-cols-2 gap-2 mb-2">
+        <select class="inp" id="nPair">${Object.keys(PAIRS).map(Number).sort((a,b)=>a-b).filter(n=>!d.lessons.some(l=>l.n===n)).map(n=>`<option value="${n}">${n} пара · ${fmt(PAIRS[n][0])}</option>`).join('')||'<option value="">все слоты заняты</option>'}</select>
+        <select class="inp" id="nType"><option value="prac">Практика</option><option value="lec">Лекция</option></select>
+      </div>
+      <input class="inp mb-2" id="nTitle" placeholder="Предмет">
+      <div class="grid grid-cols-2 gap-2 mb-2"><input class="inp" id="nTeacher" placeholder="Преподаватель"><input class="inp" id="nRoom" placeholder="Кабинет"></div>
+      <input class="inp mb-2.5" id="nPlace" placeholder="Корпус" value="${NK}">
+      <button class="btn btn-p w-full" id="addLesson"><i data-lucide="plus" style="width:15px;height:15px"></i>Добавить в расписание</button>
+    </div>
+    <div class="glass rounded-2xl p-4 mt-3">
+      <div class="sec-title"><i data-lucide="file-spreadsheet"></i>Импорт из Excel</div>
+      <p class="text-[12.5px] text-white/45 leading-relaxed mb-3">Загрузите таблицу (.xlsx, .xls или .csv) со столбцами «День недели», «Пара», «Предмет», «Преподаватель», «Кабинет», «Корпус», «Тип», а при желании «Начало» и «Конец». Перед применением вы увидите предпросмотр. Импорт заменит текущую типовую неделю.</p>
+      <div class="grid grid-cols-2 gap-2">
+        <button class="btn btn-g" id="xlsTpl"><i data-lucide="download" style="width:15px;height:15px"></i>Скачать шаблон</button>
+        <button class="btn btn-p" id="xlsPick"><i data-lucide="upload" style="width:15px;height:15px"></i>Загрузить файл</button>
+      </div>
+      <input type="file" id="xlsFile" class="hidden" accept=".xlsx,.xls,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
+    </div>
+    <button class="btn btn-g w-full mt-3" id="resetSch"><i data-lucide="trash-2" style="width:15px;height:15px"></i>Очистить расписание</button>
+  </div>`;
+}
+
+/* ---------- Мероприятия ---------- */
+function viewEv(d){
+  if(!canSch)return `<div class="glass rounded-2xl p-6 text-center text-[13px] text-white/45">Нет прав на добавление мероприятий.</div>`;
+  const list=EVENTS[dayIdx]||[];
+  return `<div>
+    <div class="sec-title"><i data-lucide="party-popper"></i>${d.wd}, ${d.day} ${d.mon}</div>
+    <div class="space-y-2.5">
+      ${list.length?list.map((e,k)=>`
+        <div class="glass rounded-2xl p-4 flex items-start gap-3 ls-item">
+          <span class="w-10 h-10 rounded-xl grid place-items-center shrink-0" style="background:linear-gradient(135deg,#f59e0b,#f43f5e)"><i data-lucide="party-popper" style="width:17px;height:17px"></i></span>
+          <div class="flex-1 min-w-0">
+            <div class="text-[13.5px] font-semibold leading-snug">${e.title}</div>
+            <div class="text-[11.5px] text-white/40 mt-1">${e.time} · ${e.place}</div>
+            <div class="text-[11.5px] text-white/35 mt-0.5">${e.org}</div>
+          </div>
+          <button class="btn btn-d !py-1.5 !px-2.5" data-evdel="${k}"><i data-lucide="trash-2" style="width:13px;height:13px"></i></button>
+        </div>`).join('')
+      :`<div class="glass rounded-2xl p-6 text-center text-[13px] text-white/40">Мероприятий на этот день нет.</div>`}
+    </div>
+    <div class="glass rounded-2xl p-4 mt-3">
+      <div class="sec-title"><i data-lucide="plus"></i>Новое мероприятие</div>
+      <input class="inp mb-2" id="eTitle" placeholder="Название">
+      <div class="grid grid-cols-2 gap-2 mb-2"><input class="inp" id="eTime" placeholder="Время, напр. 16:30"><input class="inp" id="ePlace" placeholder="Место"></div>
+      <input class="inp mb-2.5" id="eOrg" placeholder="Организатор">
+      <button class="btn btn-p w-full" id="addEv"><i data-lucide="plus" style="width:15px;height:15px"></i>Добавить мероприятие</button>
+    </div>
+  </div>`;
+}
+
+/* ---------- Время пар ---------- */
+function viewTime(){
+  if(!canSch)return `<div class="glass rounded-2xl p-6 text-center text-[13px] text-white/45">Нет прав на изменение времени пар.</div>`;
+  const keys=Object.keys(PAIRS).map(Number).sort((a,b)=>a-b);
+  return `<div>
+    <div class="sec-title"><i data-lucide="clock"></i>Расписание звонков</div>
+    <div class="glass rounded-2xl divide-y divide-white/[0.06] overflow-hidden">
+      ${keys.map(n=>`
+        <div class="flex items-center gap-2.5 p-3 ls-item">
+          <span class="w-9 h-9 rounded-xl grid place-items-center font-bold text-[13px] shrink-0" style="background:linear-gradient(135deg,#6d5bff,#a855f7)">${n}</span>
+          <input class="inp !py-2 text-center" style="width:92px" data-tm="${n}" data-k="0" value="${fmt(PAIRS[n][0])}" placeholder="09:00">
+          <span class="text-white/30">—</span>
+          <input class="inp !py-2 text-center" style="width:92px" data-tm="${n}" data-k="1" value="${fmt(PAIRS[n][1])}" placeholder="10:30">
+          <span class="text-[11.5px] text-white/35 ml-auto hidden sm:block">${PAIRS[n][1]-PAIRS[n][0]} мин</span>
+          <button class="btn btn-d !py-1.5 !px-2.5" data-tmdel="${n}"><i data-lucide="trash-2" style="width:13px;height:13px"></i></button>
+        </div>`).join('')}
+    </div>
+    <div class="glass rounded-2xl p-4 mt-3">
+      <div class="sec-title"><i data-lucide="plus"></i>Добавить пару в сетку</div>
+      <div class="flex gap-2 flex-wrap">
+        <input class="inp !py-2.5 text-center" style="width:74px" id="tnN" placeholder="№" value="${Math.max(0,...keys)+1}">
+        <input class="inp !py-2.5 text-center" style="width:100px" id="tnA" placeholder="18:00">
+        <input class="inp !py-2.5 text-center" style="width:100px" id="tnB" placeholder="19:30">
+        <button class="btn btn-p flex-1 !min-w-[130px]" id="tnAdd"><i data-lucide="plus" style="width:15px;height:15px"></i>Добавить</button>
+      </div>
+    </div>
+    <button class="btn btn-g w-full mt-3" id="tmReset"><i data-lucide="rotate-ccw" style="width:15px;height:15px"></i>Вернуть стандартное время</button>
+    <p class="text-[11px] text-white/25 text-center mt-3">Время применяется ко всем дням и видно студентам в дневнике</p>
+  </div>`;
+}
+
+/* ---------- Обработчики ---------- */
+function bind(){
+  $$('[data-tm]').forEach(inp=>inp.addEventListener('change',()=>{
+    const n=+inp.dataset.tm,k=+inp.dataset.k,v=toMin(inp.value);
+    if(v===null){toast('Формат времени: ЧЧ:ММ','err');render();return}
+    PAIRS[n][k]=v;
+    if(PAIRS[n][1]<=PAIRS[n][0]){PAIRS[n][1]=PAIRS[n][0]+90;toast('Конец скорректирован (+90 мин)')}
+    persistTimes();toast(`Время ${n}-й пары обновлено`,'ok');render();}));
+  $$('[data-tmdel]').forEach(b=>b.addEventListener('click',()=>{
+    const n=+b.dataset.tmdel;
+    if(WEEK.some(d=>d.lessons.some(l=>l.n===n)))return toast('Сначала удалите пары с этим номером из расписания','err');
+    delete PAIRS[n];persistTimes();toast('Слот удалён');render();}));
+  const tna=$('#tnAdd');tna&&tna.addEventListener('click',()=>{
+    const n=parseInt($('#tnN').value),a=toMin($('#tnA').value),b=toMin($('#tnB').value);
+    if(!n||n<1||n>12)return toast('Номер пары: 1–12','err');
+    if(PAIRS[n])return toast('Такой номер уже есть','err');
+    if(a===null||b===null)return toast('Укажите время в формате ЧЧ:ММ','err');
+    if(b<=a)return toast('Конец должен быть позже начала','err');
+    PAIRS[n]=[a,b];persistTimes();toast(`Пара ${n} добавлена в сетку`,'ok');render();});
+  const tmr=$('#tmReset');tmr&&tmr.addEventListener('click',()=>{
+    PAIRS={1:[540,630],2:[645,735],3:[780,870],4:[880,970],5:[980,1070]};persistTimes();toast('Время восстановлено');render()});
+  $$('[data-pair]').forEach(b=>b.addEventListener('click',()=>{attPair=+b.dataset.pair;render()}));
+  $$('#body .a-btn').forEach(b=>b.addEventListener('click',()=>{
+    const i=+b.dataset.i,t=b.dataset.a,k=gk(dayIdx,attPair,i);
+    if(S.att[k]&&S.att[k].t===t){delete S.att[k];toast('Отметка снята')}
+    else if(t==='О'){const v=prompt(`Опоздание «${STUDENTS[i]}» — на сколько минут?`,'10');if(v===null)return;S.att[k]={t:'О',min:Math.max(1,parseInt(v)||1)};toast(`${STUDENTS[i]} — опоздание`,'ok')}
+    else{S.att[k]={t};toast(`${STUDENTS[i]} — ${t}`,'ok')}
+    save(S);api('att',S.att);render();}));
+  const clr=$('#clrAtt');clr&&clr.addEventListener('click',()=>{STUDENTS.forEach((_,i)=>delete S.att[gk(dayIdx,attPair,i)]);save(S);api('att',S.att);render();toast('Отметки сброшены')});
+
+  $$('[data-hwadd]').forEach(b=>b.addEventListener('click',()=>{
+    const n=b.dataset.hwadd, t=$(`[data-hwtext="${n}"]`).value.trim();
+    if(!t)return toast('Введите текст задания','err');
+    S.hw[hk(dayIdx,n)]={text:t,due:$(`[data-hwdue="${n}"]`).value.trim(),by:'Староста',src:'Выдано старостой'};save(S);api('hw',S.hw);toast('ДЗ добавлено','ok');render();}));
+  $$('[data-hwdel]').forEach(b=>b.addEventListener('click',()=>{delete S.hw[hk(dayIdx,b.dataset.hwdel)];save(S);api('hw',S.hw);toast('ДЗ удалено','ok');render()}));
+
+  $$('#body [data-f]').forEach(inp=>inp.addEventListener('change',()=>{
+    const l=tpl(dayIdx).lessons.find(x=>x.n===+inp.dataset.n);if(!l)return;
+    l[inp.dataset.f]=inp.value;persistSch();toast('Расписание обновлено','ok');}));
+  $$('[data-del]').forEach(b=>b.addEventListener('click',()=>{
+    tpl(dayIdx).lessons=tpl(dayIdx).lessons.filter(x=>x.n!==+b.dataset.del);persistSch();toast('Пара удалена','ok');render()}));
+  const add=$('#addLesson');add&&add.addEventListener('click',()=>{
+    const n=+$('#nPair').value,t=$('#nTitle').value.trim();
+    if(!n)return toast('Все слоты пар заняты','err');
+    if(!t)return toast('Укажите предмет','err');
+    tpl(dayIdx).lessons.push({n,type:$('#nType').value,title:t,teacher:$('#nTeacher').value.trim()||'—',room:$('#nRoom').value.trim()||'—',place:$('#nPlace').value.trim()||NK});
+    tpl(dayIdx).lessons.sort((a,b)=>a.n-b.n);persistSch();toast('Пара добавлена','ok');render();});
+  const rs=$('#resetSch');rs&&rs.addEventListener('click',()=>{
+    if(!confirm('Удалить все пары из расписания на всех неделях?'))return;
+    WEEK.forEach(d=>d.lessons=[]);persistSch();toast('Расписание очищено','ok');render()});
+
+  const xt=$('#xlsTpl');xt&&xt.addEventListener('click',downloadTemplate);
+  const xp=$('#xlsPick'),xf=$('#xlsFile');
+  xp&&xp.addEventListener('click',()=>xf.click());
+  xf&&xf.addEventListener('change',()=>{const f=xf.files[0];xf.value='';if(f)handleImportFile(f)});
+
+  const ae=$('#addEv');ae&&ae.addEventListener('click',()=>{
+    const t=$('#eTitle').value.trim();if(!t)return toast('Укажите название','err');
+    (EVENTS[dayIdx]=EVENTS[dayIdx]||[]).push({time:$('#eTime').value.trim()||'—',title:t,place:$('#ePlace').value.trim()||'—',org:$('#eOrg').value.trim()||'Организатор не указан'});
+    persistEv();toast('Мероприятие добавлено','ok');render();});
+  $$('[data-evdel]').forEach(b=>b.addEventListener('click',()=>{EVENTS[dayIdx].splice(+b.dataset.evdel,1);persistEv();toast('Мероприятие удалено','ok');render()}));
+}
+/* ================= ИМПОРТ РАСПИСАНИЯ ИЗ EXCEL / CSV ================= */
+const XLSX_URLS=['https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js'];
+function loadXLSX(){
+  if(window.XLSX)return Promise.resolve(window.XLSX);
+  return new Promise((resolve,reject)=>{
+    const sc=document.createElement('script');
+    sc.src=XLSX_URLS[0];
+    sc.onload=()=>window.XLSX?resolve(window.XLSX):reject(new Error('Модуль Excel не инициализировался'));
+    sc.onerror=()=>reject(new Error('Не удалось загрузить модуль чтения Excel (нет доступа к cdn.sheetjs.com). CSV-файлы читаются без него.'));
+    document.head.appendChild(sc);
+  });
+}
+
+const IMP_HDR={
+  day:['день','деньнедели','дн','weekday','day'],
+  pair:['пара','номерпары','номер','№','№пары','пары','pair','num','n'],
+  title:['предмет','дисциплина','названиепредмета','название','subject','title'],
+  teacher:['преподаватель','педагог','препод','учитель','фио','teacher'],
+  room:['кабинет','аудитория','каб','room'],
+  place:['корпус','здание','место','адрес','place','building'],
+  type:['тип','видзанятия','вид','формазанятия','type'],
+  start:['начало','началопары','start','from'],
+  end:['конец','окончание','конецпары','end','to'],
+  time:['время','time']
+};
+const normH=v=>String(v??'').toLowerCase().replace(/ё/g,'е').replace(/[\s.,:;()«»"'_\-–—/\\]+/g,'');
+function impDay(v){
+  const t=String(v??'').trim().toLowerCase().replace(/ё/g,'е').replace(/\./g,'');
+  if(!t)return null;
+  if(/^[1-7]$/.test(t))return +t-1;
+  const i=[/^(пн|пон|mon)/,/^(вт|tue)/,/^(ср|wed)/,/^(чт|чет|thu)/,/^(пт|пят|fri)/,/^(сб|суб|sat)/,/^(вс|вос|sun)/].findIndex(r=>r.test(t));
+  return i<0?null:i;
+}
+function impMinutes(v){
+  if(typeof v==='number')return(v>=0&&v<1)?Math.round(v*1440):null;
+  const m=/(\d{1,2})\s*[:.ч]\s*(\d{2})/.exec(String(v??''));
+  if(!m)return null;const h=+m[1],mi=+m[2];
+  return(h<24&&mi<60)?h*60+mi:null;
+}
+function impRange(v){
+  const all=[...String(v??'').matchAll(/(\d{1,2})\s*[:.]\s*(\d{2})/g)].map(m=>(+m[1])*60+(+m[2]));
+  return all.length>=2?[all[0],all[1]]:null;
+}
+const fmtMin=m=>String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+
+/* rows — двумерный массив ячеек; existing — текущая сетка времени {n:[start,end]}.
+   Возвращает {noHeader:true} или результат разбора. */
+function parseScheduleTable(rows,existing,names){
+  let map=null,hi=-1;
+  for(let ri=0;ri<Math.min(rows.length,15)&&!map;ri++){
+    const m={};
+    (rows[ri]||[]).forEach((cell,ci)=>{const h=normH(cell);if(!h)return;
+      for(const k in IMP_HDR)if(m[k]===undefined&&IMP_HDR[k].includes(h))m[k]=ci});
+    if(m.day!==undefined&&m.pair!==undefined&&m.title!==undefined){map=m;hi=ri}
+  }
+  if(!map)return{noHeader:true};
+  const days=names.map(()=>[]),errors=[],warnings=[],fileTimes={},seen=new Set();
+  let prevDay=null,rowCount=0;
+  for(let ri=hi+1;ri<rows.length;ri++){
+    const r=rows[ri]||[];
+    if(!r.some(c=>String(c??'').trim()!==''))continue;
+    rowCount++;
+    const line=ri+1,get=k=>map[k]===undefined?'':String(r[map[k]]??'').trim();
+    let d=impDay(get('day'));
+    if(d===null&&!get('day')&&prevDay!==null)d=prevDay;   // объединённые ячейки дня
+    if(d===null){errors.push({line,msg:`не распознан день недели «${get('day')||'пусто'}»`});continue}
+    prevDay=d;
+    const nm=/\d+/.exec(get('pair')),n=nm?+nm[0]:NaN;
+    if(!Number.isInteger(n)||n<1||n>12){errors.push({line,msg:`некорректный номер пары «${get('pair')||'пусто'}» (нужно 1–12)`});continue}
+    const title=get('title');
+    if(!title){errors.push({line,msg:'не указан предмет'});continue}
+    if(seen.has(d*100+n)){errors.push({line,msg:`${names[d].wd}, ${n} пара — дубль, строка пропущена`});continue}
+    // время пары из файла (необязательно)
+    let a=impMinutes(map.start===undefined?'':r[map.start]),b=impMinutes(map.end===undefined?'':r[map.end]);
+    if((a===null||b===null)&&map.time!==undefined){const g=impRange(r[map.time]);if(g){a=g[0];b=g[1]}}
+    if(a!==null&&b!==null){
+      if(b<=a)warnings.push({line,msg:`${n} пара: конец раньше начала, время проигнорировано`});
+      else if(!fileTimes[n])fileTimes[n]=[a,b];
+      else if(fileTimes[n][0]!==a||fileTimes[n][1]!==b)warnings.push({line,msg:`${n} пара: другое время (${fmtMin(a)}–${fmtMin(b)}), использовано первое из файла`});
+    }
+    seen.add(d*100+n);
+    const ty=normH(get('type'));
+    days[d].push({n,type:/^лек|lec/.test(ty)?'lec':'prac',title,teacher:get('teacher')||'—',room:get('room')||'—',place:get('place'),_line:line});
+  }
+  const merged={...existing,...fileTimes};
+  days.forEach((list,d)=>{
+    for(let i=list.length-1;i>=0;i--)if(!merged[list[i].n]){
+      errors.push({line:list[i]._line,msg:`${names[d].wd}, ${list[i].n} пара: не задано время (добавьте столбцы «Начало» и «Конец» или слот во вкладке «Время пар»)`});list.splice(i,1)}
+    list.sort((x,y)=>x.n-y.n);list.forEach(l=>delete l._line);
+  });
+  const newTimes={};
+  Object.entries(fileTimes).forEach(([n,t])=>{const o=existing[n];if(!o||o[0]!==t[0]||o[1]!==t[1])newTimes[n]=t});
+  errors.sort((x,y)=>x.line-y.line);
+  return{noHeader:false,sch:names.map((w,i)=>({wd:w.wd,s:w.s,lessons:days[i]})),newTimes,errors,warnings,rowCount,
+    lessons:days.reduce((s,l)=>s+l.length,0)};
+}
+
+function parseCSV(text){
+  text=text.replace(/^\uFEFF/,'');
+  const first=text.split(/\r?\n/,1)[0]||'';
+  const delim=[';','\t',','].map(d=>[d,first.split(d).length]).sort((a,b)=>b[1]-a[1])[0][0];
+  const rows=[];let row=[],cell='',q=false;
+  for(let i=0;i<text.length;i++){const c=text[i];
+    if(q){if(c==='"'){if(text[i+1]==='"'){cell+='"';i++}else q=false}else cell+=c}
+    else if(c==='"')q=true;
+    else if(c===delim){row.push(cell);cell=''}
+    else if(c==='\n'||c==='\r'){if(c==='\r'&&text[i+1]==='\n')i++;row.push(cell);rows.push(row);row=[];cell=''}
+    else cell+=c}
+  if(cell!==''||row.length){row.push(cell);rows.push(row)}
+  return rows;
+}
+function decodeText(buf){
+  try{return new TextDecoder('utf-8',{fatal:true}).decode(buf)}
+  catch(e){return new TextDecoder('windows-1251').decode(buf)}
+}
+
+const TPL_ROWS=[
+  ['День недели','Пара','Предмет','Преподаватель','Кабинет','Корпус','Тип','Начало','Конец'],
+  ['Понедельник',1,'Математика','Иванов И. И.','204','Корпус А','Лекция','09:00','10:30'],
+  ['Понедельник',2,'Информатика','Петров П. П.','312','Корпус А','Практика','10:45','12:15'],
+  ['Вторник',1,'Физическая культура','Сидоров С. С.','Спортзал','Корпус Б','Практика','09:00','10:30']
+];
+const TPL_HELP=[
+  ['Как заполнять таблицу'],
+  [''],
+  ['1. Одна строка = одна пара. Заголовки в первой строке менять не нужно.'],
+  ['2. «День недели»: Понедельник…Воскресенье, Пн…Вс или цифра 1–7. Если день один и тот же для нескольких строк подряд, его можно указать только в первой.'],
+  ['3. «Пара»: номер от 1 до 12.'],
+  ['4. «Тип»: Лекция или Практика (по умолчанию — Практика).'],
+  ['5. «Начало» и «Конец» — необязательные столбцы (формат 09:00). Если указаны, обновят сетку времени пар. Если нет — используется сетка из вкладки «Время пар».'],
+  ['6. Расписание задаёт типовую неделю и повторяется каждую неделю автоматически.'],
+  ['7. Перед загрузкой удалите строки-примеры из листа «Расписание».']
+];
+async function downloadTemplate(){
+  try{
+    const X=await loadXLSX(),wb=X.utils.book_new();
+    const ws=X.utils.aoa_to_sheet(TPL_ROWS);
+    ws['!cols']=[16,7,34,26,12,14,12,9,9].map(w=>({wch:w}));
+    X.utils.book_append_sheet(wb,ws,'Расписание');
+    const hs=X.utils.aoa_to_sheet(TPL_HELP);hs['!cols']=[{wch:110}];
+    X.utils.book_append_sheet(wb,hs,'Как заполнять');
+    X.writeFile(wb,'raspisanie-shablon.xlsx');
+  }catch(e){
+    const csv='\uFEFF'+TPL_ROWS.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(';')).join('\r\n');
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+    a.download='raspisanie-shablon.csv';document.body.appendChild(a);a.click();a.remove();
+    toast('Модуль Excel недоступен — скачан шаблон в формате CSV (открывается в Excel)');
+  }
+}
+
+function closeImport(){const m=$('#impModal');m&&m.remove()}
+function showImportPreview(res,fileName){
+  closeImport();
+  const perDay=res.sch.map(d=>`<span class="chip ${d.lessons.length?'c-g':'c-s'}">${d.s} · ${d.lessons.length}</span>`).join(' ');
+  const nt=Object.entries(res.newTimes).sort((a,b)=>a[0]-b[0]);
+  const list=(arr,cls)=>{const shown=arr.slice(0,8).map(x=>`<li>строка ${x.line}: ${esc(x.msg)}</li>`).join('');
+    return `<ul class="text-[12px] ${cls} space-y-1 list-disc pl-4">${shown}${arr.length>8?`<li>…и ещё ${arr.length-8}</li>`:''}</ul>`};
+  const m=document.createElement('div');
+  m.id='impModal';m.className='fixed inset-0 z-50 flex items-end sm:items-center justify-center p-3';
+  m.style.background='rgba(4,4,10,.72)';
+  m.innerHTML=`<div class="glass rounded-2xl p-4 w-full max-w-[560px] max-h-[88vh] overflow-y-auto" style="background:#12121c">
+    <div class="sec-title"><i data-lucide="file-spreadsheet"></i>Предпросмотр импорта</div>
+    <p class="text-[12.5px] text-white/50 mb-3 break-words">${esc(fileName)}</p>
+    <div class="text-[14px] font-semibold mb-2">${res.lessons?`Найдено пар: ${res.lessons}`:'Подходящих пар не найдено'}</div>
+    <div class="flex flex-wrap gap-1.5 mb-3">${perDay}</div>
+    ${nt.length?`<div class="text-[12.5px] text-white/60 mb-3">Время пар будет обновлено: ${nt.map(([n,t])=>`${n} пара ${fmtMin(t[0])}–${fmtMin(t[1])}`).join(', ')}.</div>`:''}
+    ${res.errors.length?`<div class="mb-3"><div class="text-[12.5px] font-semibold text-rose-300 mb-1.5">Строки пропущены (${res.errors.length}):</div>${list(res.errors,'text-rose-200/80')}</div>`:''}
+    ${res.warnings.length?`<div class="mb-3"><div class="text-[12.5px] font-semibold text-amber-300 mb-1.5">Замечания (${res.warnings.length}):</div>${list(res.warnings,'text-amber-200/80')}</div>`:''}
+    <p class="text-[12px] text-white/40 mb-3">Применение заменит текущую типовую неделю. Оценки, посещаемость и ДЗ не затрагиваются.</p>
+    <div class="grid grid-cols-2 gap-2">
+      <button class="btn btn-g" id="impCancel">Отмена</button>
+      <button class="btn btn-p" id="impApply" ${res.lessons?'':'disabled style="opacity:.4;pointer-events:none"'}>Применить</button>
+    </div></div>`;
+  document.body.appendChild(m);icons();
+  $('#impCancel').addEventListener('click',closeImport);
+  m.addEventListener('click',e=>{if(e.target===m)closeImport()});
+  $('#impApply').addEventListener('click',async()=>{
+    const btn=$('#impApply');btn.disabled=true;
+    try{
+      const r=await fetch('/api/schedule/import',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({sch:res.sch,times:res.newTimes})});
+      const d=await r.json().catch(()=>({}));
+      if(!r.ok){toast(d.error||'Сервер отклонил импорт','err');btn.disabled=false;return}
+      WEEK.length=0;res.sch.forEach(x=>WEEK.push(x));
+      Object.entries(res.newTimes).forEach(([n,t])=>{PAIRS[n]=t});
+      closeImport();render();toast(`Импортировано пар: ${d.lessons}`,'ok');
+    }catch(e){toast('Нет связи с сервером','err');btn.disabled=false}
+  });
+}
+async function handleImportFile(file){
+  try{
+    if(file.size>5*1024*1024)throw new Error('Файл слишком большой (максимум 5 МБ)');
+    toast('Читаю файл…');
+    const names=BASE.map(d=>({wd:d.wd,s:d.s})),buf=await file.arrayBuffer();
+    let tables;
+    if(/\.csv$/i.test(file.name))tables=[parseCSV(decodeText(buf))];
+    else{
+      const X=await loadXLSX(),wb=X.read(buf,{type:'array'});
+      tables=wb.SheetNames.map(n=>X.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:true,defval:''}));
+    }
+    let res=null;
+    for(const t of tables){const r=parseScheduleTable(t,PAIRS,names);if(!r.noHeader){res=r;break}}
+    if(!res)throw new Error('Не найдены заголовки. Нужны столбцы «День недели», «Пара» и «Предмет» — скачайте шаблон.');
+    showImportPreview(res,file.name);
+  }catch(e){toast(e.message||'Не удалось прочитать файл','err')}
+}
+
+(async function bootstrap(){
+  try{
+    const me=await fetch('/api/me',{credentials:'same-origin',cache:'no-store'});
+    if(me.status===401)return location.replace('/login.html');
+    if(!me.ok)throw new Error('Не удалось загрузить профиль');
+    user=(await me.json()).user;ROLE=user.role;
+    canAtt=['starosta','curator','dev'].includes(ROLE);
+    canSch=['starosta','curator','admin','dev'].includes(ROLE);
+    $('#roleChip').innerHTML=`<i data-lucide="clipboard-check"></i>${NAMES[ROLE]||ROLE}`;
+    $('#whoAmI').textContent=`${user.fio} · ${NAMES[ROLE]||ROLE}${user.group?' · '+user.group:''}`;
+    icons();await pullState({ force: true });
+  }catch(e){toast(e.message||'Ошибка загрузки','err')}
+})();
+
+/* Автообновление сознательно отключено: текст, который пользователь вводит,
+   не должен пропадать. Обновление — по кнопке в шапке или перезагрузкой (F5). */
+$('#refreshBtn').addEventListener('click', async () => {
+  if (hasUnsavedInput()) {
+    toast('Сначала сохраните или очистите несохранённый текст', 'err');
+    return;
+  }
+  const btn = $('#refreshBtn');
+  btn.style.transition = 'transform .6s linear';
+  btn.style.transform = 'rotate(360deg)';
+  setTimeout(() => { btn.style.transition = ''; btn.style.transform = ''; }, 620);
+  await pullState({ force: true });
+  toast('Данные обновлены', 'ok');
+});
+</script>
+</body>
+</html>

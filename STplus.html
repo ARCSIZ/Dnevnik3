@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<script src="/splash.js"></script>
+<title>Студия Plus · Панель разработчика</title>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Unbounded:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  html { -webkit-tap-highlight-color: transparent; }
+  html, body, * { scrollbar-width:none; } *::-webkit-scrollbar { width:0;height:0;display:none; }
+  body { font-family:'Inter',system-ui,sans-serif;background:#07070d;color:#ecedf5;overflow-x:hidden;min-height:100dvh; }
+  .font-display { font-family:'Unbounded',sans-serif; }
+  .bg-scene { position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none; }
+  .blob { position:absolute;border-radius:9999px;filter:blur(90px);opacity:.45;animation:drift 26s ease-in-out infinite alternate; }
+  .b1 { width:540px;height:540px;left:-160px;top:-180px;background:radial-gradient(circle,#f43f5e 0%,transparent 65%);opacity:.26; }
+  .b2 { width:560px;height:560px;right:-190px;top:20%;background:radial-gradient(circle,#6a55f8 0%,transparent 62%);animation-delay:-9s; }
+  .b3 { width:460px;height:460px;left:25%;bottom:-220px;background:radial-gradient(circle,#0ea5e9 0%,transparent 65%);animation-delay:-16s;opacity:.3; }
+  @keyframes drift { from{transform:translate(0,0) scale(1)} to{transform:translate(60px,-40px) scale(1.12)} }
+  .grid-lines { position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);background-size:56px 56px;mask-image:radial-gradient(ellipse 80% 60% at 50% 15%,black 10%,transparent 75%);-webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 15%,black 10%,transparent 75%); }
+  .glass { background:linear-gradient(160deg,rgba(255,255,255,.055),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.09);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 24px 64px -28px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.07); }
+  .fade-up { animation:fadeUp .7s cubic-bezier(.16,1,.3,1) both; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+  .ls-item { animation:fadeUp .5s cubic-bezier(.16,1,.3,1) both; }
+  .icon-btn { width:38px;height:38px;display:grid;place-items:center;border-radius:12px;color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);transition:all .18s;cursor:pointer; }
+  .icon-btn:hover { color:#fff;background:rgba(255,255,255,.08); } .icon-btn:active { transform:scale(.9); }
+  .btn { display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 16px;border-radius:14px;font-size:13.5px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all .18s; }
+  .btn:active { transform:scale(.97); }
+  .btn-p { color:#fff;background:linear-gradient(135deg,#6d5bff,#a855f7);box-shadow:0 10px 26px -12px rgba(124,108,255,.8),inset 0 1px 0 rgba(255,255,255,.22); }
+  .btn-p:hover { filter:brightness(1.07);transform:translateY(-1px); }
+  .btn-g { color:rgba(255,255,255,.75);border-color:rgba(255,255,255,.1);background:rgba(255,255,255,.04); }
+  .btn-g:hover { color:#fff;background:rgba(255,255,255,.08); }
+  .btn-d { color:#fda4af;border-color:rgba(253,164,175,.22);background:rgba(244,63,94,.08); }
+  .btn-d:hover { background:rgba(244,63,94,.15); }
+  .chip { display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:4px 10px;border-radius:9999px;border:1px solid;white-space:nowrap; }
+  .chip svg { width:12px;height:12px; }
+  .c-r { color:#fda4af;background:rgba(244,63,94,.1);border-color:rgba(253,164,175,.28); }
+  .c-v { color:#c4b5fd;background:rgba(139,92,246,.12);border-color:rgba(196,181,253,.25); }
+  .c-b { color:#7dd3fc;background:rgba(56,189,248,.1);border-color:rgba(125,211,252,.25); }
+  .c-g { color:#6ee7b7;background:rgba(52,211,153,.1);border-color:rgba(110,231,183,.3); }
+  .c-a { color:#fcd34d;background:rgba(245,158,11,.1);border-color:rgba(252,211,77,.25); }
+  .c-s { color:rgba(255,255,255,.4);background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.09); }
+  .tabs { position:relative;display:flex;border-radius:15px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.07);padding:4px;gap:2px; }
+  .tab { flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9.5px 4px;border-radius:11px;font-size:12.5px;font-weight:600;color:rgba(255,255,255,.45);background:none;border:none;cursor:pointer;transition:all .22s; }
+  .tab svg { width:14px;height:14px; }
+  .tab.on { color:#fff;background:linear-gradient(135deg,rgba(244,63,94,.85),rgba(168,85,247,.9));box-shadow:0 6px 18px -6px rgba(244,63,94,.5); }
+  .inp { width:100%;border-radius:13px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.1);padding:11px 13px;font-size:13.5px;color:#fff;outline:none;transition:all .2s;caret-color:#a78bfa; }
+  .inp:focus { border-color:rgba(167,139,250,.6);background:rgba(255,255,255,.07);box-shadow:0 0 0 4px rgba(124,108,255,.14); }
+  .inp::placeholder { color:rgba(255,255,255,.25); }
+  select.inp { appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%23ffffff88' stroke-width='2'%3E%3Cpath d='M3 5l4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center; }
+  select.inp option { background:#15151f; }
+  .sec-title { display:flex;align-items:center;gap:7px;font-size:10.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.38);margin:0 4px 9px; }
+  .sec-title svg { width:13px;height:13px; }
+  .av { width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:12.5px;font-weight:700;flex-shrink:0;color:#fff; }
+  .perm-yes { color:#6ee7b7; } .perm-no { color:rgba(255,255,255,.18); }
+  table.perm { width:100%;border-collapse:collapse;font-size:12px; }
+  table.perm th,table.perm td { padding:9px 6px;text-align:center;border-bottom:1px solid rgba(255,255,255,.055); }
+  table.perm th:first-child,table.perm td:first-child { text-align:left;padding-left:12px;color:rgba(255,255,255,.65); }
+  table.perm th { font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.35);font-weight:700; }
+  #toasts { position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:80;display:flex;flex-direction:column;align-items:center;gap:10px;width:min(92vw,460px);pointer-events:none; }
+  .toast { display:flex;align-items:center;gap:10px;padding:11px 18px;border-radius:9999px;background:rgba(17,17,27,.94);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(14px);font-size:13.5px;font-weight:500;opacity:0;transform:translateY(14px) scale(.95);transition:all .35s cubic-bezier(.22,1.2,.36,1); }
+  .toast.show { opacity:1;transform:none; }
+  .view { animation:fadeUp .45s cubic-bezier(.16,1,.3,1) both; }
+  @media (prefers-reduced-motion: reduce) { * { animation-duration:.01ms !important;transition-duration:.01ms !important } }
+</style>
+</head>
+<body class="antialiased">
+<div class="bg-scene"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="grid-lines"></div></div>
+
+<header class="relative z-10 mx-auto w-full max-w-[860px] px-5 pt-6 pb-2 flex items-center justify-between fade-up">
+  <div class="flex items-center gap-3 min-w-0">
+    <button class="icon-btn" id="toDiary" aria-label="В дневник"><i data-lucide="arrow-left" style="width:17px;height:17px"></i></button>
+    <div class="min-w-0">
+      <div class="font-display text-[15px] font-bold leading-none flex items-center gap-2">Студия <span class="text-rose-300">Plus</span></div>
+      <div class="text-[11.5px] text-white/40 mt-1.5">панель разработчика · полный доступ</div>
+    </div>
+  </div>
+  <span class="chip c-r shrink-0"><i data-lucide="terminal"></i>root</span>
+</header>
+
+<main class="relative z-10 mx-auto w-full max-w-[860px] px-5 pb-24">
+  <!-- Статистика -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-4">
+    <div class="glass rounded-2xl p-3.5 fade-up"><div class="text-[11px] text-white/40 mb-1.5">Аккаунтов</div><div class="text-[21px] font-bold" id="stAcc">0</div></div>
+    <div class="glass rounded-2xl p-3.5 fade-up"><div class="text-[11px] text-white/40 mb-1.5">Преподаватели</div><div class="text-[21px] font-bold text-violet-300" id="stTeach">0</div></div>
+    <div class="glass rounded-2xl p-3.5 fade-up"><div class="text-[11px] text-white/40 mb-1.5">Группы</div><div class="text-[21px] font-bold text-sky-300" id="stGroups">1</div></div>
+    <div class="glass rounded-2xl p-3.5 fade-up"><div class="text-[11px] text-white/40 mb-1.5">Статус</div><div class="text-[13px] font-bold text-emerald-300 mt-1.5 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>online</div></div>
+  </div>
+
+  <div class="tabs mt-4 fade-up">
+    <button class="tab on" data-t="acc"><i data-lucide="users-round"></i><span>Аккаунты</span></button>
+    <button class="tab" data-t="new"><i data-lucide="user-plus"></i><span>Создать</span></button>
+    <button class="tab" data-t="perm"><i data-lucide="shield-check"></i><span>Права</span></button>
+    <button class="tab" data-t="sys"><i data-lucide="settings-2"></i><span>Система</span></button>
+  </div>
+
+  <div id="body" class="mt-4"></div>
+</main>
+<div id="toasts"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const icons=()=>window.lucide&&lucide.createIcons(); icons();
+function toast(msg,type='info'){const m={info:['info','text-violet-300'],ok:['check','text-emerald-300'],err:['circle-alert','text-rose-300']}[type]||['info','text-violet-300'];
+  const el=document.createElement('div');el.className='toast';el.innerHTML=`<span class="${m[1]} flex"><i data-lucide="${m[0]}" style="width:15px;height:15px"></i></span><span class="text-white/85">${msg}</span>`;
+  $('#toasts').appendChild(el);icons();requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('show')));
+  setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),400)},3200);}
+
+const ROLES={
+  student:{n:'Студент',c:'c-s',i:'graduation-cap',grp:true,g:'linear-gradient(135deg,#475569,#334155)'},
+  starosta:{n:'Староста',c:'c-g',i:'clipboard-check',grp:true,g:'linear-gradient(135deg,#059669,#0d9488)'},
+  teacher:{n:'Преподаватель',c:'c-v',i:'presentation',grp:false,g:'linear-gradient(135deg,#6d5bff,#a855f7)'},
+  curator:{n:'Куратор группы',c:'c-b',i:'user-cog',grp:true,g:'linear-gradient(135deg,#0ea5e9,#6366f1)'},
+  admin:{n:'Дежурный администратор',c:'c-a',i:'shield',grp:false,g:'linear-gradient(135deg,#f59e0b,#f97316)'},
+  dev:{n:'Разработчик',c:'c-r',i:'terminal',grp:false,g:'linear-gradient(135deg,#f43f5e,#a855f7)'},
+};
+let ACC=[];
+let GROUPS=[];
+let STATE={grades:{},att:{},hw:{}};
+async function request(url,options={}){
+  const r=await fetch(url,{...options,credentials:'same-origin',headers:{'Content-Type':'application/json',...(options.headers||{})}});
+  const d=await r.json().catch(()=>({}));
+  if(r.status===401){location.replace('/login.html');throw new Error('Требуется вход')}
+  if(!r.ok)throw new Error(d.error||'Ошибка сервера');
+  return d;
+}
+async function loadAccounts(){ACC=await request('/api/accounts',{cache:'no-store'});}
+async function loadGroups(){GROUPS=await request('/api/groups',{cache:'no-store'});const count=$('#stGroups');if(count)count.textContent=GROUPS.length;const selector=$('#fGroup');if(selector){const previous=selector.value;selector.innerHTML=GROUPS.map(g=>`<option value="${String(g.id).replace(/&/g,'&amp;').replace(/\"/g,'&quot;').replace(/</g,'&lt;')}">${g.name}</option>`).join('');if(GROUPS.some(g=>g.id===previous))selector.value=previous;}}
+async function loadState(){STATE=await request('/api/state',{cache:'no-store'});}
+function renderGroups(){const el=$('#groupList');if(!el)return;el.innerHTML=GROUPS.map(g=>`<div class="flex items-center gap-3 rounded-xl bg-white/[.03] border border-white/[.06] p-3"><div class="flex-1 min-w-0"><div class="text-[13px] font-semibold">${g.name}</div><div class="text-[11px] text-white/40">${g.specialty||'Учебная группа'} · ${g.course} курс · куратор: ${g.curatorLogin||'не назначен'} · староста: ${g.starostaLogin||'не назначен'}</div></div><button class="icon-btn !w-8 !h-8 !text-rose-300" data-group-del="${encodeURIComponent(g.id)}" title="Удалить группу"><i data-lucide="trash-2" style="width:14px;height:14px"></i></button></div>`).join('')||'<p class="text-[12px] text-white/40">Групп пока нет.</p>';icons();$$('[data-group-del]').forEach(b=>b.addEventListener('click',async()=>{const g=GROUPS.find(x=>x.id===decodeURIComponent(b.dataset.groupDel));if(!g||!confirm(`Удалить группу «${g.name}»?`))return;try{await request('/api/groups/'+encodeURIComponent(g.id),{method:'DELETE'});await loadGroups();renderGroups();toast('Группа удалена','ok')}catch(e){toast(e.message,'err')}}));}
+
+let tab='acc';
+$$('.tab').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.t;$$('.tab').forEach(x=>x.classList.toggle('on',x===b));render()}));
+$('#toDiary').addEventListener('click',()=>location.href='diary.html');
+
+function stats(){$('#stAcc').textContent=ACC.length;$('#stTeach').textContent=ACC.filter(a=>a.role==='teacher'||a.role==='curator').length}
+
+function viewAcc(){
+  return `<div>
+    <div class="flex items-center justify-between mb-2"><div class="sec-title !mb-0"><i data-lucide="users-round"></i>Все аккаунты</div>
+      <input class="inp !py-1.5 !w-auto !text-[12px]" id="q" placeholder="поиск…"></div>
+    <div class="glass rounded-2xl divide-y divide-white/[0.06] overflow-hidden" id="accList"></div>
+  </div>`;
+}
+function accRows(f=''){
+  const list=ACC.filter(a=>(a.fio+a.login+ROLES[a.role].n).toLowerCase().includes(f.toLowerCase()));
+  return list.map((a,i)=>{const R=ROLES[a.role];const idx=ACC.indexOf(a);
+    return `<div class="flex items-center gap-3 p-3 ls-item" style="animation-delay:${i*.02}s">
+      <span class="av" style="background:${R.g}">${a.fio.split(' ').map(x=>x[0]).slice(0,2).join('')}</span>
+      <span class="flex-1 min-w-0">
+        <span class="block text-[13.5px] font-semibold truncate">${a.fio}</span>
+        <span class="block text-[11.5px] text-white/35 mt-0.5 truncate">@${a.login}${a.group?` · ${a.group}`:''}${a.subj?` · ${a.subj}`:''}</span>
+      </span>
+      <span class="chip ${R.c} shrink-0"><i data-lucide="${R.i}"></i>${R.n}</span>
+      ${a.role!=='dev'?`<button class="icon-btn shrink-0 !w-8 !h-8 !text-rose-300" data-del="${idx}" title="Удалить"><i data-lucide="trash-2" style="width:14px;height:14px"></i></button>`:''}
+    </div>`}).join('')||`<div class="p-6 text-center text-[13px] text-white/40">Ничего не найдено</div>`;
+}
+function viewNew(){
+  return `<div class="glass rounded-2xl p-4">
+    <div class="sec-title"><i data-lucide="user-plus"></i>Новый аккаунт</div>
+    <div class="grid sm:grid-cols-2 gap-2 mb-2">
+      <input class="inp" id="fFio" placeholder="ФИО, напр. Иванова А. А.">
+      <input class="inp" id="fLogin" placeholder="Логин (латиница)">
+    </div>
+    <div class="grid sm:grid-cols-2 gap-2 mb-2">
+      <select class="inp" id="fRole">${Object.entries(ROLES).filter(([k])=>k!=='dev').map(([k,v])=>`<option value="${k}">${v.n}</option>`).join('')}</select>
+      <input class="inp" id="fPass" type="password" autocomplete="new-password" placeholder="Временный пароль (минимум 8 символов)">
+    </div>
+    <div class="grid sm:grid-cols-2 gap-2 mb-1" id="extraWrap">
+      <input class="inp" id="fSubj" placeholder="Предмет(ы)">
+      <select class="inp" id="fGroup">${GROUPS.map(g=>`<option value="${g.id}">${g.name}</option>`).join('')}</select>
+    </div>
+    <p class="text-[11.5px] text-white/35 mb-3 mt-2" id="roleHint"></p>
+    <button class="btn btn-p w-full" id="create"><i data-lucide="user-plus" style="width:15px;height:15px"></i>Создать аккаунт</button>
+  </div>
+  <div class="glass rounded-2xl p-4 mt-3">
+    <div class="sec-title"><i data-lucide="layers-2"></i>Учебные группы</div>
+    <div class="grid sm:grid-cols-3 gap-2 mb-2">
+      <input class="inp" id="gName" placeholder="Название группы, например 03-СД-26-о">
+      <input class="inp" id="gSpec" placeholder="Специальность">
+      <select class="inp" id="gCourse"><option value="1">1 курс</option><option value="2">2 курс</option><option value="3">3 курс</option><option value="4">4 курс</option><option value="5">5 курс</option><option value="6">6 курс</option></select>
+    </div>
+    <button class="btn btn-p w-full" id="createGroup"><i data-lucide="plus" style="width:15px;height:15px"></i>Зарегистрировать группу</button>
+    <div id="groupList" class="mt-3 space-y-2"></div>
+    <p class="text-[11.5px] text-white/35 mt-3">Для каждой группы создаётся отдельное расписание. Куратора и старосту можно назначить при создании аккаунта соответствующей роли.</p>
+  </div>
+  <div class="glass rounded-2xl p-4 mt-3">
+    <div class="sec-title"><i data-lucide="info"></i>Правила</div>
+    <ul class="text-[12.5px] text-white/50 space-y-1.5 leading-relaxed">
+      <li>• Преподавателям и дежурным администраторам группа не назначается.</li>
+      <li>• Куратор обязательно привязан к группе и может быть преподавателем.</li>
+      <li>• Староста выбирается из студентов группы.</li>
+      <li>• Роль «Разработчик» выдаёт полный доступ к Студии Plus.</li>
+    </ul>
+  </div>`;
+}
+const PERMS=[
+  ['Просмотр расписания',['student','starosta','teacher','curator','admin','dev']],
+  ['Оценки своей пары',['teacher','curator','dev']],
+  ['ДЗ своего предмета',['teacher','curator','dev']],
+  ['ДЗ за преподавателя',['starosta','curator','dev']],
+  ['Отметки У/Н/О/Б',['starosta','curator','dev']],
+  ['У/Н/О/Б на все предметы',['curator','dev']],
+  ['Изменение расписания',['starosta','curator','admin','dev']],
+  ['Мероприятия',['starosta','curator','admin','dev']],
+  ['Создание аккаунтов',['dev']],
+];
+function viewPerm(){
+  const cols=['student','starosta','teacher','curator','admin','dev'];
+  return `<div class="glass rounded-2xl p-3 overflow-x-auto">
+    <table class="perm"><thead><tr><th>Право</th>${cols.map(c=>`<th>${ROLES[c].n.split(' ')[0]}</th>`).join('')}</tr></thead>
+    <tbody>${PERMS.map(([p,rs])=>`<tr><td>${p}</td>${cols.map(c=>`<td>${rs.includes(c)?'<span class="perm-yes">✔</span>':'<span class="perm-no">—</span>'}</td>`).join('')}</tr>`).join('')}</tbody></table>
+  </div>
+  <p class="text-[11.5px] text-white/35 mt-3 px-1">Куратор видит и меняет отметки по всем предметам группы, преподаватель — только по своей текущей паре.</p>`;
+}
+function viewSys(){
+  return `<div class="space-y-3">
+    <div class="glass rounded-2xl p-4">
+      <div class="sec-title"><i data-lucide="log-in"></i>Быстрый вход в студии</div>
+      <div class="grid sm:grid-cols-3 gap-2">
+        <button class="btn btn-g" data-go="studio|teacher"><i data-lucide="presentation" style="width:15px;height:15px"></i>Студия</button>
+        <button class="btn btn-g" data-go="zhurnal|starosta"><i data-lucide="clipboard-check" style="width:15px;height:15px"></i>Журнал</button>
+        <button class="btn btn-g" data-go="diary|student"><i data-lucide="notebook-pen" style="width:15px;height:15px"></i>Дневник</button>
+      </div>
+    </div>
+    <div class="glass rounded-2xl p-4">
+      <div class="sec-title"><i data-lucide="database"></i>Данные сессии</div>
+      <div class="text-[12.5px] text-white/50 space-y-1.5">
+        <div class="flex justify-between"><span>Оценок выставлено</span><span class="text-white/80" id="cntG">0</span></div>
+        <div class="flex justify-between"><span>Отметок посещаемости</span><span class="text-white/80" id="cntA">0</span></div>
+        <div class="flex justify-between"><span>Домашних заданий</span><span class="text-white/80" id="cntH">0</span></div>
+      </div>
+      <button class="btn btn-d w-full mt-3" id="wipe"><i data-lucide="trash-2" style="width:15px;height:15px"></i>Полностью очистить базу</button>
+    </div>
+    <div class="glass rounded-2xl p-4">
+      <div class="sec-title"><i data-lucide="info"></i>О платформе</div>
+      <div class="text-[12.5px] text-white/50 space-y-1"><div class="flex justify-between"><span>Версия</span><span>1.0</span></div>
+      <div class="flex justify-between"><span>Файлы</span><span>login · diary · studio · zhurnal · STplus</span></div></div>
+    </div>
+  </div>`;
+}
+
+function render(){
+  stats();
+  const b=$('#body');
+  b.innerHTML = tab==='acc'?viewAcc():tab==='new'?viewNew():tab==='perm'?viewPerm():viewSys();
+  b.firstElementChild&&b.firstElementChild.classList.add('view');
+  icons();
+
+  if(tab==='acc'){
+    const list=$('#accList'); list.innerHTML=accRows(); icons(); bindAcc();
+    $('#q').addEventListener('input',e=>{list.innerHTML=accRows(e.target.value);icons();bindAcc()});
+  }
+  if(tab==='new'){
+    const sync=()=>{const r=$('#fRole').value,R=ROLES[r];
+      $('#fGroup').style.display=R.grp?'':'none';
+      $('#fSubj').style.display=(r==='teacher'||r==='curator')?'':'none';
+      $('#roleHint').textContent=R.grp?'Для этой роли нужна группа.':'Группа не требуется для этой роли.';};
+    $('#fRole').addEventListener('change',sync); sync();
+    $('#createGroup')?.addEventListener('click',async()=>{const name=$('#gName').value.trim();if(!name)return toast('Укажите название группы','err');try{await request('/api/groups',{method:'POST',body:JSON.stringify({name,specialty:$('#gSpec').value.trim(),course:Number($('#gCourse').value)})});await loadGroups();renderGroups();$('#gName').value='';$('#gSpec').value='';toast(`Группа «${name}» создана`,'ok')}catch(e){toast(e.message,'err')}});
+    renderGroups();
+    $('#create').addEventListener('click',async()=>{
+      const fio=$('#fFio').value.trim(),login=$('#fLogin').value.trim(),role=$('#fRole').value;
+      if(!fio)return toast('Укажите ФИО','err');
+      if(!/^[A-Za-z0-9_.-]{3,}$/.test(login))return toast('Логин: латиница, минимум 3 символа','err');
+      if(ACC.some(a=>a.login===login))return toast('Такой логин уже существует','err');
+      const password=$('#fPass').value;
+      if(password.length<8)return toast('Пароль должен содержать минимум 8 символов','err');
+      try{
+        await request('/api/accounts',{method:'POST',body:JSON.stringify({fio,login,role,password,subj:$('#fSubj').value.trim(),group:$('#fGroup').value.trim()})});
+        await loadAccounts();toast(`Аккаунт «${fio}» создан`,'ok');$('#fFio').value='';$('#fLogin').value='';$('#fPass').value='';stats();
+      }catch(e){toast(e.message,'err')}
+    });
+  }
+  if(tab==='sys'){
+    $('#cntG').textContent=Object.keys(STATE.grades||{}).length;
+    $('#cntA').textContent=Object.keys(STATE.att||{}).length;
+    $('#cntH').textContent=Object.keys(STATE.hw||{}).length;
+    $$('[data-go]').forEach(b=>b.addEventListener('click',()=>{const[f]=b.dataset.go.split('|');location.href=f+'.html'}));
+    $('#wipe').addEventListener('click',async()=>{
+      if(!confirm('ВНИМАНИЕ! Будут удалены все аккаунты кроме разработчика, все группы, расписание, оценки, посещаемость, ДЗ, мероприятия и настройки. Отменить это действие нельзя. Продолжить?'))return;
+      try{await request('/api/reset',{method:'POST',body:'{}'});await loadState();await loadAccounts();await loadGroups();toast('База очищена. Можно создавать аккаунты заново.','ok');render()}catch(e){toast(e.message,'err')}
+    });
+  }
+}
+function bindAcc(){
+  $$('[data-del]').forEach(b=>b.addEventListener('click',async()=>{
+    const a=ACC[+b.dataset.del];if(!a||!confirm(`Удалить аккаунт «${a.fio}»?`))return;
+    try{await request('/api/accounts/'+encodeURIComponent(a.login),{method:'DELETE'});await loadAccounts();toast(`Аккаунт «${a.fio}» удалён`);render()}catch(e){toast(e.message,'err')}
+  }));
+}
+(async function bootstrap(){
+  try{
+    const me=await request('/api/me',{cache:'no-store'});
+    if(me.user.role!=='dev')return location.replace('/'+me.user.home);
+    await Promise.all([loadAccounts(),loadGroups(),loadState()]);render();
+  }catch(e){toast(e.message||'Ошибка загрузки','err')}
+})();
+</script>
+</body>
+</html>

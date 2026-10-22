@@ -1,0 +1,10 @@
+.env
+data.json
+node_modules
+npm-debug.log*
+.git
+.gitignore
+README.md
+# Виртуальное окружение — не копируем из хоста
+.venv/
+venv/

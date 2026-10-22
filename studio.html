@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<script src="/splash.js"></script>
+<title>Студия преподавателя · 02-СД-25-о</title>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Unbounded:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  html { -webkit-tap-highlight-color: transparent; }
+  html, body, * { scrollbar-width: none; }
+  *::-webkit-scrollbar { width: 0; height: 0; display: none; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #07070d; color: #ecedf5; overflow-x: hidden; min-height: 100dvh; }
+  .font-display { font-family: 'Unbounded', sans-serif; }
+  .bg-scene { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+  .blob { position: absolute; border-radius: 9999px; filter: blur(90px); opacity: .5; animation: drift 24s ease-in-out infinite alternate; }
+  .b1 { width: 520px; height: 520px; left: -150px; top: -170px; background: radial-gradient(circle,#6a55f8 0%,transparent 65%); }
+  .b2 { width: 560px; height: 560px; right: -190px; top: 25%; background: radial-gradient(circle,#0ea5e9 0%,transparent 62%); animation-delay: -9s; }
+  @keyframes drift { from { transform: translate(0,0) scale(1);} to { transform: translate(60px,-40px) scale(1.12);} }
+  .grid-lines { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px); background-size: 56px 56px; mask-image: radial-gradient(ellipse 80% 60% at 50% 15%, black 10%, transparent 75%); -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 15%, black 10%, transparent 75%); }
+  .glass { background: linear-gradient(160deg,rgba(255,255,255,.055),rgba(255,255,255,.02)); border: 1px solid rgba(255,255,255,.09); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); box-shadow: 0 24px 64px -28px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.07); }
+  .fade-up { animation: fadeUp .7s cubic-bezier(.16,1,.3,1) both; }
+  @keyframes fadeUp { from { opacity:0; transform: translateY(20px);} to { opacity:1; transform:none;} }
+  .ls-item { animation: fadeUp .5s cubic-bezier(.16,1,.3,1) both; }
+  .icon-btn { width:38px;height:38px;display:grid;place-items:center;border-radius:12px;color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);transition:all .18s;cursor:pointer; }
+  .icon-btn:hover { color:#fff;background:rgba(255,255,255,.08); } .icon-btn:active { transform:scale(.9); }
+  .btn { display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 16px;border-radius:14px;font-size:13.5px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all .18s; }
+  .btn:active { transform:scale(.97); }
+  .btn-p { color:#fff;background:linear-gradient(135deg,#6d5bff,#a855f7);box-shadow:0 10px 26px -12px rgba(124,108,255,.8),inset 0 1px 0 rgba(255,255,255,.22); }
+  .btn-p:hover { filter:brightness(1.07);transform:translateY(-1px); }
+  .btn-g { color:rgba(255,255,255,.75);border-color:rgba(255,255,255,.1);background:rgba(255,255,255,.04); }
+  .btn-g:hover { color:#fff;background:rgba(255,255,255,.08); }
+  .btn-d { color:#fda4af;border-color:rgba(253,164,175,.22);background:rgba(244,63,94,.08); }
+  .btn-d:hover { background:rgba(244,63,94,.15); }
+  .chip { display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:4px 10px;border-radius:9999px;border:1px solid;white-space:nowrap; }
+  .chip svg { width:12px;height:12px; }
+  .c-v { color:#c4b5fd;background:rgba(139,92,246,.12);border-color:rgba(196,181,253,.25); }
+  .c-g { color:#6ee7b7;background:rgba(52,211,153,.1);border-color:rgba(110,231,183,.3); }
+  .c-a { color:#fcd34d;background:rgba(245,158,11,.1);border-color:rgba(252,211,77,.25); }
+  .c-s { color:rgba(255,255,255,.4);background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.09); }
+  .live-dot { width:6px;height:6px;border-radius:99px;background:#34d399;animation:lp 1.6s ease-in-out infinite; }
+  @keyframes lp { 0%,100%{box-shadow:0 0 0 0 rgba(52,211,153,.5);} 50%{box-shadow:0 0 0 5px rgba(52,211,153,0);} }
+  .hscroll { overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;margin:-6px;padding:6px; }
+  .pair-tab { flex:0 0 auto;min-width:148px;padding:11px 10px;border-radius:15px;cursor:pointer;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);text-align:left;transition:all .2s; }
+  .pair-tab:hover:not(.lock) { border-color:rgba(167,139,250,.4);transform:translateY(-2px); }
+  .pair-tab.on { background:linear-gradient(140deg,#6d5bff,#a855f7);border-color:transparent;box-shadow:0 10px 26px -12px rgba(124,108,255,.7); }
+  .pair-tab.lock { opacity:.4;cursor:not-allowed; }
+  .g-btn { width:38px;height:38px;border-radius:12px;font-size:15px;font-weight:800;color:#fff;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);cursor:pointer;transition:all .16s; }
+  .g-btn:hover { background:rgba(255,255,255,.12);transform:translateY(-1px); } .g-btn:active { transform:scale(.9); }
+  .g-btn.on5 { background:linear-gradient(135deg,#10b981,#14b8a6);border-color:transparent;box-shadow:0 6px 16px -6px rgba(16,185,129,.8); }
+  .g-btn.on4 { background:linear-gradient(135deg,#6366f1,#8b5cf6);border-color:transparent;box-shadow:0 6px 16px -6px rgba(99,102,241,.8); }
+  .g-btn.on3 { background:linear-gradient(135deg,#f59e0b,#f97316);border-color:transparent;box-shadow:0 6px 16px -6px rgba(245,158,11,.8); }
+  .g-btn.on2 { background:linear-gradient(135deg,#f43f5e,#e11d48);border-color:transparent;box-shadow:0 6px 16px -6px rgba(244,63,94,.8); }
+  .a-btn { width:34px;height:34px;border-radius:11px;font-size:12.5px;font-weight:800;color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04);cursor:pointer;transition:all .16s; }
+  .a-btn:hover { color:#fff;background:rgba(255,255,255,.1); } .a-btn:active { transform:scale(.9); }
+  .a-btn.onU { background:rgba(56,189,248,.2);color:#7dd3fc;border-color:rgba(125,211,252,.4); }
+  .a-btn.onN { background:rgba(244,63,94,.2);color:#fda4af;border-color:rgba(253,164,175,.4); }
+  .a-btn.onO { background:rgba(245,158,11,.2);color:#fcd34d;border-color:rgba(252,211,77,.4); }
+  .a-btn.onB { background:rgba(16,185,129,.2);color:#6ee7b7;border-color:rgba(110,231,183,.4); }
+  .st-row { display:flex;align-items:center;gap:10px;padding:11px 13px;transition:background .18s;flex-wrap:wrap; }
+  .st-row:hover { background:rgba(255,255,255,.025); }
+  .av { width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:12px;font-weight:700;flex-shrink:0;background:linear-gradient(135deg,#4c1d95,#7c3aed);color:#fff; }
+  .inp { width:100%;border-radius:13px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.1);padding:12px 14px;font-size:14px;color:#fff;outline:none;transition:all .2s;caret-color:#a78bfa; }
+  .inp:focus { border-color:rgba(167,139,250,.6);background:rgba(255,255,255,.07);box-shadow:0 0 0 4px rgba(124,108,255,.14); }
+  .inp::placeholder { color:rgba(255,255,255,.25); }
+  textarea.inp { resize:vertical;min-height:88px;line-height:1.5; }
+  #toasts { position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:80;display:flex;flex-direction:column;align-items:center;gap:10px;width:min(92vw,460px);pointer-events:none; }
+  .toast { display:flex;align-items:center;gap:10px;padding:11px 18px;border-radius:9999px;background:rgba(17,17,27,.94);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(14px);box-shadow:0 14px 40px -10px rgba(0,0,0,.6);font-size:13.5px;font-weight:500;opacity:0;transform:translateY(14px) scale(.95);transition:all .35s cubic-bezier(.22,1.2,.36,1); }
+  .toast.show { opacity:1;transform:none; }
+  .sec-title { display:flex;align-items:center;gap:7px;font-size:10.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.38);margin:0 4px 9px; }
+  .sec-title svg { width:13px;height:13px; }
+  @media (prefers-reduced-motion: reduce) { * { animation-duration:.01ms !important;transition-duration:.01ms !important; } }
+</style>
+</head>
+<body class="antialiased">
+<div class="bg-scene"><div class="blob b1"></div><div class="blob b2"></div><div class="grid-lines"></div></div>
+
+<header class="relative z-10 mx-auto w-full max-w-[760px] px-5 pt-6 pb-2 flex items-center justify-between fade-up">
+  <div class="flex items-center gap-3 min-w-0">
+    <button class="icon-btn" id="toDiary" aria-label="В дневник"><i data-lucide="arrow-left" style="width:17px;height:17px"></i></button>
+    <div class="min-w-0">
+      <div class="font-display text-[15px] font-bold leading-none truncate">Студия преподавателя</div>
+      <div class="text-[11.5px] text-white/40 mt-1.5 truncate" id="whoAmI">—</div>
+    </div>
+  </div>
+  <span class="chip c-v shrink-0" id="roleChip"><i data-lucide="shield-check"></i>преподаватель</span>
+</header>
+
+<main class="relative z-10 mx-auto w-full max-w-[760px] px-5 pb-24">
+
+  <!-- Выбор дня (куратор) -->
+  <div class="glass rounded-2xl p-3 mt-4 fade-up hidden" id="dayPickWrap">
+    <div class="sec-title !mb-2"><i data-lucide="calendar-days"></i>День занятий</div>
+    <div class="hscroll"><div class="flex gap-1.5" id="dayPick" style="min-width:max-content"></div></div>
+  </div>
+
+  <!-- Текущая пара -->
+  <div class="glass rounded-3xl p-4 mt-4 relative overflow-hidden fade-up">
+    <div class="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-violet-400/50 to-transparent"></div>
+    <div class="flex items-center justify-between gap-3 mb-3 flex-wrap">
+      <div class="sec-title !mb-0"><i data-lucide="clock"></i>Пары на этот день</div>
+      <span class="chip c-s" id="clockChip"><i data-lucide="clock"></i>—</span>
+    </div>
+    <div class="hscroll"><div class="flex gap-2" id="pairTabs" style="min-width:max-content"></div></div>
+    <p class="text-[11.5px] text-white/35 mt-2.5" id="pairHint"></p>
+  </div>
+
+  <!-- Домашнее задание -->
+  <div class="mt-4 fade-up" id="hwBlock"></div>
+
+  <!-- Студенты -->
+  <div class="mt-4 fade-up">
+    <div class="flex items-center justify-between gap-2 flex-wrap mb-2">
+      <div class="sec-title !mb-0"><i data-lucide="users"></i>Группа 02-СД-25-о · <span id="stCount"></span></div>
+      <div class="flex gap-1.5">
+        <button class="btn btn-g !py-1.5 !px-3 !text-[12px]" id="allPresent"><i data-lucide="check-check" style="width:13px;height:13px"></i>Все на месте</button>
+        <button class="btn btn-d !py-1.5 !px-3 !text-[12px]" id="clearAll"><i data-lucide="eraser" style="width:13px;height:13px"></i>Очистить</button>
+      </div>
+    </div>
+    <div class="glass rounded-2xl divide-y divide-white/[0.06] overflow-hidden" id="students"></div>
+    <p class="text-center text-[11px] text-white/25 mt-4">Изменения сохраняются в текущей сессии и видны студентам в дневнике</p>
+  </div>
+</main>
+
+<div id="toasts"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const icons=()=>window.lucide&&lucide.createIcons(); icons();
+const toastsEl=$('#toasts');
+function toast(msg,type='info'){const m={info:['info','text-violet-300'],ok:['check','text-emerald-300'],err:['circle-alert','text-rose-300']}[type]||['info','text-violet-300'];
+  const el=document.createElement('div');el.className='toast';el.innerHTML=`<span class="${m[1]} flex"><i data-lucide="${m[0]}" style="width:15px;height:15px"></i></span><span class="text-white/85">${msg}</span>`;
+  toastsEl.appendChild(el);icons();requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('show')));
+  setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),400)},3200);}
+
+/* ---------- Общие данные ---------- */
+const PAIRS={};
+const fmt=m=>String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+const nowMin=()=>{const t=new Date();return t.getHours()*60+t.getMinutes()};
+function emptyWeek(){
+ const names=['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'],short=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+ return names.map((wd,i)=>({wd,s:short[i],lessons:[]}))
+}
+const WEEK=emptyWeek(); /* типовая неделя: повторяется каждую неделю */
+const MONTHS=['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+const MAX_DAY=3650;
+let SCH_START=new Date(2026,9,19,12); /* уточняется сервером (поле start) */
+const dayDate=o=>{const d=new Date(SCH_START);d.setDate(d.getDate()+o);return d};
+const todayRaw=()=>{const t=new Date();t.setHours(12,0,0,0);return Math.round((t-SCH_START)/86400000)};
+const todayOff=()=>Math.max(0,todayRaw());
+const tpl=o=>WEEK[((o%7)+7)%7];
+const STUDENTS=[];
+
+/* ---------- Состояние сервера ---------- */
+let S={grades:{},att:{},hw:{}};
+const save=()=>{};
+const gk=(d,p,i)=>`${d}:${p}:${i}`, hk=(d,p)=>`${d}:${p}`;
+
+async function api(part,payload){
+  const r=await fetch('/api/state/'+part,{method:'PUT',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok){
+    toast(d.error||'Изменение отклонено сервером','err');
+    /* Форму не перерисовываем, чтобы не потерять вводимый текст. */
+    return false;
+  }
+  return true;
+}
+
+/* Не перерисовываем интерфейс, если пользователь печатает или изменил поле. */
+function isDirtyField(el){
+  if(el.disabled || el.type === 'checkbox' || el.type === 'radio') return false;
+  if(el.tagName === 'SELECT'){
+    const opt = el.options[el.selectedIndex];
+    return document.activeElement === el || !!(opt && !opt.defaultSelected);
+  }
+  return document.activeElement === el || String(el.value || '') !== String(el.defaultValue || '');
+}
+function hasUnsavedInput(){
+  return $$('input, textarea, select').some(isDirtyField);
+}
+let firstPull=false;
+async function pullState(options = {}){
+  const { force = false } = options;
+  if(!force && hasUnsavedInput()) return;
+  const r=await fetch('/api/state',{credentials:'same-origin',cache:'no-store'});
+  if(r.status===401)return location.replace('/login.html');
+  if(!r.ok)throw new Error('Не удалось загрузить данные');
+  const d=await r.json();
+  S.grades=d.grades||{};S.att=d.att||{};S.hw=d.hw||{};
+  if(d.times){Object.keys(PAIRS).forEach(k=>delete PAIRS[k]);Object.assign(PAIRS,d.times)}
+  if(d.start&&/^\d{4}-\d{2}-\d{2}$/.test(d.start)){const[yy,mm,dd]=d.start.split('-').map(Number);SCH_START=new Date(yy,mm-1,dd,12);if(!firstPull){firstPull=true;dayIdx=todayOff()}}
+  if(d.sch)d.sch.forEach((x,i)=>{if(WEEK[i])WEEK[i].lessons=x.lessons||[]});
+  if(d.students){STUDENTS.length=0;d.students.forEach(x=>STUDENTS.push(x))}
+  renderAll();
+}
+
+/* ---------- Роль ---------- */
+let ROLE='teacher',USER=null,TEACHER_NAME='',isCurator=false;
+
+/* ---------- Текущий день/пара ---------- */
+let dayIdx=todayOff(), pairN=null;
+/* «Селецкая Е. Л.» в расписании = «Селецкая Екатерина Леонидовна» в аккаунте (та же логика, что на сервере) */
+const nameTokens=v=>String(v||'').toLowerCase().replace(/ё/g,'е').replace(/[.,]/g,' ').split(/\s+/).filter(Boolean);
+function sameTeacher(a,b){
+  const x=nameTokens(a),y=nameTokens(b);
+  if(!x.length||!y.length)return false;
+  if(x.join(' ')===y.join(' '))return true;
+  if(x[0]!==y[0])return false;
+  const ix=x.slice(1).map(w=>w[0]),iy=y.slice(1).map(w=>w[0]),n=Math.min(ix.length,iy.length);
+  return n>0&&ix.slice(0,n).every((c,i)=>c===iy[i]);
+}
+const myLessons=d=>tpl(d).lessons.filter(l=>ROLE==='dev'||sameTeacher(l.teacher,TEACHER_NAME));
+function livePair(){const m=nowMin();for(const k in PAIRS){const[a,b]=PAIRS[k];if(m>=a&&m<b)return +k}return null}
+
+/* выбор дня: неделя за неделей без ограничений */
+function renderDayPick(){
+  const base=Math.floor(dayIdx/7)*7, t=todayRaw();
+  let h=`<button class="pair-tab !min-w-[44px] !text-center" data-wk="-1" aria-label="Предыдущая неделя"><div class="text-[15px] font-bold">‹</div></button>`;
+  for(let k=0;k<7;k++){
+    const o=base+k, w=tpl(o), dt=dayDate(o);
+    h+=`<button class="pair-tab !min-w-[64px] !text-center ${o===dayIdx?'on':''}" data-d="${o}"><div class="text-[11px] opacity-70">${w.s}${o===t?' · сегодня':''}</div><div class="text-[15px] font-bold">${dt.getDate()}<span class="text-[10px] font-medium opacity-60"> ${MONTHS[dt.getMonth()]}</span></div></button>`;
+  }
+  h+=`<button class="pair-tab !min-w-[44px] !text-center" data-wk="1" aria-label="Следующая неделя"><div class="text-[15px] font-bold">›</div></button>`;
+  h+=`<button class="pair-tab !text-center" data-today="1"><div class="text-[12px] font-semibold">Сегодня</div></button>`;
+  $('#dayPick').innerHTML=h;
+}
+$('#dayPick').addEventListener('click',e=>{
+  const b=e.target.closest('.pair-tab');if(!b)return;
+  if(b.dataset.d!==undefined)dayIdx=+b.dataset.d;
+  else if(b.dataset.wk)dayIdx=Math.min(MAX_DAY,Math.max(0,dayIdx+7*(+b.dataset.wk)));
+  else if(b.dataset.today)dayIdx=todayOff();
+  else return;
+  pairN=null;renderAll();
+});
+
+function renderPairs(){
+  const lv=livePair(), ls=myLessons(dayIdx);
+  $('#clockChip').innerHTML=`<i data-lucide="clock"></i>${fmt(nowMin())}`;
+  if(!ls.length){
+    const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    let next=null;for(let k=1;k<=7;k++){if(myLessons(dayIdx+k).length){next=dayIdx+k;break}}
+    let msg=`<div class="text-[13px] text-white/40 py-3">В этот день у вас нет занятий в группе.</div>`;
+    if(next!==null){
+      const dt=dayDate(next);
+      msg+=`<button class="pair-tab !text-center mt-1" data-jump="${next}"><div class="text-[12px] font-semibold">К ближайшему дню с вашими парами: ${tpl(next).wd}, ${dt.getDate()} ${MONTHS[dt.getMonth()]}</div></button>`;
+    }else if(ROLE!=='dev'){
+      // ни в один день недели пары с вашим именем не найдены — показываем, кто записан в расписании
+      const all=[...new Set(WEEK.flatMap(d=>d.lessons.map(l=>l.teacher)).filter(t=>t&&t!=='—'))];
+      const latin=/[A-Za-z]/.test(TEACHER_NAME);
+      msg=`<div class="text-[13px] text-amber-200/90 py-3 leading-relaxed">В расписании не найдено ни одной пары с вашим именем (<b>${esc(TEACHER_NAME)}</b>).
+        ${all.length?`<div class="text-white/50 mt-2">В расписании указаны преподаватели: ${all.slice(0,15).map(t=>esc(t)+(/[A-Za-z]/.test(t)?' <span class="text-rose-300">(есть латинские буквы!)</span>':'')).join('; ')}${all.length>15?'…':''}.</div>`:'<div class="text-white/50 mt-2">Расписание пока пустое.</div>'}
+        <div class="text-white/50 mt-2">Фамилия в расписании должна совпадать с фамилией в аккаунте (инициалы могут быть сокращены: «Фамилия И. О.»).${latin?' <span class="text-rose-300">В вашем имени есть латинские буквы — возможно, при вводе вместо русских попали похожие.</span>':''}</div></div>`;
+    }
+    $('#pairTabs').innerHTML=msg;$('#pairHint').textContent='';pairN=null;
+    const jb=$('#pairTabs [data-jump]');jb&&jb.addEventListener('click',()=>{dayIdx=+jb.dataset.jump;pairN=null;renderAll()});
+    icons();return}
+  $('#pairTabs').innerHTML=ls.map(l=>{
+    const[a,b]=PAIRS[l.n], live=l.n===lv&&dayIdx===todayRaw(), open=true;
+    return `<button class="pair-tab ${open?'':'lock'}" data-p="${l.n}" ${open?'':'disabled'}>
+      <div class="flex items-center gap-1.5 mb-1">
+        <span class="text-[11px] font-bold opacity-80">${l.n} пара</span>
+        ${live?'<span class="live-dot"></span>':''}
+        ${open?'':'<i data-lucide="lock" style="width:11px;height:11px"></i>'}
+      </div>
+      <div class="text-[11.5px] opacity-70">${fmt(a)}–${fmt(b)}</div>
+      <div class="text-[12px] font-semibold mt-1 leading-tight line-clamp-2">${l.title}</div>
+    </button>`}).join('');
+  $$('#pairTabs .pair-tab').forEach(b=>b.addEventListener('click',()=>{if(b.disabled)return;pairN=+b.dataset.p;renderAll()}));
+  if(pairN===null){const open=ls.find(l=>l.n===lv)||ls[0];pairN=open?open.n:null}
+  $$('#pairTabs .pair-tab').forEach(b=>b.classList.toggle('on',+b.dataset.p===pairN));
+  $('#pairHint').textContent = ROLE==='dev'
+    ? 'Разработчик: разрешён полный доступ для диагностики.'
+    : (lv?`Сейчас идёт ${lv}-я пара — оценки и отметки доступны только для неё.`:'Сейчас нет активной пары. Редактирование оценок и посещаемости закрыто.');
+  icons();
+}
+
+/* ---------- ДЗ ---------- */
+function renderHW(){
+  const box=$('#hwBlock');
+  if(pairN===null){box.innerHTML='';return}
+  const l=tpl(dayIdx).lessons.find(x=>x.n===pairN);
+  const cur=S.hw[hk(dayIdx,pairN)];
+  box.innerHTML=`
+    <div class="sec-title"><i data-lucide="book-marked"></i>Домашнее задание · ${l.title}</div>
+    <div class="glass rounded-2xl p-4">
+      ${cur?`<div class="flex items-start gap-2.5 mb-3 rounded-xl bg-amber-400/8 border border-amber-300/20 p-3">
+          <i data-lucide="book-marked" class="text-amber-300 shrink-0 mt-0.5" style="width:15px;height:15px"></i>
+          <div class="min-w-0"><p class="text-[13.5px] leading-relaxed">${cur.text}</p>
+          <p class="text-[11.5px] text-white/40 mt-1.5">срок: ${cur.due||'не указан'} · автор: ${cur.by||'преподаватель'}</p></div>
+        </div>`:`<p class="text-[13px] text-white/40 mb-3">Домашнее задание не выдано.</p>`}
+      <textarea class="inp" id="hwText" placeholder="Текст домашнего задания…">${cur?cur.text:''}</textarea>
+      <div class="flex gap-2 mt-2.5 flex-wrap">
+        <input class="inp !py-2.5 flex-1 !min-w-[140px]" id="hwDue" placeholder="Срок, напр. к 3 ноября" value="${cur&&cur.due?cur.due:''}">
+        <button class="btn btn-p" id="hwSave"><i data-lucide="save" style="width:15px;height:15px"></i>${cur?'Обновить':'Выдать ДЗ'}</button>
+        ${cur?`<button class="btn btn-d" id="hwDel"><i data-lucide="trash-2" style="width:15px;height:15px"></i>Убрать</button>`:''}
+      </div>
+    </div>`;
+  icons();
+  $('#hwSave').addEventListener('click',()=>{
+    const t=$('#hwText').value.trim(); if(!t)return toast('Введите текст задания','err');
+    S.hw[hk(dayIdx,pairN)]={text:t,due:$('#hwDue').value.trim(),by:TEACHER_NAME,src:'Выдано преподавателем'};save(S);api('hw',S.hw);
+    toast('Домашнее задание сохранено','ok');renderHW();});
+  const dl=$('#hwDel'); dl&&dl.addEventListener('click',()=>{delete S.hw[hk(dayIdx,pairN)];save(S);api('hw',S.hw);toast('Домашнее задание убрано','ok');renderHW()});
+}
+
+/* ---------- Студенты ---------- */
+const ATT=[['У','пропуск по уважительной причине'],['Н','пропуск без уважительной причины'],['О','опоздание'],['Б','больничный']];
+function renderStudents(){
+  const box=$('#students');
+  $('#stCount').textContent=`${STUDENTS.length} студентов`;
+  if(pairN===null){box.innerHTML=`<div class="p-6 text-center text-[13px] text-white/40">Выберите пару, чтобы выставлять оценки и отметки.</div>`;return}
+  const editable=ROLE==='dev'||(pairN===livePair()&&dayIdx===todayRaw());
+  box.innerHTML=STUDENTS.map((n,i)=>{
+    const g=S.grades[gk(dayIdx,pairN,i)], a=S.att[gk(dayIdx,pairN,i)];
+    const ini=n.split(' ').map(x=>x[0]).join('');
+    return `<div class="st-row ls-item" style="animation-delay:${i*.025}s">
+      <span class="av">${ini}</span>
+      <span class="flex-1 min-w-[120px]">
+        <span class="block text-[13.5px] font-semibold leading-tight">${n}</span>
+        <span class="block text-[11px] text-white/35 mt-0.5">${a?`${ATT.find(x=>x[0]===a.t)[1]}${a.t==='О'&&a.min?` · ${a.min} мин`:''}`:'на занятии'}</span>
+      </span>
+      <span class="flex gap-1.5 ${editable?'':'opacity-40'}">${[5,4,3,2].map(v=>`<button class="g-btn ${g===v?'on'+v:''}" data-g="${v}" data-i="${i}" ${editable?'':'disabled'}>${v}</button>`).join('')}</span>
+      <span class="w-px h-7 bg-white/10 mx-0.5"></span>
+      <span class="flex gap-1.5 ${editable?'':'opacity-40'}">${ATT.map(([t])=>`<button class="a-btn ${a&&a.t===t?'on'+t:''}" data-a="${t}" data-i="${i}" title="${ATT.find(x=>x[0]===t)[1]}" ${editable?'':'disabled'}>${t}</button>`).join('')}</span>
+    </div>`}).join('');
+  $$('#students .g-btn').forEach(b=>b.addEventListener('click',()=>{
+    const i=+b.dataset.i,v=+b.dataset.g,k=gk(dayIdx,pairN,i);
+    if(S.grades[k]===v){delete S.grades[k];toast(`Оценка у «${STUDENTS[i]}» удалена`)}else{S.grades[k]=v;toast(`${STUDENTS[i]} — оценка ${v}`,'ok')}
+    save(S);api('grades',S.grades);renderStudents();}));
+  $$('#students .a-btn').forEach(b=>b.addEventListener('click',()=>{
+    const i=+b.dataset.i,t=b.dataset.a,k=gk(dayIdx,pairN,i);
+    if(S.att[k]&&S.att[k].t===t){delete S.att[k];toast(`Отметка у «${STUDENTS[i]}» снята`)}
+    else if(t==='О'){const v=prompt(`Опоздание «${STUDENTS[i]}» — на сколько минут?`,'10');if(v===null)return;const mn=Math.max(1,parseInt(v)||1);S.att[k]={t:'О',min:mn};toast(`${STUDENTS[i]} — опоздание ${mn} мин`,'ok')}
+    else{S.att[k]={t};toast(`${STUDENTS[i]} — ${t}`,'ok')}
+    save(S);api('att',S.att);renderStudents();}));
+}
+$('#allPresent').addEventListener('click',()=>{if(pairN===null)return;STUDENTS.forEach((_,i)=>delete S.att[gk(dayIdx,pairN,i)]);api('att',S.att);renderStudents();toast('Все отмечены присутствующими','ok')});
+$('#clearAll').addEventListener('click',()=>{if(pairN===null)return;STUDENTS.forEach((_,i)=>{delete S.att[gk(dayIdx,pairN,i)];delete S.grades[gk(dayIdx,pairN,i)]});api('att',S.att);api('grades',S.grades);renderStudents();toast('Оценки и отметки очищены')});
+$('#toDiary').addEventListener('click',()=>location.href='diary.html');
+
+function renderAll(){renderDayPick();renderPairs();renderHW();renderStudents()}
+(async function bootstrap(){
+  try{
+    const me=await fetch('/api/me',{credentials:'same-origin',cache:'no-store'});
+    if(me.status===401)return location.replace('/login.html');
+    if(!me.ok)throw new Error('Не удалось загрузить профиль');
+    USER=(await me.json()).user;ROLE=USER.role;TEACHER_NAME=USER.fio;isCurator=ROLE==='curator';
+    $('#roleChip').innerHTML=`<i data-lucide="shield-check"></i>${ROLE==='dev'?'разработчик':isCurator?'куратор':'преподаватель'}`;
+    $('#whoAmI').textContent=`${TEACHER_NAME} · ${isCurator?'куратор и преподаватель':'преподаватель'}`;
+    $('#dayPickWrap').classList.remove('hidden');icons();
+    await pullState({ force: true });
+  }catch(e){toast(e.message||'Ошибка загрузки','err')}
+})();
+setInterval(()=>{$('#clockChip').innerHTML=`<i data-lucide="clock"></i>${fmt(nowMin())}`;icons()},30000);
+</script>
+</body>
+</html>

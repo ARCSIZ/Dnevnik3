@@ -1,0 +1,1744 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<script src="/splash.js"></script>
+<title>Дневник · 02-СД-25-о</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#07070d">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Unbounded:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  html { -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #07070d;
+    color: #ecedf5;
+    overflow-x: hidden;
+    min-height: 100dvh;
+  }
+  .font-display { font-family: 'Unbounded', sans-serif; }
+
+  /* ---------- Фон ---------- */
+  .bg-scene { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+  .parallax-layer { position: absolute; inset: 0; transition: transform .7s cubic-bezier(.2,.8,.2,1); will-change: transform; }
+  .blob { position: absolute; border-radius: 9999px; filter: blur(90px); opacity: .55; animation: drift 22s ease-in-out infinite alternate; will-change: transform; }
+  .b1 { width: 520px; height: 520px; left: -140px; top: -160px; background: radial-gradient(circle, #6a55f8 0%, transparent 65%); }
+  .b2 { width: 560px; height: 560px; right: -180px; top: 22%; background: radial-gradient(circle, #a24fe0 0%, transparent 62%); animation-duration: 28s; animation-delay: -9s; }
+  .b3 { width: 460px; height: 460px; left: 20%; bottom: -220px; background: radial-gradient(circle, #3e63f2 0%, transparent 65%); animation-duration: 32s; animation-delay: -16s; opacity: .38; }
+  @keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(70px,-50px) scale(1.15); } }
+  .grid-lines {
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(255,255,255,.032) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.032) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 20%, black 10%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 20%, black 10%, transparent 75%);
+  }
+  .noise {
+    position: absolute; inset: 0; opacity: .05; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .glass {
+    background: linear-gradient(160deg, rgba(255,255,255,.055), rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.09);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: 0 24px 64px -28px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.07);
+  }
+  .grad-text { background: linear-gradient(92deg, #a78bfa, #c084fc 45%, #818cf8); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  /* ---------- Появление ---------- */
+  .fade-up { animation: fadeUp .8s cubic-bezier(.16,1,.3,1) both; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+  .d1 { animation-delay: .06s; } .d2 { animation-delay: .14s; } .d3 { animation-delay: .22s; } .d4 { animation-delay: .3s; }
+
+  /* ---------- Переключение экранов ---------- */
+  .view-out { animation: viewOut .2s cubic-bezier(.4,0,1,1) both; }
+  .view-in { animation: viewIn .45s cubic-bezier(.16,1,.3,1) both; }
+  @keyframes viewOut { to { opacity: 0; transform: translateY(12px); } }
+  @keyframes viewIn { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: none; } }
+
+  /* ---------- Смена дня ---------- */
+  .d-in-r { animation: dInR .45s cubic-bezier(.16,1,.3,1) both; }
+  .d-in-l { animation: dInL .45s cubic-bezier(.16,1,.3,1) both; }
+  @keyframes dInR { from { opacity: 0; transform: translateX(34px); } to { opacity: 1; transform: none; } }
+  @keyframes dInL { from { opacity: 0; transform: translateX(-34px); } to { opacity: 1; transform: none; } }
+  .ls-item { animation: lsIn .55s cubic-bezier(.16,1,.3,1) both; }
+  .no-anim .ls-item { animation: none !important; }
+  @keyframes lsIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+  /* ---------- Неделя (день-ячейка) ---------- */
+  .day-cell {
+    position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5px;
+    min-width: 44px; flex: 1; padding: 8px 3px; border-radius: 15px; cursor: pointer;
+    border: 1px solid rgba(255,255,255,.07); background: rgba(255,255,255,.03);
+    color: rgba(255,255,255,.55);
+    transition: transform .16s cubic-bezier(.34,1.56,.64,1), background .2s, border-color .2s, color .2s, box-shadow .2s;
+  }
+  .day-cell:hover { transform: translateY(-2px); border-color: rgba(167,139,250,.35); color: #fff; }
+  .day-cell:active { transform: scale(.94); }
+  .day-cell .dc-wd { font-size: 9.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; opacity: .75; }
+  .day-cell .dc-nwrap { position: relative; }
+  .day-cell .dc-d { font-size: 16px; font-weight: 700; line-height: 1.25; }
+  .day-cell .dc-dot { position: absolute; right: -8px; top: 3px; width: 4.5px; height: 4.5px; border-radius: 99px; background: #a78bfa; }
+  .day-cell .dc-mon {
+    position: absolute; top: 3.5px; right: 3.5px;
+    font-size: 7px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; line-height: 1;
+    color: rgba(255,255,255,.6); background: rgba(255,255,255,.09);
+    padding: 2.5px 4px; border-radius: 99px;
+  }
+  .day-cell.on {
+    background: linear-gradient(140deg, #6d5bff, #a855f7);
+    border-color: transparent; color: #fff;
+    box-shadow: 0 10px 26px -10px rgba(124,108,255,.65), inset 0 1px 0 rgba(255,255,255,.25);
+  }
+  .day-cell.on .dc-dot { background: #fff; }
+  .day-cell.on .dc-mon { background: rgba(255,255,255,.2); color: #fff; }
+  .day-cell.wknd { opacity: .55; }
+  .day-cell.wknd.on { opacity: 1; }
+  @media (min-width: 640px) {
+    #weekStrip { justify-content: center; }
+    .day-cell { flex: none; width: 62px; padding: 11px 4px 10px; }
+  }
+
+  /* ---------- Подразделы дня ---------- */
+  .subtabs { position: relative; display: flex; border-radius: 15px; background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.07); padding: 4px; }
+  .subtab-ind { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 11px; background: linear-gradient(135deg, rgba(109,91,255,.85), rgba(168,85,247,.85)); box-shadow: 0 6px 18px -6px rgba(124,108,255,.6), inset 0 1px 0 rgba(255,255,255,.2); transition: transform .42s cubic-bezier(.22,1.2,.36,1); }
+  .subtab-btn { position: relative; z-index: 1; flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px; padding: 9.5px 0; border-radius: 11px; font-size: 13px; font-weight: 600; color: rgba(255,255,255,.45); background: none; border: none; cursor: pointer; transition: color .25s, transform .1s; }
+  .subtab-btn svg { width: 15px; height: 15px; }
+  .subtab-btn:active { transform: scale(.96); }
+  .subtab-btn.active { color: #fff; }
+
+  /* ---------- Мероприятия ---------- */
+  .event-icon { background: linear-gradient(135deg, #f59e0b, #f43f5e); box-shadow: 0 8px 20px -8px rgba(244,63,94,.5), inset 0 1px 0 rgba(255,255,255,.25); }
+
+  /* ---------- Карточка-кнопка урока ---------- */
+  .lesson-card[data-pair] { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .lesson-card[data-pair]:active { transform: scale(.985); }
+  .lesson-card[data-pair]:focus-visible { outline: 2px solid rgba(167,139,250,.7); outline-offset: 2px; }
+  .lesson-card .ls-arrow { color: rgba(255,255,255,.25); transition: transform .2s, color .2s; }
+  .lesson-card:hover .ls-arrow { color: rgba(255,255,255,.6); transform: translateX(3px); }
+
+  .grade-pill {
+    display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 9px;
+    font-size: 13px; font-weight: 800; color: #fff; flex-shrink: 0;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.25);
+  }
+  .g5 { background: linear-gradient(135deg, #10b981, #14b8a6); }
+  .g4 { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+  .g3 { background: linear-gradient(135deg, #f59e0b, #f97316); }
+  .g2 { background: linear-gradient(135deg, #f43f5e, #e11d48); }
+  .gn { background: rgba(255,255,255,.08); color: rgba(255,255,255,.4); box-shadow: none; }
+
+  /* ---------- Экран урока ---------- */
+  .det-in { animation: detIn .45s cubic-bezier(.16,1,.3,1) both; }
+  .det-out { animation: detOut .2s cubic-bezier(.4,0,1,1) both; }
+  .det-back-in { animation: detBackIn .45s cubic-bezier(.16,1,.3,1) both; }
+  @keyframes detIn { from { opacity: 0; transform: translateX(40px) scale(.98); } to { opacity: 1; transform: none; } }
+  @keyframes detBackIn { from { opacity: 0; transform: translateX(-40px) scale(.98); } to { opacity: 1; transform: none; } }
+  @keyframes detOut { to { opacity: 0; transform: translateX(-24px); } }
+  .det-item { animation: lsIn .5s cubic-bezier(.16,1,.3,1) both; }
+
+  .info-row { display: flex; align-items: flex-start; gap: 12px; padding: 13px 16px; }
+  .info-ico { width: 32px; height: 32px; border-radius: 11px; display: grid; place-items: center; flex-shrink: 0; background: rgba(255,255,255,.055); color: rgba(255,255,255,.5); }
+  .hw-done { text-decoration: line-through; opacity: .5; }
+
+  /* ---------- Настройки ---------- */
+  .set-group { margin-bottom: 18px; }
+  .set-title { display: flex; align-items: center; gap: 7px; font-size: 10.5px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.38); margin: 0 4px 9px; }
+  .set-title svg { width: 13px; height: 13px; }
+
+  /* Категории-кнопки */
+  .cat-list { display: flex; flex-direction: column; gap: 10px; }
+  .cat-card {
+    display: flex; align-items: center; gap: 13px; width: 100%; text-align: left;
+    padding: 14px 15px; border-radius: 20px; cursor: pointer;
+    background: linear-gradient(160deg, rgba(255,255,255,.055), rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.09);
+    backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+    box-shadow: 0 18px 40px -26px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.06);
+    transition: transform .2s cubic-bezier(.34,1.4,.64,1), border-color .2s, background .2s;
+    animation: lsIn .5s cubic-bezier(.16,1,.3,1) both;
+  }
+  .cat-list .cat-card:nth-child(1) { animation-delay: .04s; }
+  .cat-list .cat-card:nth-child(2) { animation-delay: .1s; }
+  .cat-list .cat-card:nth-child(3) { animation-delay: .16s; }
+  .cat-list .cat-card:nth-child(4) { animation-delay: .22s; }
+  .cat-card:hover { transform: translateY(-2px); border-color: rgba(167,139,250,.4); }
+  .cat-card:active { transform: scale(.982); }
+  .cat-ico { width: 42px; height: 42px; border-radius: 15px; display: grid; place-items: center; color: #fff; flex-shrink: 0; box-shadow: 0 10px 22px -10px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.25); }
+  .cat-ico svg { width: 19px; height: 19px; }
+  .cat-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .cat-name { font-size: 14.5px; font-weight: 600; }
+  .cat-desc { font-size: 11.5px; color: rgba(255,255,255,.4); line-height: 1.35; }
+  .cat-meta { font-size: 11px; font-weight: 600; color: #a5b4fc; background: rgba(99,102,241,.14); border: 1px solid rgba(165,180,252,.22); padding: 3px 9px; border-radius: 99px; flex-shrink: 0; }
+  .cat-meta.off { color: rgba(255,255,255,.35); background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.08); }
+  .cat-arrow { width: 17px; height: 17px; color: rgba(255,255,255,.28); flex-shrink: 0; transition: transform .2s, color .2s; }
+  .cat-card:hover .cat-arrow { color: rgba(255,255,255,.6); transform: translateX(3px); }
+
+  .sub-in { animation: detIn .4s cubic-bezier(.16,1,.3,1) both; }
+  .sub-back-in { animation: detBackIn .4s cubic-bezier(.16,1,.3,1) both; }
+
+  /* ---------- Оценки ---------- */
+  .ring-track { stroke: rgba(255,255,255,.08); }
+  .ring-val { stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; transition: stroke-dashoffset 1.1s cubic-bezier(.16,1,.3,1); }
+  .dist-bar { height: 7px; border-radius: 99px; background: rgba(255,255,255,.07); overflow: hidden; }
+  .dist-fill { height: 100%; border-radius: 99px; transform-origin: left; transform: scaleX(0); transition: transform .9s cubic-bezier(.16,1,.3,1); }
+  .subj-card { width: 100%; text-align: left; padding: 13px 15px; cursor: pointer; transition: background .18s; }
+  .subj-card:hover { background: rgba(255,255,255,.03); }
+  .subj-card:active { background: rgba(255,255,255,.05); }
+  .mini-grade { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 7px; font-size: 11.5px; font-weight: 800; color: #fff; }
+  .subj-body { max-height: 0; overflow: hidden; transition: max-height .42s cubic-bezier(.16,1,.3,1), opacity .3s; opacity: 0; }
+  .subj-card.open + .subj-body { max-height: 420px; opacity: 1; }
+  .subj-chev { transition: transform .3s cubic-bezier(.34,1.4,.64,1); }
+  .subj-card.open .subj-chev { transform: rotate(90deg); }
+  .trend-up { color: #6ee7b7; } .trend-down { color: #fda4af; } .trend-flat { color: rgba(255,255,255,.4); }
+  .spark-dot { width: 7px; height: 7px; border-radius: 99px; }
+  .set-row { display: flex; align-items: center; gap: 12px; padding: 12px 15px; cursor: pointer; transition: background .18s; }
+  label.set-row:hover { background: rgba(255,255,255,.03); }
+  .set-row.sub { padding-left: 22px; }
+  .set-ico { width: 32px; height: 32px; border-radius: 11px; display: grid; place-items: center; flex-shrink: 0; }
+  .set-ico svg { width: 15px; height: 15px; }
+  .set-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .set-name { font-size: 13.5px; font-weight: 600; }
+  .set-desc { font-size: 11.5px; color: rgba(255,255,255,.38); line-height: 1.35; }
+  .set-row.off { opacity: .4; pointer-events: none; }
+
+  /* Переключатель */
+  .switch { position: relative; flex-shrink: 0; display: inline-flex; }
+  .switch input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+  .switch .track {
+    width: 44px; height: 26px; border-radius: 99px; background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.1); display: flex; align-items: center; padding: 2px;
+    transition: background .28s cubic-bezier(.2,.8,.2,1), border-color .28s, box-shadow .28s;
+  }
+  .switch .thumb {
+    width: 20px; height: 20px; border-radius: 99px; background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,.45);
+    transition: transform .3s cubic-bezier(.34,1.5,.64,1), width .18s;
+  }
+  .switch input:checked + .track {
+    background: linear-gradient(135deg, #6d5bff, #a855f7); border-color: transparent;
+    box-shadow: 0 6px 16px -6px rgba(124,108,255,.75), inset 0 1px 0 rgba(255,255,255,.25);
+  }
+  .switch input:checked + .track .thumb { transform: translateX(18px); }
+  .switch input:active + .track .thumb { width: 24px; }
+  .switch input:checked:active + .track .thumb { transform: translateX(14px); }
+  .switch input:focus-visible + .track { outline: 2px solid rgba(167,139,250,.7); outline-offset: 2px; }
+
+  /* Сегмент-выбор */
+  .seg { display: flex; gap: 3px; padding: 3px; border-radius: 11px; background: rgba(255,255,255,.055); border: 1px solid rgba(255,255,255,.07); flex-shrink: 0; }
+  .seg-btn { min-width: 32px; padding: 5px 7px; border: none; background: none; border-radius: 8px; color: rgba(255,255,255,.45); font-size: 12px; font-weight: 600; cursor: pointer; transition: all .2s; }
+  .seg-btn:hover { color: #fff; }
+  .seg-btn.active { background: linear-gradient(135deg, #6d5bff, #a855f7); color: #fff; box-shadow: 0 4px 12px -4px rgba(124,108,255,.7); }
+  .seg-btn:active { transform: scale(.92); }
+
+  /* Компактный режим расписания */
+  body.compact .lesson-card { padding-top: 10px; padding-bottom: 10px; }
+  body.compact .lesson-card h3 { font-size: 14px; }
+  body.compact .ls-item { margin-bottom: -2px; }
+
+  /* ---------- Чипы ---------- */
+  .chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 9999px;
+    border: 1px solid; white-space: nowrap;
+  }
+  .chip svg { width: 12px; height: 12px; }
+  .chip-lec { color: #7dd3fc; background: rgba(56,189,248,.1); border-color: rgba(125,211,252,.25); }
+  .chip-prac { color: #c4b5fd; background: rgba(139,92,246,.12); border-color: rgba(196,181,253,.25); }
+
+  /* ---------- Пара ---------- */
+  .pair-badge {
+    width: 36px; height: 36px; border-radius: 12px; display: grid; place-items: center;
+    font-size: 13.5px; font-weight: 700; color: #fff; flex-shrink: 0;
+    box-shadow: 0 8px 20px -8px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.22);
+  }
+  .badge-lec { background: linear-gradient(135deg, #0ea5e9, #6366f1); }
+  .badge-prac { background: linear-gradient(135deg, #7c6cff, #c026d3); }
+
+  .lesson-card { position: relative; overflow: hidden; transition: transform .2s cubic-bezier(.34,1.4,.64,1), border-color .2s; }
+  .lesson-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.16); }
+  .lesson-card.ls-live { border-color: rgba(52,211,153,.4); box-shadow: 0 0 0 1px rgba(52,211,153,.18), 0 20px 50px -24px rgba(16,185,129,.25); }
+
+  .live-dot { width: 6px; height: 6px; border-radius: 99px; background: #34d399; animation: livePulse 1.6s ease-in-out infinite; }
+  @keyframes livePulse { 0%,100% { box-shadow: 0 0 0 0 rgba(52,211,153,.5); } 50% { box-shadow: 0 0 0 5px rgba(52,211,153,0); } }
+  .live-chip { color: #6ee7b7; background: rgba(52,211,153,.1); border-color: rgba(110,231,183,.3); }
+  .gap-chip { color: #fbbf24; background: rgba(251,191,36,.08); border-color: rgba(251,191,36,.22); }
+  .gap-chip-sm { color: rgba(255,255,255,.35); background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.07); }
+
+  /* ---------- Кнопки ---------- */
+  .icon-btn {
+    width: 38px; height: 38px; display: grid; place-items: center; border-radius: 12px;
+    color: rgba(255,255,255,.55); border: 1px solid rgba(255,255,255,.08);
+    background: rgba(255,255,255,.03); transition: all .18s; cursor: pointer; position: relative;
+  }
+  .icon-btn:hover { color: #fff; background: rgba(255,255,255,.08); transform: translateY(-1px); }
+  .icon-btn:active { transform: scale(.9); }
+  .btn-ghost {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 12px 18px; border-radius: 14px; font-size: 13.5px; font-weight: 600;
+    color: rgba(255,255,255,.75); border: 1px solid rgba(255,255,255,.1);
+    background: rgba(255,255,255,.04); transition: all .18s; cursor: pointer;
+  }
+  .btn-ghost:hover { color: #fff; background: rgba(255,255,255,.08); transform: translateY(-1px); }
+  .btn-ghost:active { transform: scale(.97); }
+
+  /* ---------- Нижнее меню ---------- */
+  .bottom-nav {
+    position: fixed; left: 50%; transform: translateX(-50%);
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    z-index: 50; width: min(92vw, 400px);
+    padding: 6px; border-radius: 24px;
+    box-shadow: 0 24px 60px -16px rgba(0,0,0,.75), inset 0 1px 0 rgba(255,255,255,.08);
+  }
+  .nav-ind {
+    position: absolute; top: 6px; bottom: 6px; left: 6px;
+    width: calc(50% - 6px); border-radius: 18px;
+    background: linear-gradient(135deg, rgba(109,91,255,.9), rgba(168,85,247,.9));
+    box-shadow: 0 10px 24px -8px rgba(124,108,255,.7), inset 0 1px 0 rgba(255,255,255,.25);
+    transition: transform .42s cubic-bezier(.22,1.2,.36,1);
+  }
+  .nav-btn {
+    position: relative; z-index: 1; flex: 1; display: flex; align-items: center; justify-content: center;
+    gap: 8px; padding: 12px 0; border-radius: 18px; border: none; background: none; cursor: pointer;
+    color: rgba(255,255,255,.45); font-size: 13.5px; font-weight: 600;
+    transition: color .25s, transform .12s;
+  }
+  .nav-btn svg { width: 19px; height: 19px; transition: transform .3s cubic-bezier(.34,1.56,.64,1); }
+  .nav-btn:active { transform: scale(.94); }
+  .nav-btn.active { color: #fff; }
+  .nav-btn.active svg { transform: scale(1.08); }
+
+  /* ---------- Скрыть все скролл-бары ---------- */
+  html, body, * { scrollbar-width: none; }
+  *::-webkit-scrollbar { width: 0; height: 0; display: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+
+  @keyframes shakeX { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(4px); } 75% { transform: translateX(-2px); } }
+  .shake { animation: shakeX .35s ease both; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .blob { animation: none !important; }
+    * { transition-duration: .01ms !important; animation-duration: .01ms !important; animation-delay: 0s !important; }
+  }
+</style>
+</head>
+<body class="antialiased">
+
+  <!-- ======= ФОН ======= -->
+  <div class="bg-scene">
+    <div class="parallax-layer" id="paraLayer">
+      <div class="blob b1"></div>
+      <div class="blob b2"></div>
+      <div class="blob b3"></div>
+    </div>
+    <div class="grid-lines"></div>
+    <div class="noise"></div>
+  </div>
+
+  <!-- ======= ШАПКА ======= -->
+  <header class="relative z-10 mx-auto w-full max-w-[640px] px-5 pt-6 pb-2 flex items-center justify-between">
+    <div class="flex items-center gap-3 fade-up">
+      <div class="w-10 h-10 rounded-2xl grid place-items-center bg-gradient-to-br from-[#6d5bff] to-[#a855f7] shadow-lg shadow-violet-500/30">
+        <i data-lucide="graduation-cap" class="text-white" style="width:19px;height:19px"></i>
+      </div>
+      <div>
+        <div class="text-[14px] font-bold leading-none">02-СД-25-о</div>
+        <div class="text-[11px] text-white/40 mt-1">Сестринское дело · 2 курс</div>
+      </div>
+    </div>
+    <button class="icon-btn fade-up d1" id="bellBtn" aria-label="Уведомления">
+      <i data-lucide="bell" style="width:17px;height:17px"></i>
+      <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-fuchsia-400 border-2 border-[#0a0a12]"></span>
+    </button>
+  </header>
+
+  <!-- ======= КОНТЕНТ ======= -->
+  <main class="relative z-10 mx-auto w-full max-w-[640px] px-5 pb-40" id="mainArea">
+
+    <!-- ================= ЭКРАН: ДНЕВНИК ================= -->
+    <section id="screenDiary">
+      <div class="flex items-end justify-between gap-3 mt-5 mb-5 fade-up d1">
+        <div>
+          <h1 class="font-display font-bold text-[24px] leading-none">Расписание</h1>
+          <div class="flex items-center gap-1.5 mt-2.5 text-[12px] text-white/40">
+            <i data-lucide="calendar-days" style="width:13px;height:13px" class="text-violet-300"></i>
+            <span id="weekCaption">Текущая неделя</span>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <button class="icon-btn" id="todayBtn" aria-label="Сегодня" title="Сегодня"><i data-lucide="calendar-check" style="width:17px;height:17px"></i></button>
+          <button class="icon-btn" id="prevDay" aria-label="Предыдущий день"><i data-lucide="chevron-left" style="width:17px;height:17px"></i></button>
+          <button class="icon-btn" id="nextDay" aria-label="Следующий день"><i data-lucide="chevron-right" style="width:17px;height:17px"></i></button>
+        </div>
+      </div>
+
+      <!-- Неделя -->
+      <div class="flex gap-1 overflow-x-auto no-scrollbar -mx-2 -my-2.5 px-2 py-2.5 fade-up d2" id="weekStrip"></div>
+
+      <!-- Подразделы дня -->
+      <div class="subtabs mt-3.5 fade-up d2" id="subTabs" role="tablist">
+        <div class="subtab-ind" id="subInd"></div>
+        <button type="button" class="subtab-btn active" data-sub="schedule">
+          <i data-lucide="calendar-clock"></i><span>Расписание</span>
+        </button>
+        <button type="button" class="subtab-btn" data-sub="events">
+          <i data-lucide="party-popper"></i><span>Мероприятия</span>
+        </button>
+      </div>
+
+      <!-- День -->
+      <div id="dayView" class="mt-5 fade-up d3"></div>
+
+      <p class="text-center text-[11px] text-white/25 mt-10 fade-up d4">Расписание группы 02-СД-25-о</p>
+    </section>
+
+    <!-- ================= ЭКРАН: УРОК ================= -->
+    <section id="screenLesson" class="hidden"></section>
+
+    <!-- ================= ЭКРАН: ОЦЕНКИ ================= -->
+    <section id="screenGrades" class="hidden">
+      <div class="flex items-center gap-3 mt-5 mb-5">
+        <button type="button" class="icon-btn" id="gradesBack" aria-label="Назад"><i data-lucide="arrow-left" style="width:17px;height:17px"></i></button>
+        <div class="min-w-0">
+          <h1 class="font-display font-bold text-[22px] leading-none">Успеваемость</h1>
+          <div class="text-[12px] text-white/40 mt-1.5" id="gradesSubtitle">Текущий период</div>
+        </div>
+      </div>
+      <div id="gradesBody"></div>
+    </section>
+
+    <!-- ================= ЭКРАН: НАСТРОЙКИ ================= -->
+    <section id="screenSettings" class="hidden">
+      <div class="flex items-center gap-3 mt-5 mb-5">
+        <button type="button" class="icon-btn" id="settingsBack" aria-label="Назад"><i data-lucide="arrow-left" style="width:17px;height:17px"></i></button>
+        <div class="min-w-0">
+          <h1 class="font-display font-bold text-[22px] leading-none" id="setHeading">Настройки</h1>
+          <div class="text-[12px] text-white/40 mt-1.5 hidden" id="setSubheading"></div>
+        </div>
+      </div>
+
+      <!-- ===== Список категорий ===== -->
+      <div id="setHub">
+        <div class="cat-list">
+          <button type="button" class="cat-card" data-cat="notif">
+            <span class="cat-ico" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)"><i data-lucide="bell-ring"></i></span>
+            <span class="cat-text">
+              <span class="cat-name">Уведомления</span>
+              <span class="cat-desc">Оповещения, напоминания, тихий режим</span>
+            </span>
+            <span class="cat-meta" id="catNotifMeta">вкл</span>
+            <i data-lucide="chevron-right" class="cat-arrow"></i>
+          </button>
+          <button type="button" class="cat-card" data-cat="look">
+            <span class="cat-ico" style="background:linear-gradient(135deg,#a855f7,#ec4899)"><i data-lucide="palette"></i></span>
+            <span class="cat-text">
+              <span class="cat-name">Внешний вид</span>
+              <span class="cat-desc">Фон, плотность списка пар</span>
+            </span>
+            <i data-lucide="chevron-right" class="cat-arrow"></i>
+          </button>
+          <button type="button" class="cat-card" data-cat="study">
+            <span class="cat-ico" style="background:linear-gradient(135deg,#10b981,#14b8a6)"><i data-lucide="graduation-cap"></i></span>
+            <span class="cat-text">
+              <span class="cat-name">Учёба</span>
+              <span class="cat-desc">Стартовый день, выходные</span>
+            </span>
+            <i data-lucide="chevron-right" class="cat-arrow"></i>
+          </button>
+          <button type="button" class="cat-card" data-cat="about">
+            <span class="cat-ico" style="background:linear-gradient(135deg,#64748b,#334155)"><i data-lucide="info"></i></span>
+            <span class="cat-text">
+              <span class="cat-name">О приложении</span>
+              <span class="cat-desc">Версия и учебное заведение</span>
+            </span>
+            <i data-lucide="chevron-right" class="cat-arrow"></i>
+          </button>
+        </div>
+        <p class="text-center text-[11px] text-white/25 mt-6">Настройки действуют только в текущей сессии</p>
+      </div>
+
+      <!-- Уведомления -->
+      <div class="set-group hidden" data-group="notif">
+        <div class="glass rounded-2xl p-3.5 mb-3 text-[12.5px] leading-relaxed text-white/55" id="pushStatus">Проверяю уведомления…</div>
+        <div class="glass rounded-2xl divide-y divide-white/[0.06] overflow-hidden">
+          <label class="set-row">
+            <span class="set-ico" style="background:rgba(99,102,241,.14);color:#a5b4fc"><i data-lucide="bell"></i></span>
+            <span class="set-text"><span class="set-name">Push-уведомления</span><span class="set-desc">Включает оповещения на этом устройстве</span></span>
+            <span class="switch"><input type="checkbox" id="swMaster"><span class="track"><span class="thumb"></span></span></span>
+          </label>
+          <label class="set-row sub" data-dep="swMaster">
+            <span class="set-ico" style="background:rgba(139,92,246,.14);color:#c4b5fd"><i data-lucide="calendar-clock"></i></span>
+            <span class="set-text"><span class="set-name">Изменения в расписании</span><span class="set-desc">Перенос, отмена или замена пары</span></span>
+            <span class="switch"><input type="checkbox" data-pref="schedule" checked><span class="track"><span class="thumb"></span></span></span>
+          </label>
+          <label class="set-row sub" data-dep="swMaster">
+            <span class="set-ico" style="background:rgba(16,185,129,.14);color:#6ee7b7"><i data-lucide="star"></i></span>
+            <span class="set-text"><span class="set-name">Новые оценки</span><span class="set-desc">Приходит сразу после выставления</span></span>
+            <span class="switch"><input type="checkbox" data-pref="grades" checked><span class="track"><span class="thumb"></span></span></span>
+          </label>
+          <label class="set-row sub" data-dep="swMaster">
+            <span class="set-ico" style="background:rgba(245,158,11,.14);color:#fcd34d"><i data-lucide="book-marked"></i></span>
+            <span class="set-text"><span class="set-name">Домашние задания</span><span class="set-desc">Новое ДЗ с текстом и сроком</span></span>
+            <span class="switch"><input type="checkbox" data-pref="hw" checked><span class="track"><span class="thumb"></span></span></span>
+          </label>
+          <label class="set-row sub" data-dep="swMaster">
+            <span class="set-ico" style="background:rgba(244,63,94,.14);color:#fda4af"><i data-lucide="party-popper"></i></span>
+            <span class="set-text"><span class="set-name">Мероприятия</span><span class="set-desc">События и встречи группы</span></span>
+            <span class="switch"><input type="checkbox" data-pref="events"><span class="track"><span class="thumb"></span></span></span>
+          </label>
+          <div class="set-row sub" data-dep="swMaster">
+            <span class="set-ico" style="background:rgba(56,189,248,.14);color:#7dd3fc"><i data-lucide="alarm-clock"></i></span>
+            <span class="set-text"><span class="set-name">Напоминание о паре</span><span class="set-desc">За сколько минут до начала (мин)</span></span>
+            <div class="seg" id="remindSeg">
+              <button type="button" class="seg-btn" data-v="0">выкл</button>
+              <button type="button" class="seg-btn" data-v="10">10</button>
+              <button type="button" class="seg-btn active" data-v="30">30</button>
+              <button type="button" class="seg-btn" data-v="60">60</button>
+            </div>
+          </div>
+          <label class="set-row sub" data-dep="swMaster">
+            <span class="set-ico" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.55)"><i data-lucide="moon"></i></span>
+            <span class="set-text"><span class="set-name">Не беспокоить ночью</span><span class="set-desc">С 22:00 до 07:00 уведомления придут утром</span></span>
+            <span class="switch"><input type="checkbox" data-pref="quiet" checked><span class="track"><span class="thumb"></span></span></span>
+          </label>
+        </div>
+        <button type="button" class="btn-ghost w-full mt-3 hidden" id="pushTest"><i data-lucide="send" style="width:15px;height:15px"></i>Отправить тестовое уведомление</button>
+        <p class="text-[11.5px] text-white/30 mt-3 leading-relaxed">Настройки хранятся в вашем аккаунте. Переключатель «Push-уведомления» включает оповещения только на этом устройстве, на другом его нужно включить отдельно.</p>
+      </div>
+
+      <!-- Внешний вид -->
+      <div class="set-group hidden" data-group="look">
+        <div class="glass rounded-2xl divide-y divide-white/[0.06] overflow-hidden">
+          <label class="set-row">
+            <span class="set-ico" style="background:rgba(139,92,246,.14);color:#c4b5fd"><i data-lucide="sparkles"></i></span>
+            <span class="set-text"><span class="set-name">Анимированный фон</span><span class="set-desc">Градиентные пятна и подсветка</span></span>
+            <span class="switch"><input type="checkbox" id="swBg" checked><span class="track"><span class="thumb"></span></span></span>
+          </label>
+          <label class="set-row">
+            <span class="set-ico" style="background:rgba(56,189,248,.14);color:#7dd3fc"><i data-lucide="list-checks"></i></span>
+            <span class="set-text"><span class="set-name">Компактный список пар</span><span class="set-desc">Меньше отступов в расписании</span></span>
+            <span class="switch"><input type="checkbox" id="swCompact"><span class="track"><span class="thumb"></span></span></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Учёба -->
+      <div class="set-group hidden" data-group="study">
+        <div class="glass rounded-2xl divide-y divide-white/[0.06] overflow-hidden">
+          <label class="set-row">
+            <span class="set-ico" style="background:rgba(16,185,129,.14);color:#6ee7b7"><i data-lucide="calendar-days"></i></span>
+            <span class="set-text"><span class="set-name">Открывать текущий день</span><span class="set-desc">При запуске показывать сегодня</span></span>
+            <span class="switch"><input type="checkbox" checked><span class="track"><span class="thumb"></span></span></span>
+          </label>
+          <label class="set-row">
+            <span class="set-ico" style="background:rgba(245,158,11,.14);color:#fcd34d"><i data-lucide="eye-off"></i></span>
+            <span class="set-text"><span class="set-name">Скрывать выходные</span><span class="set-desc">Убрать Сб и Вс из полосы недели</span></span>
+            <span class="switch"><input type="checkbox" id="swHideWknd"><span class="track"><span class="thumb"></span></span></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- О приложении -->
+      <div class="set-group hidden" data-group="about">
+        <div class="glass rounded-2xl divide-y divide-white/[0.06] overflow-hidden">
+          <div class="set-row"><span class="set-ico" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.5)"><i data-lucide="app-window"></i></span><span class="set-text"><span class="set-name">Версия</span></span><span class="text-[13px] text-white/40">1.0</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ЭКРАН: АККАУНТ ================= -->
+    <section id="screenAccount" class="hidden">
+      <h1 class="font-display font-bold text-[24px] leading-none mt-5 mb-5">Аккаунт</h1>
+
+      <div class="glass rounded-3xl p-5 mb-4 relative overflow-hidden">
+        <div class="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-violet-400/50 to-transparent"></div>
+        <div class="flex items-center gap-4">
+          <div class="w-16 h-16 rounded-3xl grid place-items-center bg-gradient-to-br from-[#6d5bff] to-[#a855f7] shadow-xl shadow-violet-500/30 shrink-0" id="accAvatar">
+            <span id="accInitials" class="text-white font-display font-bold text-[20px] tracking-wide">ИИ</span>
+          </div>
+          <div class="min-w-0">
+            <div class="font-display font-bold text-[16px] leading-tight" id="accName">Иванов Иван</div>
+            <div class="text-[12.5px] text-white/45 mt-1" id="accMeta">Группа 02-СД-25-о · очная форма</div>
+            <div class="chip mt-2.5" style="color:#6ee7b7;background:rgba(52,211,153,.1);border-color:rgba(110,231,183,.25)">
+              <i data-lucide="badge-check"></i> обучается
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass rounded-3xl divide-y divide-white/[0.06] mb-4 overflow-hidden">
+        <div class="flex items-center justify-between px-5 py-3.5">
+          <span class="flex items-center gap-2.5 text-[13px] text-white/45"><i data-lucide="users" style="width:15px;height:15px" class="text-violet-300"></i>Группа</span>
+          <span class="text-[13.5px] font-semibold">02-СД-25-о</span>
+        </div>
+        <div class="flex items-center justify-between px-5 py-3.5">
+          <span class="flex items-center gap-2.5 text-[13px] text-white/45"><i data-lucide="heart-pulse" style="width:15px;height:15px" class="text-violet-300"></i>Специальность</span>
+          <span class="text-[13.5px] font-semibold">Сестринское дело</span>
+        </div>
+        <div class="flex items-center justify-between px-5 py-3.5">
+          <span class="flex items-center gap-2.5 text-[13px] text-white/45"><i data-lucide="calendar-days" style="width:15px;height:15px" class="text-violet-300"></i>Учебный год</span>
+          <span class="text-[13.5px] font-semibold">2026/27 · 2 курс</span>
+        </div>
+      </div>
+
+      <div class="space-y-2.5 mb-4" id="roleTools"></div>
+
+      <div class="space-y-2.5 mb-4">
+        <button class="btn-ghost w-full justify-between" id="openGrades">
+          <span class="flex items-center gap-2.5"><i data-lucide="trending-up" style="width:16px;height:16px" class="text-fuchsia-300"></i>Оценки и успеваемость</span>
+          <span class="flex items-center gap-2">
+            <span class="text-[13px] font-bold text-emerald-300" id="accAvg">4.6</span>
+            <i data-lucide="chevron-right" style="width:16px;height:16px" class="text-white/30"></i>
+          </span>
+        </button>
+        <button class="btn-ghost w-full justify-between" id="openSettings">
+          <span class="flex items-center gap-2.5"><i data-lucide="settings" style="width:16px;height:16px" class="text-indigo-300"></i>Настройки</span>
+          <i data-lucide="chevron-right" style="width:16px;height:16px" class="text-white/30"></i>
+        </button>
+        <button class="btn-ghost w-full justify-center !text-rose-300 hover:!bg-rose-400/10 !border-rose-300/20" id="logoutBtn">
+          <i data-lucide="log-out" style="width:16px;height:16px"></i>Выйти из аккаунта
+        </button>
+      </div>
+
+      <p class="text-center text-[11px] text-white/25">Данные аккаунта защищены серверной сессией</p>
+    </section>
+  </main>
+
+  <!-- ======= НИЖНЕЕ МЕНЮ ======= -->
+  <nav class="bottom-nav glass">
+    <div class="nav-ind" id="navInd"></div>
+    <div class="flex">
+      <button class="nav-btn active" id="navDiaryBtn">
+        <i data-lucide="notebook-pen"></i><span>Дневник</span>
+      </button>
+      <button class="nav-btn" id="navAccountBtn">
+        <i data-lucide="user-round"></i><span>Аккаунт</span>
+      </button>
+    </div>
+  </nav>
+
+<script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+/* ================= УТИЛИТЫ ================= */
+const $  = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const icons = () => window.lucide && lucide.createIcons();
+icons();
+
+/* ================= ПАРАЛЛАКС ФОНА ================= */
+if (matchMedia('(pointer:fine)').matches && !reduced) {
+  const layer = $('#paraLayer');
+  addEventListener('mousemove', e => {
+    const x = e.clientX / innerWidth - .5, y = e.clientY / innerHeight - .5;
+    layer.style.transform = `translate3d(${x * 20}px, ${y * 20}px, 0)`;
+  });
+}
+
+/* ================= ДАННЫЕ РАСПИСАНИЯ ================= */
+/* Время пар: [начало, конец] в минутах от полуночи */
+const PAIRS = {};
+
+function emptyWeek() {
+  const names = ['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'];
+  const shorts = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+  return names.map((wd,i)=>({wd,wdShort:shorts[i],s:shorts[i],weekend:i>4,lessons:[]}));
+}
+const WEEK = emptyWeek(); /* типовая неделя: повторяется каждую неделю */
+const MONTHS = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+const MAX_DAY = 3650;
+let SCH_START = new Date(2026, 9, 19, 12); /* уточняется сервером (поле start) */
+const dayDate = o => { const d = new Date(SCH_START); d.setDate(d.getDate() + o); return d; };
+const todayRaw = () => { const t = new Date(); t.setHours(12,0,0,0); return Math.round((t - SCH_START) / 86400000); };
+const todayOff = () => Math.max(0, todayRaw());
+/* День с номером o (дней от старта): шаблон дня недели + реальная дата */
+function dayInfo(o) {
+  const t = WEEK[((o % 7) + 7) % 7], dt = dayDate(o);
+  return { wd: t.wd, wdShort: t.wdShort, s: t.s, weekend: t.weekend, day: dt.getDate(), mon: MONTHS[dt.getMonth()], lessons: t.lessons };
+}
+const EVENTS = {};
+let subTab = 'schedule';
+
+const EXTRA = {};
+const extraOf = (di, n) => EXTRA[`${di}-${n}`] || {};
+const GRADE_CLS = { 5: 'g5', 4: 'g4', 3: 'g3', 2: 'g2' };
+const GRADE_WORD = { 5: 'отлично', 4: 'хорошо', 3: 'удовлетворительно', 2: 'неудовлетворительно' };
+
+const WD_GEN = { 'Понедельник': 'Понедельник', 'Вторник': 'Вторник', 'Среда': 'Среду', 'Четверг': 'Четверг', 'Пятница': 'Пятницу', 'Суббота': 'Субботу', 'Воскресенье': 'Воскресенье' };
+
+function plural(n, one, few, many) {
+  const m = n % 100, d = n % 10;
+  if (m > 10 && m < 20) return many;
+  if (d > 1 && d < 5) return few;
+  if (d === 1) return one;
+  return many;
+}
+const fmt = m => String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+const nowMin = () => { const t = new Date(); return t.getHours() * 60 + t.getMinutes(); };
+
+const TYPE = {
+  lec:  { label: 'Лекция',   chip: 'chip-lec',  badge: 'badge-lec',  icon: 'book-open' },
+  prac: { label: 'Практика', chip: 'chip-prac', badge: 'badge-prac', icon: 'flask-conical' },
+};
+function pickIcon(title, fallback) {
+  const t = title.toLowerCase();
+  if (t.includes('физичес')) return 'dumbbell';
+  if (t.includes('иностран') || t.includes('латин')) return 'languages';
+  if (t.includes('микробиол')) return 'microscope';
+  if (t.includes('генетик')) return 'dna';
+  if (t.includes('анатоми')) return 'heart-pulse';
+  if (t.includes('истори')) return 'landmark';
+  if (t.includes('безопасн')) return 'shield-check';
+  if (t.includes('финансов')) return 'wallet';
+  if (t.includes('русский')) return 'pen-line';
+  return fallback;
+}
+
+/* ================= РЕНДЕР НЕДЕЛИ ================= */
+const strip = $('#weekStrip');
+let dayIdx = todayOff();
+let stripWeek = -1;
+let hideWknd = false;
+function renderWeekStrip() {
+  const base = Math.floor(dayIdx / 7) * 7;
+  stripWeek = base;
+  const first = dayInfo(base), last = dayInfo(base + 6);
+  strip.innerHTML = Array.from({ length: 7 }, (_, k) => base + k).map(o => {
+    const d = dayInfo(o);
+    return `
+    <button type="button" class="day-cell ${d.weekend ? 'wknd' : ''} ${o === dayIdx ? 'on' : ''}" data-i="${o}" aria-label="${d.wd}, ${d.day} ${d.mon}">
+      <span class="dc-wd">${d.wdShort}</span>
+      <span class="dc-nwrap"><span class="dc-d">${d.day}</span>${d.lessons.length ? '<span class="dc-dot"></span>' : ''}</span>
+      ${d.mon !== first.mon ? `<span class="dc-mon">${d.mon}</span>` : ''}
+    </button>`;
+  }).join('');
+  $$('.day-cell').forEach(c => c.addEventListener('click', () => selectDay(+c.dataset.i, +c.dataset.i > dayIdx ? 1 : -1)));
+  if (hideWknd) $$('.day-cell.wknd').forEach(c => c.style.display = 'none');
+  const thisWeek = base === Math.floor(todayOff() / 7) * 7;
+  $('#weekCaption').textContent = `${first.day} ${first.mon} — ${last.day} ${last.mon}${thisWeek ? ' · текущая неделя' : ''}`;
+}
+renderWeekStrip();
+
+/* ================= РЕНДЕР ДНЯ ================= */
+function gapChip(minutes, big) {
+  return `
+    <div class="flex gap-3.5 ls-item" style="animation-delay:.05s">
+      <div class="w-9 shrink-0"></div>
+      <div class="flex-1 py-2">
+        <span class="chip ${big ? 'gap-chip' : 'gap-chip-sm'}">
+          <i data-lucide="${big ? 'coffee' : 'clock'}"></i>${big ? 'большая перемена' : 'перемена'} · ${minutes} мин
+        </span>
+      </div>
+    </div>`;
+}
+
+function lessonHTML(l, isLast, live, pct, elapsed, delay) {
+  const tp = TYPE[l.type];
+  const [s, e] = PAIRS[l.n];
+  const icon = pickIcon(l.title, tp.icon);
+  const ex = extraOf(dayIdx, l.n);
+  const marks = (ex.grade ? `<span class="grade-pill ${GRADE_CLS[ex.grade]}">${ex.grade}</span>` : '')
+    + (ex.hw ? `<span class="chip gap-chip-sm"><i data-lucide="book-marked"></i>ДЗ</span>` : '');
+  return `
+    <div class="flex gap-3.5 ls-item" style="animation-delay:${delay}s">
+      <div class="w-9 shrink-0 flex flex-col items-center">
+        <div class="pair-badge ${tp.badge}">${l.n}</div>
+      </div>
+      <article role="button" tabindex="0" data-pair="${l.n}" class="lesson-card glass rounded-2xl px-4 py-3.5 flex-1 min-w-0 ${live ? 'ls-live' : ''}">
+        <div class="flex items-center gap-2 flex-wrap mb-2.5">
+          <span class="chip ${tp.chip}"><i data-lucide="${icon}"></i>${tp.label}</span>
+          ${live ? '<span class="chip live-chip"><span class="live-dot"></span>сейчас идёт</span>' : ''}
+          <span class="ml-auto flex items-center gap-1.5 text-[12px] font-medium text-white/45 whitespace-nowrap">
+            <i data-lucide="clock" style="width:12.5px;height:12.5px" class="text-white/30"></i>${fmt(s)} – ${fmt(e)}
+          </span>
+        </div>
+        <h3 class="font-semibold text-[15px] leading-snug mb-2.5">${l.title}</h3>
+        <div class="space-y-1.5 text-[13px] text-white/60">
+          <p class="flex items-center gap-2">
+            <i data-lucide="user-round" style="width:13.5px;height:13.5px" class="text-white/30 shrink-0"></i>${l.teacher}
+          </p>
+          <p class="flex items-center gap-2">
+            <i data-lucide="map-pin" style="width:13.5px;height:13.5px" class="text-white/30 shrink-0"></i>
+            <span class="truncate">${l.room}<span class="text-white/35"> · ${l.place}</span></span>
+          </p>
+        </div>
+        <div class="flex items-center gap-2 mt-3 pt-3 border-t border-white/[0.06]">
+          ${marks || '<span class="text-[12px] text-white/25">нет оценок и ДЗ</span>'}
+          <i data-lucide="chevron-right" class="ls-arrow ml-auto" style="width:16px;height:16px"></i>
+        </div>
+        ${live ? `
+          <div class="mt-3.5">
+            <div class="h-1 rounded-full bg-white/[0.08] overflow-hidden">
+              <div data-live-bar class="h-full rounded-full bg-gradient-to-r from-emerald-400 to-teal-400 transition-all duration-700" style="width:${pct}%"></div>
+            </div>
+            <div data-live-text class="mt-1.5 text-[11px] text-emerald-300/80">идёт пара · прошло ${elapsed} мин из ${e - s}</div>
+          </div>` : ''}
+      </article>
+    </div>`;
+}
+
+function dayHTML(d, off) {
+  const m = off === todayRaw() ? nowMin() : -1;
+  const ls = d.lessons;
+  let liveN = null, gapLive = false;
+  ls.forEach(l => { const [s, e] = PAIRS[l.n]; if (m >= s && m < e) liveN = l.n; });
+  if (!liveN && ls.length > 1) {
+    for (let k = 0; k < ls.length - 1; k++) {
+      const [, e1] = PAIRS[ls[k].n]; const [s2] = PAIRS[ls[k + 1].n];
+      if (m >= e1 && m < s2) { gapLive = true; break; }
+    }
+  }
+
+  const dateFull = `${d.day} ${d.mon}`;
+  const summary = ls.length
+    ? `${ls.length} ${plural(ls.length, 'пара', 'пары', 'пар')} · ${fmt(PAIRS[ls[0].n][0])} – ${fmt(PAIRS[ls[ls.length - 1].n][1])}`
+    : 'выходной день';
+
+  let head = `
+    <div class="ls-item">
+      <div class="flex items-end justify-between gap-3 flex-wrap">
+        <h2 class="font-display font-bold text-[20px]">${d.wd}</h2>
+        <span class="text-[12.5px] text-white/40 pb-0.5">${dateFull}</span>
+      </div>
+      <div class="mt-2 flex items-center gap-2 flex-wrap">
+        <span class="text-[12.5px] text-white/45">${summary}</span>
+        ${liveN !== null ? `<span class="chip live-chip"><span class="live-dot"></span>идёт ${liveN}-я пара</span>` : ''}
+        ${gapLive ? `<span class="chip gap-chip"><i data-lucide="coffee"></i>сейчас перемена</span>` : ''}
+      </div>
+    </div>`;
+
+  if (!ls.length) {
+    return head + `
+      <div class="glass rounded-3xl mt-5 py-12 px-6 flex flex-col items-center text-center ls-item" style="animation-delay:.1s">
+        <div class="w-16 h-16 rounded-3xl grid place-items-center bg-violet-500/12 text-violet-300 mb-4" style="background:rgba(139,92,246,.12)">
+          <i data-lucide="moon-star" style="width:26px;height:26px"></i>
+        </div>
+        <div class="font-display font-bold text-[17px] mb-1.5">Занятий нет</div>
+        <p class="text-[13px] text-white/45 max-w-[260px] leading-relaxed">${d.weekend ? 'Выходной — отдыхайте и набирайтесь сил перед новой неделей.' : 'В этот день пар не запланировано.'}</p>
+        <button class="btn-ghost mt-5 !py-2.5" onclick="goNextLessonDay()">
+          <i data-lucide="calendar-days" style="width:15px;height:15px"></i>К ближайшему учебному дню
+        </button>
+      </div>`;
+  }
+
+  let rows = '', delay = .08;
+  ls.forEach((l, i) => {
+    const live = l.n === liveN;
+    let pct = 0, elapsed = 0;
+    if (live) { const [s, e] = PAIRS[l.n]; elapsed = m - s; pct = Math.min(100, Math.round(elapsed / (e - s) * 100)); }
+    rows += lessonHTML(l, i === ls.length - 1, live, pct, elapsed, delay);
+    delay += .07;
+    if (i < ls.length - 1) {
+      const gap = PAIRS[ls[i + 1].n][0] - PAIRS[l.n][1];
+      if (gap > 0) { rows += gapChip(gap, gap >= 25); delay += .04; }
+    }
+  });
+  return head + `<div class="mt-5">${rows}</div>`;
+}
+
+/* ------- Мероприятия дня ------- */
+function eventsHTML(d, i) {
+  const list = EVENTS[i] || [];
+  const dateFull = `${d.day} ${d.mon}`;
+  const summary = list.length
+    ? `${list.length} ${plural(list.length, 'мероприятие', 'мероприятия', 'мероприятий')}`
+    : 'мероприятий нет';
+  let head = `
+    <div class="ls-item">
+      <div class="flex items-end justify-between gap-3 flex-wrap">
+        <h2 class="font-display font-bold text-[20px]">${d.wd}</h2>
+        <span class="text-[12.5px] text-white/40 pb-0.5">${dateFull}</span>
+      </div>
+      <div class="mt-2"><span class="text-[12.5px] text-white/45">${summary}</span></div>
+    </div>`;
+  if (!list.length) {
+    return head + `
+      <div class="glass rounded-3xl mt-5 py-12 px-6 flex flex-col items-center text-center ls-item" style="animation-delay:.1s">
+        <div class="w-16 h-16 rounded-3xl grid place-items-center text-amber-300 mb-4" style="background:rgba(245,158,11,.12)">
+          <i data-lucide="party-popper" style="width:26px;height:26px"></i>
+        </div>
+        <div class="font-display font-bold text-[17px] mb-1.5">Мероприятий нет</div>
+        <p class="text-[13px] text-white/45 max-w-[260px] leading-relaxed">Когда для группы появятся события и встречи, они будут показаны здесь.</p>
+        <button class="btn-ghost mt-5 !py-2.5" onclick="setSubTab('schedule')">
+          <i data-lucide="calendar-clock" style="width:15px;height:15px"></i>К расписанию
+        </button>
+      </div>`;
+  }
+  let rows = '', delay = .08;
+  list.forEach((ev, k) => {
+    rows += `
+      <div class="flex gap-3.5 ls-item" style="animation-delay:${delay}s">
+        <div class="w-9 shrink-0 flex flex-col items-center">
+          <div class="pair-badge event-icon"><i data-lucide="${ev.icon}" style="width:16px;height:16px"></i></div>
+        </div>
+        <article class="lesson-card glass rounded-2xl px-4 py-3.5 flex-1 min-w-0">
+          <div class="flex items-center gap-2 flex-wrap mb-2.5">
+            <span class="chip gap-chip"><i data-lucide="sparkles"></i>${ev.type}</span>
+            <span class="ml-auto flex items-center gap-1.5 text-[12px] font-medium text-white/45 whitespace-nowrap">
+              <i data-lucide="clock" style="width:12.5px;height:12.5px" class="text-white/30"></i>${ev.time}
+            </span>
+          </div>
+          <h3 class="font-semibold text-[15px] leading-snug mb-2.5">${ev.title}</h3>
+          <div class="space-y-1.5 text-[13px] text-white/60">
+            <p class="flex items-center gap-2">
+              <i data-lucide="map-pin" style="width:13.5px;height:13.5px" class="text-white/30 shrink-0"></i>${ev.place}
+            </p>
+            <p class="flex items-center gap-2">
+              <i data-lucide="user-round" style="width:13.5px;height:13.5px" class="text-white/30 shrink-0"></i>${ev.org}
+            </p>
+          </div>
+        </article>
+      </div>`;
+    delay += .07;
+  });
+  return head + `<div class="mt-5">${rows}</div>`;
+}
+
+function selectDay(i, dir = 0, silent = false, force = false) {
+  if (i < 0 || i > MAX_DAY) return;
+  const sameAndReady = i === dayIdx && $('#dayView').innerHTML && !silent && !force;
+  if (sameAndReady) return;
+  dayIdx = i;
+  if (Math.floor(i / 7) * 7 !== stripWeek) renderWeekStrip();
+  $$('.day-cell').forEach(c => c.classList.toggle('on', +c.dataset.i === i));
+  const cell = $(`.day-cell[data-i="${i}"]`);
+  cell && cell.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'nearest', inline: 'center' });
+  const view = $('#dayView');
+  const anim = silent || reduced ? '' : (dir >= 0 ? 'd-in-r' : 'd-in-l');
+  const content = subTab === 'schedule' ? dayHTML(dayInfo(i), i) : eventsHTML(dayInfo(i), i);
+  view.innerHTML = `<div id="dayInner" class="${anim}">${content}</div>`;
+  view.dataset.live = subTab === 'schedule' ? liveSig(i) : '';
+  icons();
+}
+
+function goNextLessonDay() {
+  for (let k = 1; k <= 28; k++) {
+    if (dayInfo(dayIdx + k).lessons.length) return selectDay(dayIdx + k, 1);
+  }
+  selectDay(todayOff(), 0);
+}
+$('#todayBtn').addEventListener('click', () => { const t = todayOff(); selectDay(t, t >= dayIdx ? 1 : -1, false, true); });
+
+/* ------- Подразделы дня: Расписание / Мероприятия ------- */
+const subInd = $('#subInd');
+function setSubTab(name) {
+  if (name === subTab) return;
+  subTab = name;
+  subInd.style.transform = name === 'events' ? 'translateX(100%)' : 'translateX(0)';
+  $$('.subtab-btn').forEach(b => b.classList.toggle('active', b.dataset.sub === name));
+  selectDay(dayIdx, name === 'events' ? 1 : -1, false, true);
+}
+$$('.subtab-btn').forEach(b => b.addEventListener('click', () => setSubTab(b.dataset.sub)));
+
+/* ================= ЭКРАН УРОКА ================= */
+const lessonScreen = $('#screenLesson');
+let lessonOpenN = null;
+
+function lessonDetailHTML(d, l, di) {
+  const tp = TYPE[l.type];
+  const [s, e] = PAIRS[l.n];
+  const ex = extraOf(di, l.n);
+  const icon = pickIcon(l.title, tp.icon);
+  const dateFull = `${d.wd}, ${d.day} ${d.mon}`;
+  const m = nowMin();
+  const live = di === todayRaw() && m >= s && m < e;
+
+  const gradeBlock = ex.grade ? `
+    <div class="glass rounded-2xl p-4 det-item" style="animation-delay:.16s">
+      <div class="flex items-center gap-3">
+        <div class="grade-pill ${GRADE_CLS[ex.grade]}" style="width:46px;height:46px;border-radius:16px;font-size:22px">${ex.grade}</div>
+        <div class="min-w-0">
+          <div class="text-[10px] uppercase tracking-[0.18em] text-white/35 font-semibold">Оценка</div>
+          <div class="text-[14px] font-semibold mt-1 capitalize">${GRADE_WORD[ex.grade]}</div>
+          ${ex.gradeNote ? `<div class="text-[12px] text-white/40 mt-0.5">${ex.gradeNote}</div>` : ''}
+        </div>
+      </div>
+    </div>` : `
+    <div class="glass rounded-2xl p-4 det-item" style="animation-delay:.16s">
+      <div class="flex items-center gap-3">
+        <div class="grade-pill gn" style="width:46px;height:46px;border-radius:16px;font-size:20px">—</div>
+        <div>
+          <div class="text-[10px] uppercase tracking-[0.18em] text-white/35 font-semibold">Оценка</div>
+          <div class="text-[13.5px] text-white/45 mt-1">Оценки за это занятие пока нет</div>
+        </div>
+      </div>
+    </div>`;
+
+  const hwBlock = ex.hw ? `
+    <div class="glass rounded-2xl p-4 det-item" style="animation-delay:.22s">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="w-8 h-8 rounded-xl grid place-items-center bg-amber-400/12 text-amber-300"><i data-lucide="book-marked" style="width:16px;height:16px"></i></span>
+        <span class="text-[10px] uppercase tracking-[0.18em] text-white/35 font-semibold">Домашнее задание</span>
+        ${ex.hw.due ? `<span class="chip gap-chip ml-auto"><i data-lucide="clock"></i>${ex.hw.due}</span>` : ''}
+      </div>
+      <p class="text-[14px] leading-relaxed text-white/85">${ex.hw.text}</p>
+      ${ex.hw.src ? `<p class="mt-2.5 flex items-center gap-2 text-[12.5px] text-white/40"><i data-lucide="paperclip" style="width:13px;height:13px"></i>${ex.hw.src}</p>` : ''}
+      <button type="button" class="btn-ghost w-full mt-4 !py-2.5" data-hw-toggle>
+        <i data-lucide="circle-check" style="width:15px;height:15px"></i><span>Отметить выполненным</span>
+      </button>
+    </div>` : `
+    <div class="glass rounded-2xl p-5 det-item flex flex-col items-center text-center" style="animation-delay:.22s">
+      <span class="w-12 h-12 rounded-2xl grid place-items-center bg-emerald-400/10 text-emerald-300 mb-3"><i data-lucide="coffee" style="width:21px;height:21px"></i></span>
+      <div class="font-semibold text-[14.5px]">Домашнего задания нет</div>
+      <p class="text-[12.5px] text-white/40 mt-1 max-w-[260px] leading-relaxed">По этому занятию преподаватель не задавал домашнее задание.</p>
+    </div>`;
+
+  return `
+    <div class="flex items-center gap-3 mt-5 mb-5 det-item">
+      <button type="button" class="icon-btn" id="lessonBack" aria-label="Назад"><i data-lucide="arrow-left" style="width:17px;height:17px"></i></button>
+      <div class="min-w-0">
+        <div class="text-[10px] uppercase tracking-[0.2em] text-white/35 font-semibold">${l.n}-я пара</div>
+        <div class="text-[12.5px] text-white/50 mt-0.5 truncate">${dateFull}</div>
+      </div>
+    </div>
+
+    <div class="glass rounded-3xl p-5 relative overflow-hidden det-item" style="animation-delay:.06s">
+      <div class="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-violet-400/50 to-transparent"></div>
+      <div class="flex items-start gap-3.5">
+        <div class="pair-badge ${tp.badge}" style="width:46px;height:46px;border-radius:16px"><i data-lucide="${icon}" style="width:21px;height:21px"></i></div>
+        <div class="min-w-0 flex-1">
+          <div class="flex items-center gap-2 flex-wrap mb-2">
+            <span class="chip ${tp.chip}">${tp.label}</span>
+            <span data-live-chip class="chip live-chip" style="${live ? '' : 'display:none'}"><span class="live-dot"></span>сейчас идёт</span>
+          </div>
+          <h1 class="font-display font-bold text-[18px] leading-snug">${l.title}</h1>
+        </div>
+      </div>
+    </div>
+
+    <div class="glass rounded-2xl mt-3 divide-y divide-white/[0.06] overflow-hidden det-item" style="animation-delay:.1s">
+      <div class="info-row">
+        <span class="info-ico"><i data-lucide="clock" style="width:15px;height:15px"></i></span>
+        <div><div class="text-[11.5px] text-white/40">Время</div><div class="text-[14px] font-semibold mt-0.5">${fmt(s)} – ${fmt(e)}<span class="text-white/35 font-normal text-[12.5px]"> · 90 мин</span></div></div>
+      </div>
+      <div class="info-row">
+        <span class="info-ico"><i data-lucide="map-pin" style="width:15px;height:15px"></i></span>
+        <div><div class="text-[11.5px] text-white/40">Кабинет</div><div class="text-[14px] font-semibold mt-0.5">${l.room}</div><div class="text-[12.5px] text-white/40 mt-0.5">${l.place}</div></div>
+      </div>
+      <div class="info-row">
+        <span class="info-ico"><i data-lucide="user-round" style="width:15px;height:15px"></i></span>
+        <div><div class="text-[11.5px] text-white/40">Преподаватель</div><div class="text-[14px] font-semibold mt-0.5">${l.teacher}</div></div>
+      </div>
+    </div>
+
+    <div class="mt-3 space-y-3">${gradeBlock}${hwBlock}</div>
+
+    <button type="button" class="btn-ghost w-full mt-4 det-item" style="animation-delay:.28s" id="lessonBack2">
+      <i data-lucide="arrow-left" style="width:15px;height:15px"></i>Вернуться к расписанию
+    </button>`;
+}
+
+function openLesson(pairN) {
+  const d = dayInfo(dayIdx);
+  const l = d.lessons.find(x => x.n === +pairN);
+  if (!l) return;
+  lessonScreen.innerHTML = lessonDetailHTML(d, l, dayIdx);
+  lessonOpenN = +pairN;
+  icons();
+  const diaryEl = $('#screenDiary');
+  screen = 'lesson';
+  if (reduced) {
+    diaryEl.classList.add('hidden');
+    lessonScreen.classList.remove('hidden');
+    scrollTo({ top: 0 });
+  } else {
+    diaryEl.classList.add('det-out');
+    setTimeout(() => {
+      diaryEl.classList.add('hidden'); diaryEl.classList.remove('det-out');
+      lessonScreen.classList.remove('hidden'); lessonScreen.classList.add('det-in');
+      scrollTo({ top: 0 });
+      setTimeout(() => lessonScreen.classList.remove('det-in'), 480);
+    }, 190);
+  }
+  bindLessonScreen();
+}
+
+function closeLesson() {
+  const diaryEl = $('#screenDiary');
+  screen = 'diary';
+  if (reduced) {
+    lessonScreen.classList.add('hidden'); diaryEl.classList.remove('hidden'); return;
+  }
+  lessonScreen.classList.add('det-out');
+  setTimeout(() => {
+    lessonScreen.classList.add('hidden'); lessonScreen.classList.remove('det-out');
+    diaryEl.classList.remove('hidden'); diaryEl.classList.add('det-back-in');
+    setTimeout(() => diaryEl.classList.remove('det-back-in'), 480);
+  }, 190);
+}
+
+function bindLessonScreen() {
+  const back = () => closeLesson();
+  const b1 = $('#lessonBack'), b2 = $('#lessonBack2');
+  b1 && b1.addEventListener('click', back);
+  b2 && b2.addEventListener('click', back);
+  const hwBtn = $('[data-hw-toggle]', lessonScreen);
+  if (hwBtn) {
+    hwBtn.addEventListener('click', () => {
+      const done = hwBtn.classList.toggle('hw-marked');
+      const card = hwBtn.closest('.glass');
+      const text = $('p', card);
+      text.classList.toggle('hw-done', done);
+      hwBtn.innerHTML = done
+        ? '<i data-lucide="rotate-ccw" style="width:15px;height:15px"></i><span>Отменить отметку</span>'
+        : '<i data-lucide="circle-check" style="width:15px;height:15px"></i><span>Отметить выполненным</span>';
+      hwBtn.classList.toggle('!text-emerald-300', done);
+      hwBtn.classList.toggle('!border-emerald-300/25', done);
+      icons();
+    });
+  }
+}
+
+/* Клик по карточке урока */
+$('#dayView').addEventListener('click', e => {
+  const card = e.target.closest('.lesson-card[data-pair]');
+  if (card && subTab === 'schedule') openLesson(card.dataset.pair);
+});
+$('#dayView').addEventListener('keydown', e => {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.closest('.lesson-card[data-pair]')) {
+    e.preventDefault();
+    openLesson(e.target.closest('.lesson-card[data-pair]').dataset.pair);
+  }
+});
+
+/* Стрелки дней */
+$('#prevDay').addEventListener('click', () => {
+  if (dayIdx === 0) { $('#weekStrip').classList.remove('shake'); void $('#weekStrip').offsetWidth; $('#weekStrip').classList.add('shake'); return; }
+  selectDay(dayIdx - 1, -1);
+});
+$('#nextDay').addEventListener('click', () => {
+  if (dayIdx >= MAX_DAY) { $('#weekStrip').classList.remove('shake'); void $('#weekStrip').offsetWidth; $('#weekStrip').classList.add('shake'); return; }
+  selectDay(dayIdx + 1, 1);
+});
+
+/* Свайп по контенту */
+let tX = 0, tY = 0;
+const mainArea = $('#mainArea');
+mainArea.addEventListener('touchstart', e => { tX = e.touches[0].clientX; tY = e.touches[0].clientY; }, { passive: true });
+mainArea.addEventListener('touchend', e => {
+  if (screen !== 'diary') return;
+  const dx = e.changedTouches[0].clientX - tX, dy = e.changedTouches[0].clientY - tY;
+  if (Math.abs(dx) > 64 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+    selectDay(dayIdx + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1);
+  }
+}, { passive: true });
+
+/* Автообновление расписания отключено, чтобы не перерисовывать страницу
+   под пользователем. Данные обновляются при перезагрузке (F5). */
+
+/* ================= НИЖНЕЕ МЕНЮ ================= */
+const screens = { diary: $('#screenDiary'), account: $('#screenAccount'), lesson: $('#screenLesson'), settings: $('#screenSettings'), grades: $('#screenGrades') };
+const navBtns = { diary: $('#navDiaryBtn'), account: $('#navAccountBtn') };
+const navInd = $('#navInd');
+let screen = 'diary';
+
+function setScreen(name) {
+  if (name === screen) return;
+  const out = screens[screen] || $('#screenLesson'), inn = screens[name];
+  screen = name;
+  navInd.style.transform = name === 'diary' ? 'translateX(0)' : 'translateX(100%)';
+  navBtns.diary.classList.toggle('active', name === 'diary');
+  navBtns.account.classList.toggle('active', name !== 'diary');
+  if (reduced) {
+    out.classList.add('hidden'); inn.classList.remove('hidden');
+    scrollTo({ top: 0 }); return;
+  }
+  out.classList.add('view-out');
+  setTimeout(() => {
+    out.classList.add('hidden'); out.classList.remove('view-out');
+    inn.classList.remove('hidden'); inn.classList.add('view-in');
+    scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(() => inn.classList.remove('view-in'), 480);
+  }, 200);
+}
+$('#navDiaryBtn').addEventListener('click', () => setScreen('diary'));
+$('#navAccountBtn').addEventListener('click', () => setScreen('account'));
+
+/* ================= ПРОФИЛЬ ================= */
+function hydrateProfile(user) {
+  const parts = String(user.fio || 'Пользователь').split(/\s+/);
+  const last = parts[0] || 'Пользователь', first = parts[1] || '';
+  $('#accName').textContent = [last, first].filter(Boolean).join(' ');
+  $('#accMeta').textContent = user.group
+    ? `${user.login} · группа ${user.group} · очная`
+    : `${user.login} · ${ROLE_NAMES[user.role] || user.role}`;
+  $('#accInitials').textContent = ((last[0] || 'П') + (first[0] || '')).toUpperCase();
+}
+
+/* ================= ОЦЕНКИ И УСПЕВАЕМОСТЬ ================= */
+const SUBJECTS = [];
+
+function rebuildSubjects(grades) {
+  SUBJECTS.length = 0;
+  const grouped = new Map();
+  Object.entries(grades || {}).forEach(([key, grade]) => {
+    const [day, pair, student] = key.split(':').map(Number);
+    if (AUTH_USER?.role === 'student' && student !== AUTH_USER.studentIndex) return;
+    const info = dayInfo(day);
+    const lesson = info.lessons.find(item => Number(item.n) === pair);
+    if (!lesson) return;
+    if (!grouped.has(lesson.title)) grouped.set(lesson.title, {
+      name: lesson.title, teacher: lesson.teacher, icon: pickIcon(lesson.title, 'book-open'), marks: []
+    });
+    grouped.get(lesson.title).marks.push({ g: Number(grade), d: `${info.day} ${info.mon}`, w: 'Оценка за занятие' });
+  });
+  SUBJECTS.push(...grouped.values());
+  const marks = allMarks();
+  $('#accAvg').textContent = marks.length ? (marks.reduce((sum, mark) => sum + mark.g, 0) / marks.length).toFixed(1) : '—';
+}
+
+const avgOf = ms => ms.reduce((a, b) => a + b.g, 0) / ms.length;
+const allMarks = () => SUBJECTS.flatMap(s => s.marks);
+const gradeColor = g => ({ 5: '#10b981', 4: '#8b5cf6', 3: '#f59e0b', 2: '#f43f5e' })[g];
+
+function renderGrades() {
+  const marks = allMarks();
+  const total = marks.length;
+  if (!total) {
+    $('#gradesBody').innerHTML = `
+      <div class="glass rounded-3xl py-12 px-6 flex flex-col items-center text-center det-item">
+        <div class="w-16 h-16 rounded-3xl grid place-items-center bg-violet-500/12 text-violet-300 mb-4">
+          <i data-lucide="chart-no-axes-column" style="width:26px;height:26px"></i>
+        </div>
+        <div class="font-display font-bold text-[17px] mb-1.5">Оценок пока нет</div>
+        <p class="text-[13px] text-white/45 max-w-[280px] leading-relaxed">Статистика появится после того, как преподаватель выставит первую оценку.</p>
+      </div>`;
+    icons();
+    return 0;
+  }
+  const avg = marks.reduce((a, b) => a + b.g, 0) / total;
+  const counts = { 5: 0, 4: 0, 3: 0, 2: 0 };
+  marks.forEach(m => counts[m.g]++);
+  const pct = Math.round(((avg - 2) / 3) * 100);
+  const R = 52, C = 2 * Math.PI * R;
+  const best = [...SUBJECTS].sort((a, b) => avgOf(b.marks) - avgOf(a.marks))[0];
+  const worst = [...SUBJECTS].sort((a, b) => avgOf(a.marks) - avgOf(b.marks))[0];
+
+  const distRows = [5, 4, 3, 2].map(g => {
+    const c = counts[g], p = total ? Math.round(c / total * 100) : 0;
+    return `
+      <div class="flex items-center gap-3">
+        <span class="mini-grade" style="background:${gradeColor(g)}">${g}</span>
+        <div class="dist-bar flex-1"><div class="dist-fill" data-w="${p}" style="background:${gradeColor(g)}"></div></div>
+        <span class="text-[12px] text-white/45 w-12 text-right tabular-nums">${c} · ${p}%</span>
+      </div>`;
+  }).join('');
+
+  const subjRows = SUBJECTS.map((s, i) => {
+    const a = avgOf(s.marks);
+    const last2 = s.marks.slice(-2);
+    const trend = s.marks.length > 1 ? (last2[1].g - last2[0].g) : 0;
+    const tIcon = trend > 0 ? 'trending-up' : trend < 0 ? 'trending-down' : 'minus';
+    const tCls = trend > 0 ? 'trend-up' : trend < 0 ? 'trend-down' : 'trend-flat';
+    return `
+      <div>
+        <button type="button" class="subj-card" data-subj="${i}">
+          <div class="flex items-center gap-3">
+            <span class="info-ico" style="background:rgba(139,92,246,.13);color:#c4b5fd"><i data-lucide="${s.icon}" style="width:15px;height:15px"></i></span>
+            <span class="flex-1 min-w-0">
+              <span class="block text-[13.5px] font-semibold leading-snug">${s.name}</span>
+              <span class="flex items-center gap-1.5 mt-1.5">
+                ${s.marks.map(m => `<span class="spark-dot" style="background:${gradeColor(m.g)}"></span>`).join('')}
+                <span class="text-[11.5px] text-white/35 ml-1">${s.marks.length} ${plural(s.marks.length, 'оценка', 'оценки', 'оценок')}</span>
+              </span>
+            </span>
+            <span class="flex items-center gap-2 shrink-0">
+              <i data-lucide="${tIcon}" class="${tCls}" style="width:14px;height:14px"></i>
+              <span class="text-[15px] font-bold tabular-nums" style="color:${gradeColor(Math.round(a))}">${a.toFixed(1)}</span>
+              <i data-lucide="chevron-right" class="subj-chev text-white/25" style="width:15px;height:15px"></i>
+            </span>
+          </div>
+        </button>
+        <div class="subj-body">
+          <div class="px-4 pb-3.5 pt-0.5">
+            <div class="text-[11px] text-white/35 mb-2 flex items-center gap-1.5"><i data-lucide="user-round" style="width:12px;height:12px"></i>${s.teacher}</div>
+            <div class="space-y-1.5">
+              ${s.marks.map(m => `
+                <div class="flex items-center gap-3 rounded-xl bg-white/[0.035] px-3 py-2">
+                  <span class="mini-grade" style="background:${gradeColor(m.g)}">${m.g}</span>
+                  <span class="text-[12.5px] flex-1 min-w-0 truncate">${m.w}</span>
+                  <span class="text-[11.5px] text-white/35">${m.d}</span>
+                </div>`).join('')}
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  $('#gradesBody').innerHTML = `
+    <!-- Средний балл -->
+    <div class="glass rounded-3xl p-5 relative overflow-hidden det-item">
+      <div class="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-violet-400/50 to-transparent"></div>
+      <div class="flex items-center gap-5">
+        <div class="relative shrink-0" style="width:124px;height:124px">
+          <svg viewBox="0 0 120 120" style="width:124px;height:124px">
+            <circle class="ring-track" cx="60" cy="60" r="52" fill="none" stroke-width="9"/>
+            <circle id="avgRing" class="ring-val" cx="60" cy="60" r="52" fill="none" stroke="url(#gAvg)" stroke-width="9"
+                    stroke-dasharray="${C}" stroke-dashoffset="${C}"/>
+            <defs><linearGradient id="gAvg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#34d399"/><stop offset=".55" stop-color="#8b5cf6"/><stop offset="1" stop-color="#c084fc"/>
+            </linearGradient></defs>
+          </svg>
+          <div class="absolute inset-0 grid place-content-center text-center">
+            <div class="font-display font-bold text-[27px] leading-none">${avg.toFixed(2)}</div>
+            <div class="text-[10px] uppercase tracking-[0.16em] text-white/35 mt-1.5">средний</div>
+          </div>
+        </div>
+        <div class="min-w-0 flex-1">
+          <div class="text-[10px] uppercase tracking-[0.18em] text-white/35 font-semibold">Итог месяца</div>
+          <div class="text-[15px] font-semibold mt-1.5 leading-snug">${avg >= 4.5 ? 'Отличная успеваемость' : avg >= 3.5 ? 'Хорошая успеваемость' : 'Есть над чем поработать'}</div>
+          <div class="text-[12px] text-white/40 mt-1.5 leading-relaxed">${total} ${plural(total, 'оценка', 'оценки', 'оценок')} по ${SUBJECTS.length} предметам</div>
+          <div class="chip live-chip mt-3"><i data-lucide="trending-up"></i>${pct}% от максимума</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Плитки -->
+    <div class="grid grid-cols-2 gap-2.5 mt-3">
+      <div class="glass rounded-2xl p-3.5 det-item" style="animation-delay:.06s">
+        <div class="flex items-center gap-2 text-[11px] text-white/40 mb-2"><i data-lucide="award" style="width:13px;height:13px" class="text-emerald-300"></i>Лучший предмет</div>
+        <div class="text-[12.5px] font-semibold leading-snug line-clamp-2">${best.name}</div>
+        <div class="text-[17px] font-bold text-emerald-300 mt-1.5 tabular-nums">${avgOf(best.marks).toFixed(1)}</div>
+      </div>
+      <div class="glass rounded-2xl p-3.5 det-item" style="animation-delay:.1s">
+        <div class="flex items-center gap-2 text-[11px] text-white/40 mb-2"><i data-lucide="target" style="width:13px;height:13px" class="text-amber-300"></i>Подтянуть</div>
+        <div class="text-[12.5px] font-semibold leading-snug line-clamp-2">${worst.name}</div>
+        <div class="text-[17px] font-bold text-amber-300 mt-1.5 tabular-nums">${avgOf(worst.marks).toFixed(1)}</div>
+      </div>
+    </div>
+
+    <!-- Распределение -->
+    <div class="glass rounded-2xl p-4 mt-3 det-item" style="animation-delay:.14s">
+      <div class="text-[10px] uppercase tracking-[0.18em] text-white/35 font-semibold mb-3.5">Распределение оценок</div>
+      <div class="space-y-2.5">${distRows}</div>
+    </div>
+
+    <!-- По предметам -->
+    <div class="mt-4 det-item" style="animation-delay:.18s">
+      <div class="set-title"><i data-lucide="list" class="text-violet-300"></i>По предметам</div>
+      <div class="glass rounded-2xl divide-y divide-white/[0.06] overflow-hidden">${subjRows}</div>
+    </div>
+
+    <p class="text-center text-[11px] text-white/25 mt-5 mb-1">Данные успеваемости из электронного журнала</p>`;
+
+  icons();
+  // анимации после вставки
+  requestAnimationFrame(() => {
+    const ring = $('#avgRing');
+    if (ring) ring.style.strokeDashoffset = C - (C * pct / 100);
+    $$('.dist-fill').forEach(f => f.style.transform = `scaleX(${f.dataset.w / 100})`);
+  });
+  // раскрытие предметов
+  $$('.subj-card').forEach(b => b.addEventListener('click', () => {
+    const open = b.classList.contains('open');
+    $$('.subj-card').forEach(x => x.classList.remove('open'));
+    b.classList.toggle('open', !open);
+  }));
+  return avg;
+}
+
+const gradesScreenEl = $('#screenGrades');
+function renderCuratorGroupGrades() {
+  const indices = Array.isArray(GROUP_STUDENT_INDICES) ? GROUP_STUDENT_INDICES : [];
+  const names = Array.isArray(GROUP_STUDENTS) ? GROUP_STUDENTS : [];
+  const gradeEntries = Object.entries(GROUP_GRADES || {});
+  const subjects = new Map();
+  for (const [key, value] of gradeEntries) {
+    const [day, pair, student] = key.split(':').map(Number);
+    if (!indices.includes(student)) continue;
+    const info = dayInfo(day);
+    const lesson = info.lessons.find(item => Number(item.n) === pair);
+    if (!lesson || !Number.isFinite(Number(value))) continue;
+    if (!subjects.has(lesson.title)) subjects.set(lesson.title, { name: lesson.title, marks: [] });
+    subjects.get(lesson.title).marks.push({ student, grade: Number(value), date: `${info.day} ${info.mon}` });
+  }
+  const rows = indices.map(index => {
+    const name = names[index] || names[indices.indexOf(index)] || `Студент ${index + 1}`;
+    const grades = gradeEntries.filter(([key, value]) => Number(key.split(':')[2]) === index && Number.isFinite(Number(value))).map(([, value]) => Number(value));
+    const avg = grades.length ? (grades.reduce((a,b)=>a+b,0)/grades.length).toFixed(2) : '—';
+    const absences = Object.entries(GROUP_ATT || {}).filter(([key, value]) => Number(key.split(':')[2]) === index && value && ['Н','О','Б','У'].includes(value.t)).length;
+    const subjectCells = [...subjects.values()].map(subject => {
+      const own = subject.marks.filter(m => m.student === index).map(m => m.grade);
+      return `<td class="px-3 py-3 text-center border-t border-white/[.06]">${own.length ? `<span class="font-bold" style="color:${gradeColor(Math.round(own.reduce((a,b)=>a+b,0)/own.length))}">${(own.reduce((a,b)=>a+b,0)/own.length).toFixed(1)}</span><span class="block text-[10px] text-white/35">${own.length} оц.</span>` : '<span class="text-white/20">—</span>'}</td>`;
+    }).join('');
+    return `<tr data-curator-name="${String(name).toLowerCase().replace(/&/g,'&amp;').replace(/"/g,'&quot;')}"><td class="px-3 py-3 border-t border-white/[.06] min-w-[180px]"><div class="font-semibold text-[12.5px]">${name}</div><div class="text-[10.5px] text-white/35 mt-1">${grades.length} оценок · ${absences} отметок посещаемости</div></td><td class="px-3 py-3 text-center border-t border-white/[.06] font-bold">${avg}</td>${subjectCells}</tr>`;
+  }).join('');
+  const all = gradeEntries.filter(([key, value]) => indices.includes(Number(key.split(':')[2])) && Number.isFinite(Number(value))).map(([,v])=>Number(v));
+  const average = all.length ? (all.reduce((a,b)=>a+b,0)/all.length).toFixed(2) : '—';
+  $('#gradesSubtitle').textContent = `${AUTH_USER?.group || 'Группа'} · статистика группы`;
+  $('#gradesBody').innerHTML = `<div class="grid grid-cols-2 gap-3 mb-4"><div class="glass rounded-2xl p-4"><div class="text-[11px] text-white/45">Студентов в группе</div><div class="font-display text-2xl font-bold mt-2">${indices.length}</div></div><div class="glass rounded-2xl p-4"><div class="text-[11px] text-white/45">Средний балл группы</div><div class="font-display text-2xl font-bold mt-2">${average}</div><div class="text-[10px] text-white/35 mt-1">${all.length} оценок</div></div></div><div class="glass rounded-2xl p-4 mb-3"><label class="block text-[12px] text-white/45 mb-2" for="curatorSearch">Поиск студента по ФИО</label><input id="curatorSearch" class="w-full rounded-xl px-3 py-3 bg-white/[.04] border border-white/10 outline-none text-sm" placeholder="Введите фамилию или имя"></div><div class="glass rounded-2xl overflow-x-auto"><table class="w-full text-left border-collapse"><thead class="bg-white/[.035]"><tr><th class="px-3 py-3 text-[10px] uppercase tracking-wide text-white/45">Студент</th><th class="px-3 py-3 text-[10px] uppercase tracking-wide text-white/45 text-center">Средний</th>${[...subjects.keys()].map(n=>`<th class="px-3 py-3 text-[10px] text-white/45 min-w-[110px] text-center">${n}</th>`).join('')}</tr></thead><tbody>${rows || `<tr><td colspan="${2+subjects.size}" class="px-4 py-8 text-center text-sm text-white/40">В группе пока нет данных об оценках.</td></tr>`}</tbody></table></div><p class="text-[11px] text-white/30 text-center mt-3">Средний балл рассчитан по выставленным оценкам. Посещаемость отображается количеством отметок У, Н, О и Б.</p>`;
+  $('#curatorSearch')?.addEventListener('input', e => { const q=e.target.value.trim().toLocaleLowerCase('ru'); $('#gradesBody').querySelectorAll('tbody tr[data-curator-name]').forEach(row => row.classList.toggle('hidden', !row.dataset.curatorName.includes(q))); });
+  icons();
+}
+let GROUP_STUDENT_INDICES = [], GROUP_STUDENTS = [], GROUP_GRADES = {}, GROUP_ATT = {};
+
+function openGrades() {
+  if (AUTH_USER?.role === 'curator') renderCuratorGroupGrades(); else { $('#gradesSubtitle').textContent = `${AUTH_USER?.group || 'Мои результаты'} · текущий период`; renderGrades(); }
+  screen = 'grades';
+  const acc = $('#screenAccount');
+  if (reduced) { acc.classList.add('hidden'); gradesScreenEl.classList.remove('hidden'); scrollTo({ top: 0 }); return; }
+  acc.classList.add('det-out');
+  setTimeout(() => {
+    acc.classList.add('hidden'); acc.classList.remove('det-out');
+    gradesScreenEl.classList.remove('hidden'); gradesScreenEl.classList.add('det-in');
+    scrollTo({ top: 0 });
+    setTimeout(() => gradesScreenEl.classList.remove('det-in'), 480);
+  }, 190);
+}
+function closeGrades() {
+  screen = 'account';
+  const acc = $('#screenAccount');
+  if (reduced) { gradesScreenEl.classList.add('hidden'); acc.classList.remove('hidden'); return; }
+  gradesScreenEl.classList.add('det-out');
+  setTimeout(() => {
+    gradesScreenEl.classList.add('hidden'); gradesScreenEl.classList.remove('det-out');
+    acc.classList.remove('hidden'); acc.classList.add('det-back-in');
+    setTimeout(() => acc.classList.remove('det-back-in'), 480);
+  }, 190);
+}
+$('#openGrades').addEventListener('click', openGrades);
+$('#gradesBack').addEventListener('click', closeGrades);
+/* средний балл в карточке аккаунта */
+$('#accAvg').textContent = '—';
+
+/* ================= НАСТРОЙКИ ================= */
+const setScreenEl = $('#screenSettings'), accScreenEl = $('#screenAccount');
+
+function openSettings() {
+  screen = 'settings';
+  if (reduced) { accScreenEl.classList.add('hidden'); setScreenEl.classList.remove('hidden'); scrollTo({ top: 0 }); return; }
+  accScreenEl.classList.add('det-out');
+  setTimeout(() => {
+    accScreenEl.classList.add('hidden'); accScreenEl.classList.remove('det-out');
+    setScreenEl.classList.remove('hidden'); setScreenEl.classList.add('det-in');
+    scrollTo({ top: 0 });
+    setTimeout(() => setScreenEl.classList.remove('det-in'), 480);
+  }, 190);
+}
+function closeSettings() {
+  screen = 'account';
+  if (reduced) { setScreenEl.classList.add('hidden'); accScreenEl.classList.remove('hidden'); return; }
+  setScreenEl.classList.add('det-out');
+  setTimeout(() => {
+    setScreenEl.classList.add('hidden'); setScreenEl.classList.remove('det-out');
+    accScreenEl.classList.remove('hidden'); accScreenEl.classList.add('det-back-in');
+    setTimeout(() => accScreenEl.classList.remove('det-back-in'), 480);
+  }, 190);
+}
+$('#openSettings').addEventListener('click', () => { showHub(true); openSettings(); });
+
+/* ---- Навигация внутри настроек: список категорий <-> категория ---- */
+const CAT_INFO = {
+  notif: { name: 'Уведомления', desc: 'Оповещения, напоминания, тихий режим' },
+  look:  { name: 'Внешний вид', desc: 'Фон, плотность списка пар' },
+  study: { name: 'Учёба', desc: 'Стартовый день, выходные' },
+  about: { name: 'О приложении', desc: 'Версия и учебное заведение' },
+};
+let activeCat = null;
+const setHub = $('#setHub'), setHeading = $('#setHeading'), setSub = $('#setSubheading');
+
+function showHub(instant) {
+  activeCat = null;
+  $$('.set-group').forEach(g => g.classList.add('hidden'));
+  setHeading.textContent = 'Настройки';
+  setSub.classList.add('hidden');
+  setHub.classList.remove('hidden');
+  if (!instant && !reduced) {
+    setHub.classList.add('sub-back-in');
+    setTimeout(() => setHub.classList.remove('sub-back-in'), 420);
+  }
+}
+function openCat(cat) {
+  activeCat = cat;
+  const info = CAT_INFO[cat];
+  setHub.classList.add('hidden');
+  $$('.set-group').forEach(g => g.classList.toggle('hidden', g.dataset.group !== cat));
+  const g = $(`.set-group[data-group="${cat}"]`);
+  setHeading.textContent = info.name;
+  setSub.textContent = info.desc;
+  setSub.classList.remove('hidden');
+  if (!reduced) {
+    g.classList.add('sub-in');
+    setTimeout(() => g.classList.remove('sub-in'), 420);
+  }
+  scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
+}
+$$('.cat-card').forEach(c => c.addEventListener('click', () => openCat(c.dataset.cat)));
+
+/* Кнопка «назад»: из категории — в список, из списка — в аккаунт */
+$('#settingsBack').addEventListener('click', () => {
+  if (activeCat) showHub(false); else closeSettings();
+});
+
+/* ================= PUSH-УВЕДОМЛЕНИЯ ================= */
+const swMaster = $('#swMaster'), catNotifMeta = $('#catNotifMeta'), pushStatusEl = $('#pushStatus'), pushTestBtn = $('#pushTest');
+const PUSH = { cfg: null, prefs: { schedule: true, grades: true, hw: true, events: false, quiet: true, remind: 30 } };
+const pushSupported = () => 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+const b64ToU8 = b => { const p = '='.repeat((4 - b.length % 4) % 4), r = atob((b + p).replace(/-/g, '+').replace(/_/g, '/')); return Uint8Array.from(r, c => c.charCodeAt(0)); };
+async function pushApi(method, url, body) {
+  const r = await fetch(url, { method, credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(d.error || 'Ошибка сервера');
+  return d;
+}
+const savePrefs = () => pushApi('PUT', '/api/push/prefs', PUSH.prefs).catch(e => setPushStatus(e.message, 'err'));
+function setPushStatus(text, kind) {
+  pushStatusEl.textContent = text;
+  pushStatusEl.style.color = kind === 'err' ? '#fda4af' : kind === 'ok' ? '#6ee7b7' : '';
+}
+function syncMaster() {
+  const on = swMaster.checked;
+  $$('.set-row.sub[data-dep="swMaster"]').forEach(r => r.classList.toggle('off', !on));
+  catNotifMeta.textContent = on ? 'вкл' : 'выкл';
+  catNotifMeta.classList.toggle('off', !on);
+  pushTestBtn.classList.toggle('hidden', !on);
+}
+function applyPrefsToUI() {
+  $$('input[data-pref]').forEach(i => { i.checked = !!PUSH.prefs[i.dataset.pref]; });
+  $$('#remindSeg .seg-btn').forEach(b => b.classList.toggle('active', +b.dataset.v === +PUSH.prefs.remind));
+  syncMaster();
+}
+async function pushRegister() {
+  const reg = await navigator.serviceWorker.register('/sw.js');
+  await navigator.serviceWorker.ready;
+  let sub = await reg.pushManager.getSubscription();
+  const key = b64ToU8(PUSH.cfg.publicKey);
+  try { if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: key }); }
+  catch (e) {
+    if (e.name !== 'InvalidStateError') throw e;
+    const old = await reg.pushManager.getSubscription(); if (old) await old.unsubscribe();
+    sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: key });
+  }
+  await pushApi('POST', '/api/push/subscribe', { endpoint: sub.endpoint });
+  return sub;
+}
+/* withBrowser=true: полностью отписать устройство (выключение); false: только отвязать от аккаунта (выход) */
+async function pushUnbind(withBrowser) {
+  try {
+    const reg = await navigator.serviceWorker.getRegistration('/sw.js'), sub = reg && await reg.pushManager.getSubscription();
+    if (!sub) return;
+    await pushApi('POST', '/api/push/unsubscribe', { endpoint: sub.endpoint });
+    if (withBrowser) await sub.unsubscribe();
+  } catch (e) { /* нечего отвязывать */ }
+}
+function describePushState() {
+  if (!pushSupported()) return setPushStatus('Этот браузер не поддерживает push. На iPhone: «Поделиться» → «На экран Домой», затем откройте дневник с иконки на экране.', 'err');
+  if (Notification.permission === 'denied') return setPushStatus('Уведомления заблокированы в настройках браузера для этого сайта. Разрешите их и обновите страницу.', 'err');
+  if (swMaster.checked) return setPushStatus('Уведомления включены на этом устройстве.', 'ok');
+  setPushStatus('Уведомления выключены. Включите переключатель ниже. Браузер попросит разрешение.');
+}
+/* Включённость относится к устройству и пользователю, поэтому хранится в браузере; настройки типов — в аккаунте */
+const pushFlag = () => 'push-on:' + (AUTH_USER ? AUTH_USER.login : '');
+async function loadPush() {
+  try {
+    PUSH.cfg = await pushApi('GET', '/api/push/config');
+    PUSH.prefs = PUSH.cfg.prefs;
+    const usable = pushSupported() && Notification.permission === 'granted' && localStorage.getItem(pushFlag()) === '1';
+    swMaster.checked = usable;
+    applyPrefsToUI();
+    if (swMaster.checked) { try { await pushRegister(); } catch (e) { swMaster.checked = false; syncMaster(); setPushStatus('Не удалось подключить это устройство: ' + e.message, 'err'); return; } }
+    describePushState();
+  } catch (e) { setPushStatus('Не удалось загрузить настройки уведомлений.', 'err'); }
+}
+swMaster.addEventListener('change', async () => {
+  if (swMaster.checked) {
+    if (!pushSupported() || !PUSH.cfg) { swMaster.checked = false; syncMaster(); return describePushState(); }
+    try {
+      const perm = await Notification.requestPermission();
+      if (perm !== 'granted') { swMaster.checked = false; syncMaster(); return describePushState(); }
+      await pushRegister();
+      localStorage.setItem(pushFlag(), '1');
+    } catch (e) {
+      swMaster.checked = false; syncMaster();
+      return setPushStatus('Не удалось включить уведомления: ' + e.message, 'err');
+    }
+  } else {
+    localStorage.removeItem(pushFlag()); await pushUnbind(true);
+  }
+  syncMaster(); describePushState();
+});
+$$('input[data-pref]').forEach(i => i.addEventListener('change', () => { PUSH.prefs[i.dataset.pref] = i.checked; savePrefs(); }));
+$$('#remindSeg .seg-btn').forEach(b => {
+  b.addEventListener('click', e => {
+    e.preventDefault();
+    PUSH.prefs.remind = +b.dataset.v;
+    $$('#remindSeg .seg-btn').forEach(x => x.classList.toggle('active', x === b));
+    savePrefs();
+  });
+});
+pushTestBtn.addEventListener('click', async () => {
+  pushTestBtn.disabled = true;
+  try { await pushApi('POST', '/api/push/test'); setPushStatus('Тестовое уведомление отправлено. Оно придёт через несколько секунд.', 'ok'); }
+  catch (e) { setPushStatus(e.message, 'err'); }
+  setTimeout(() => { pushTestBtn.disabled = false; }, 3000);
+});
+syncMaster();
+
+/* Анимированный фон */
+$('#swBg').addEventListener('change', e => {
+  $('.bg-scene').style.display = e.target.checked ? '' : 'none';
+});
+/* Компактный режим */
+$('#swCompact').addEventListener('change', e => {
+  document.body.classList.toggle('compact', e.target.checked);
+});
+/* Скрывать выходные */
+$('#swHideWknd').addEventListener('change', e => {
+  hideWknd = e.target.checked;
+  $$('.day-cell.wknd').forEach(c => c.style.display = hideWknd ? 'none' : '');
+  if (hideWknd && dayInfo(dayIdx).weekend) selectDay(Math.floor(dayIdx / 7) * 7, -1, false, true);
+});
+
+/* ================= РОЛИ И ДОСТУП К СТУДИЯМ ================= */
+const ROLE_NAMES = { student: 'студент', starosta: 'староста', teacher: 'преподаватель', curator: 'куратор', admin: 'дежурный администратор', dev: 'разработчик' };
+const TOOLS = {
+  teacher: [['studio.html', 'presentation', 'Студия преподавателя', 'Оценки, ДЗ, отметки', 'text-violet-300']],
+  curator: [['studio.html', 'presentation', 'Студия преподавателя', 'Оценки и ДЗ по предмету', 'text-violet-300'],
+            ['zhurnal.html', 'clipboard-check', 'Журнал группы', 'Посещаемость, расписание, события', 'text-emerald-300']],
+  starosta: [['zhurnal.html', 'clipboard-check', 'Журнал группы', 'Отметки, ДЗ, расписание, события', 'text-emerald-300']],
+  admin: [['zhurnal.html', 'calendar-cog', 'Расписание и события', 'Правка расписания, мероприятия', 'text-amber-300']],
+  dev: [['STplus.html', 'terminal', 'Студия Plus', 'Аккаунты, права, система', 'text-rose-300'],
+        ['studio.html', 'presentation', 'Студия преподавателя', 'Полный доступ', 'text-violet-300'],
+        ['zhurnal.html', 'clipboard-check', 'Журнал группы', 'Полный доступ', 'text-emerald-300']],
+};
+let AUTH_USER = null;
+function renderTools(user) {
+  const box = $('#roleTools');
+  const list = TOOLS[user.role] || [];
+  if (!list.length) { box.innerHTML = ''; return; }
+  box.innerHTML = `<div class="set-title"><i data-lucide="shield-check" class="text-violet-300"></i>Рабочие инструменты · ${ROLE_NAMES[user.role]}</div>` +
+    list.map(([href, ic, name, desc, cls]) => `
+      <button class="btn-ghost w-full justify-between" data-href="${href}">
+        <span class="flex items-center gap-2.5 min-w-0">
+          <i data-lucide="${ic}" style="width:16px;height:16px" class="${cls}"></i>
+          <span class="min-w-0 text-left"><span class="block">${name}</span><span class="block text-[11px] text-white/35 font-normal mt-0.5 truncate">${desc}</span></span>
+        </span>
+        <i data-lucide="chevron-right" style="width:16px;height:16px" class="text-white/30 shrink-0"></i>
+      </button>`).join('');
+  $$('[data-href]', box).forEach(b => b.addEventListener('click', () => location.href = b.dataset.href));
+  icons();
+}
+
+/* ================= ПРОЧЕЕ ================= */
+$('#bellBtn').addEventListener('click', () => {
+  const go = () => { openSettings(); openCat('notif'); };
+  if (screen === 'settings') { openCat('notif'); return; }
+  if (screen === 'account') { go(); return; }
+  setScreen('account');
+  setTimeout(go, reduced ? 0 : 420);
+});
+$('#logoutBtn').addEventListener('click', async () => {
+  await pushUnbind(false);   // чтобы уведомления прежнего пользователя не приходили на общее устройство
+  try { await fetch('/api/logout', { method: 'POST', credentials: 'same-origin' }); } catch (e) {}
+  window.location.href = '/login.html';
+});
+
+/* ================= СИНХРОНИЗАЦИЯ С СЕРВЕРОМ ================= */
+(async function bootstrap() {
+  try {
+    const meResponse = await fetch('/api/me', { credentials: 'same-origin', cache: 'no-store' });
+    if (meResponse.status === 401) return location.replace('/login.html');
+    if (!meResponse.ok) throw new Error('Не удалось загрузить профиль');
+    AUTH_USER = (await meResponse.json()).user;
+    hydrateProfile(AUTH_USER);
+    renderTools(AUTH_USER);
+    loadPush();
+
+    const r = await fetch('/api/state', { cache: 'no-store' });
+    if (!r.ok) throw new Error('Не удалось загрузить дневник');
+    const d = await r.json();
+    if (d.times) {
+      Object.keys(PAIRS).forEach(key => delete PAIRS[key]);
+      Object.assign(PAIRS, d.times);
+    }
+    if (d.start && /^\d{4}-\d{2}-\d{2}$/.test(d.start)) {
+      const [yy, mm, dd0] = d.start.split('-').map(Number);
+      SCH_START = new Date(yy, mm - 1, dd0, 12);
+    }
+    if (d.sch) d.sch.forEach((x, i) => { if (WEEK[i]) WEEK[i].lessons = x.lessons || []; });
+    dayIdx = todayOff();
+    if (d.ev) { Object.keys(EVENTS).forEach(k => delete EVENTS[k]); Object.assign(EVENTS, d.ev); }
+    Object.entries(d.hw || {}).forEach(([k, v]) => {
+      const key = k.replace(':', '-');
+      EXTRA[key] = EXTRA[key] || {};
+      EXTRA[key].hw = { text: v.text, due: v.due, src: v.src || 'Выдано в студии' };
+    });
+    Object.entries(d.grades || {}).forEach(([k, v]) => {
+      const [dd, pp, ii] = k.split(':');
+      if (AUTH_USER.role === 'student' && +ii !== AUTH_USER.studentIndex) return;
+      const key = `${dd}-${pp}`;
+      EXTRA[key] = EXTRA[key] || {};
+      EXTRA[key].grade = v; EXTRA[key].gradeNote = 'Выставлено преподавателем';
+    });
+    rebuildSubjects(d.grades || {});
+    GROUP_STUDENTS = d.students || []; GROUP_STUDENT_INDICES = d.groupStudentIndices || []; GROUP_GRADES = d.grades || {}; GROUP_ATT = d.att || {};
+    renderWeekStrip();
+    selectDay(dayIdx, 0, true, true);
+  } catch (error) {
+    console.error(error);
+  }
+})();
+
+/* ================= LIVE-ОБНОВЛЕНИЕ ПОЛОСКИ ПАРЫ =================
+   Полоска, надпись «прошло N мин из M», плашки «сейчас идёт» / «перемена» обновляются сами:
+   каждые 10 секунд, а также сразу при возврате на вкладку или в приложение. */
+const nowMinF = () => { const t = new Date(); return t.getHours() * 60 + t.getMinutes() + t.getSeconds() / 60; };
+/* 'L<n>' — идёт пара n, 'G' — перемена между парами, 'N' — ничего, '' — это не сегодняшний день */
+function liveSig(off) {
+  if (off !== todayRaw()) return '';
+  const ls = dayInfo(off).lessons, m = nowMin();
+  for (const l of ls) { const p = PAIRS[l.n]; if (p && m >= p[0] && m < p[1]) return 'L' + l.n; }
+  for (let k = 0; k < ls.length - 1; k++) {
+    const a = PAIRS[ls[k].n], b = PAIRS[ls[k + 1].n];
+    if (a && b && m >= a[1] && m < b[0]) return 'G';
+  }
+  return 'N';
+}
+let lastToday = todayRaw();
+function liveTick() {
+  const today = todayRaw();
+  if (today !== lastToday) {                 // наступили новые сутки, а вкладка осталась открытой
+    const wasOnToday = dayIdx === lastToday;
+    lastToday = today;
+    if (wasOnToday) dayIdx = todayOff();
+    renderWeekStrip();
+    if (wasOnToday) selectDay(dayIdx, 0, true, true);
+  }
+  const view = $('#dayView');
+  if (subTab === 'schedule' && view && view.innerHTML && dayIdx === today) {
+    const sig = liveSig(dayIdx);
+    if (view.dataset.live !== sig) {
+      // пара началась/закончилась — тихо перерисовываем день (без повторной анимации, позиция прокрутки сохраняется)
+      view.innerHTML = `<div id="dayInner" class="no-anim">${dayHTML(dayInfo(dayIdx), dayIdx)}</div>`;
+      view.dataset.live = sig;
+      icons();
+    } else if (sig[0] === 'L') {
+      const p = PAIRS[+sig.slice(1)], bar = view.querySelector('[data-live-bar]'), txt = view.querySelector('[data-live-text]');
+      if (p && bar) bar.style.width = Math.min(100, Math.max(0, (nowMinF() - p[0]) / (p[1] - p[0]) * 100)).toFixed(1) + '%';
+      if (p && txt) txt.textContent = `идёт пара · прошло ${Math.floor(nowMin() - p[0])} мин из ${p[1] - p[0]}`;
+    }
+  }
+  if (screen === 'lesson' && lessonOpenN !== null) {
+    const chip = lessonScreen.querySelector('[data-live-chip]'), p = PAIRS[lessonOpenN], m = nowMin();
+    if (chip && p) chip.style.display = (dayIdx === today && m >= p[0] && m < p[1]) ? '' : 'none';
+  }
+}
+setInterval(liveTick, 10000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) liveTick(); });
+window.addEventListener('focus', liveTick);
+window.addEventListener('pageshow', liveTick);
+
+/* Старт */
+selectDay(dayIdx, 0, true);
+</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+# Секреты и данные — никогда не коммитить
+.env
+data.json
+*.tmp
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Системное
+.DS_Store
+Thumbs.db
