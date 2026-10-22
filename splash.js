@@ -71,7 +71,21 @@
     '@keyframes sd-load{to{transform:scaleX(1)}}' +
     '@keyframes sd-float{0%{opacity:0;transform:translateY(0)}15%{opacity:.9}100%{opacity:0;transform:translateY(-95vh)}}' +
     '@media (prefers-reduced-motion:reduce){#sd-splash *,#sd-splash *:before,#sd-splash *:after{animation-duration:.01s!important;animation-delay:0s!important;animation-iteration-count:1!important}.sd-p{display:none}}' +
-    '@media (max-width:360px){.sd-title{font-size:22px}}';
+    '@media (max-width:360px){.sd-title{font-size:22px}}' +
+    /* Сезонный вариант: theme.js вешает класс на <html> до загрузки заставки,
+       поэтому здесь только переопределения цвета. */
+    '.halloween #sd-splash{background:#0a0512}' +
+    '.halloween .sd-tile{background:linear-gradient(135deg,#ff8a3d,#8b5cf6);box-shadow:0 24px 70px rgba(255,138,61,.45),inset 0 1px 0 rgba(255,255,255,.28)}' +
+    '.halloween .sd-tile:before,.halloween .sd-tile:after{border-color:rgba(253,186,116,.7)}' +
+    '.halloween .sd-g1{background:radial-gradient(circle,rgba(249,115,22,.5),transparent 62%)}' +
+    '.halloween .sd-g2{background:radial-gradient(circle,rgba(139,92,246,.42),transparent 62%)}' +
+    '.halloween .sd-g3{background:radial-gradient(circle,rgba(163,230,53,.13),transparent 65%)}' +
+    '.halloween .sd-p{background:rgba(253,186,116,.85)}' +
+    '.halloween .sd-d{stroke:#1c1226}' +
+    '.halloween .sd-dot{fill:#1c1226}' +
+    '.halloween .sd-live{fill:#fde68a}' +
+    '.halloween .sd-ping{stroke:#fbbf24}' +
+    '.halloween .sd-bar b{background:linear-gradient(90deg,#fbbf24,#8b5cf6)}';
 
   function letters(word, start) {
     var out = '', i;

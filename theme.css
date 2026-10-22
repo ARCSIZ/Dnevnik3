@@ -1,0 +1,186 @@
+/* ==========================================================================
+   Сезонное оформление («Хэллоуин») для всех страниц портала.
+   Подключается ПОСЛЕ инлайн-стилей страницы и до Tailwind-утилит.
+
+   Обычная тема задаёт токены в :root, сезонная — переопределяет их в
+   html.halloween, поэтому вся перекраска происходит в одном месте.
+   ========================================================================== */
+
+:root {
+  --g1: #6d5bff;            /* начало фирменного градиента */
+  --g2: #a855f7;            /* конец фирменного градиента */
+  --g1rgb: 109, 91, 255;    /* то же начало RGB-триплетом — для rgba() с прозрачностью */
+  --g2rgb: 168, 85, 247;
+  --glow: 124, 108, 255;    /* свечение — RGB-триплет для rgba(var(--glow), .5) */
+  --acc: 167, 139, 250;     /* светлый акцент: рамки, подписи, ховеры */
+  --acc-c: #a78bfa;         /* светлый акцент в виде hex (каретки, точки) */
+  --night: #07070d;         /* фон страницы */
+}
+
+html.halloween {
+  --g1: #ff8a3d;
+  --g2: #8b5cf6;
+  --g1rgb: 255, 138, 61;
+  --g2rgb: 139, 92, 246;
+  --glow: 255, 138, 61;
+  --acc: 253, 186, 116;
+  --acc-c: #fdba74;
+  --night: #0a0512;
+  /* Утилиты Tailwind v4 читают цвет по переменным темы — смещаем
+     фиолетовую семью в янтарную, пурпур оставляем вторым акцентом. */
+  --color-violet-300: #fdba74;
+  --color-violet-400: #fb923c;
+  --color-violet-500: #f97316;
+  --color-indigo-300: #c4b5fd;
+  --color-indigo-500: #8b5cf6;
+  --color-purple-500: #9333ea;
+}
+
+/* ---------- Фон и общая атмосфера ---------- */
+html.halloween body { background: var(--night); }
+html.halloween .blob.b1 { background: radial-gradient(circle, #f97316 0%, transparent 66%); opacity: .34; }
+html.halloween .blob.b2 { background: radial-gradient(circle, #7c3aed 0%, transparent 62%); opacity: .46; }
+html.halloween .blob.b3 { background: radial-gradient(circle, #b91c1c 0%, transparent 66%); opacity: .22; }
+html.halloween .grid-lines {
+  background-image: linear-gradient(rgba(255, 138, 61, .035) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255, 138, 61, .035) 1px, transparent 1px);
+}
+html.halloween .card-glow { background: radial-gradient(ellipse at 50% 0%, rgba(var(--glow), .2), transparent 65%); }
+
+/* ---------- Текстовый градиент ---------- */
+html.halloween .grad-text {
+  background-image: linear-gradient(92deg, #fdba74, #fb923c 45%, #c084fc);
+}
+
+/* ---------- Стекло: тёплая кромка вместо холодной ---------- */
+html.halloween .glass {
+  background: linear-gradient(160deg, rgba(255, 205, 150, .06), rgba(255, 255, 255, .018));
+  border-color: rgba(255, 170, 90, .12);
+}
+
+/* ---------- Отдельные места, где цвет задан точечно ---------- */
+html.halloween .event-icon { background: linear-gradient(135deg, #fb923c, #b91c1c); box-shadow: 0 8px 20px -8px rgba(185, 28, 28, .55), inset 0 1px 0 rgba(255, 255, 255, .25); }
+html.halloween .badge-prac { background: linear-gradient(135deg, #f97316, #a21caf); }
+html.halloween .chip-prac { color: #fdba74; background: rgba(249, 115, 22, .12); border-color: rgba(253, 186, 116, .28); }
+html.halloween .g4 { background: linear-gradient(135deg, #f97316, #a855f7); }
+html.halloween .av { background: linear-gradient(135deg, #7c2d12, #a855f7); }
+
+/* ==========================================================================
+   Декорации. Слой живёт внутри .bg-scene, поэтому переключатель
+   «Анимированный фон» в настройках гаснет его вместе со всей сценой.
+   ========================================================================== */
+.hw-layer { position: absolute; inset: 0; overflow: hidden; }
+.hw-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+/* Луна */
+.hw-moon {
+  position: absolute; right: 34px; top: 26px;
+  width: 154px; height: 154px; border-radius: 50%;
+  background: radial-gradient(circle at 38% 34%, #fff6e8 0%, #ffe3b0 52%, #f4b268 100%);
+  box-shadow: 0 0 60px 22px rgba(255, 196, 120, .22), 0 0 170px 64px rgba(255, 150, 60, .1);
+  opacity: .58;
+}
+.hw-moon i { position: absolute; border-radius: 50%; background: rgba(180, 130, 70, .22); }
+.hw-moon i:nth-child(1) { width: 22px; height: 20px; left: 46px; top: 60px; }
+.hw-moon i:nth-child(2) { width: 13px; height: 12px; left: 78px; top: 88px; }
+.hw-moon i:nth-child(3) { width: 9px; height: 9px; left: 58px; top: 104px; }
+.hw-moon i:nth-child(4) { width: 16px; height: 14px; left: 96px; top: 46px; }
+
+/* Летучие мыши: тёмный силуэт с тёплой кромкой — иначе на ночном фоне не виден */
+.hw-bat { position: absolute; width: 46px; height: auto; color: #150c20; opacity: .9; }
+.hw-bat path, .hw-bat ellipse, .hw-bat circle {
+  fill: currentColor;
+  stroke: rgba(255, 176, 110, .5);
+  stroke-width: 1.6;
+  vector-effect: non-scaling-stroke;
+}
+.hw-bat.s1 { left: 8%; top: 16%; width: 34px; animation: hwFly1 34s linear infinite; }
+.hw-bat.s2 { left: 24%; top: 27%; width: 52px; animation: hwFly2 46s linear infinite; animation-delay: -12s; }
+.hw-bat.s3 { left: 55%; top: 11%; width: 26px; animation: hwFly1 40s linear infinite; animation-delay: -24s; }
+.hw-bat .hw-wing { transform-box: fill-box; transform-origin: 100% 40%; animation: hwFlap .42s ease-in-out infinite alternate; }
+.hw-bat .hw-wing.r { transform-origin: 0% 40%; }
+.hw-bat.s2 .hw-wing { animation-duration: .5s; }
+.hw-bat.s3 .hw-wing { animation-duration: .34s; }
+@keyframes hwFlap { from { transform: scaleY(1); } to { transform: scaleY(.42); } }
+@keyframes hwFly1 {
+  0%   { transform: translate(-14vw, 0) rotate(-4deg); }
+  25%  { transform: translate(22vw, -6vh) rotate(3deg); }
+  50%  { transform: translate(46vw, 4vh) rotate(-3deg); }
+  75%  { transform: translate(68vw, -8vh) rotate(4deg); }
+  100% { transform: translate(114vw, 2vh) rotate(-4deg); }
+}
+@keyframes hwFly2 {
+  0%   { transform: translate(114vw, 0) rotate(4deg) scale(-1, 1); }
+  30%  { transform: translate(64vw, -9vh) rotate(-3deg) scale(-1, 1); }
+  60%  { transform: translate(22vw, 6vh) rotate(3deg) scale(-1, 1); }
+  100% { transform: translate(-16vw, -3vh) rotate(-4deg) scale(-1, 1); }
+}
+
+/* Паутина в углу */
+.hw-web { position: absolute; width: 170px; height: 170px; color: #fff; opacity: .07; }
+.hw-web path, .hw-web circle { fill: none; stroke: currentColor; stroke-width: 1.4; }
+.hw-web.tl { left: -14px; top: -14px; }
+.hw-web.tr { right: -14px; top: -14px; transform: scaleX(-1); }
+
+/* Туман у нижнего края */
+.hw-fog {
+  position: absolute; left: -20%; right: -20%; bottom: -30px; height: 240px; pointer-events: none;
+  background: radial-gradient(ellipse 60% 100% at 30% 100%, rgba(167, 139, 250, .17), transparent 70%),
+              radial-gradient(ellipse 55% 100% at 72% 100%, rgba(132, 204, 22, .08), transparent 72%);
+  filter: blur(26px);
+  animation: hwFog 26s ease-in-out infinite alternate;
+}
+@keyframes hwFog { from { transform: translateX(-5%) scaleY(1); } to { transform: translateX(5%) scaleY(1.16); } }
+
+/* Тлеющие угольки */
+.hw-ember {
+  position: absolute; bottom: -10px; width: 4px; height: 4px; border-radius: 50%;
+  background: #fbbf24; opacity: 0; filter: blur(.4px);
+  animation: hwRise linear infinite;
+}
+@keyframes hwRise {
+  0%   { opacity: 0; transform: translate(0, 0) scale(.6); }
+  12%  { opacity: .85; }
+  100% { opacity: 0; transform: translate(var(--dx, 20px), -88vh) scale(1.1); }
+}
+
+/* Тыква с резным свечением */
+.hw-joan { position: absolute; left: 16px; bottom: 8px; width: 92px; opacity: .78; filter: drop-shadow(0 0 22px rgba(251, 146, 60, .5)); }
+.hw-joan .hw-lantern { animation: hwFlicker 3.6s ease-in-out infinite; }
+@keyframes hwFlicker { 0%, 100% { opacity: 1; } 42% { opacity: .62; } 62% { opacity: 1; } }
+
+@media (max-width: 640px) {
+  .hw-moon { width: 104px; height: 104px; right: 14px; top: 12px; opacity: .5; }
+  .hw-moon i:nth-child(1) { width: 15px; height: 14px; left: 32px; top: 40px; }
+  .hw-moon i:nth-child(2) { width: 9px; height: 8px; left: 54px; top: 60px; }
+  .hw-moon i:nth-child(3) { display: none; }
+  .hw-moon i:nth-child(4) { width: 11px; height: 10px; left: 66px; top: 32px; }
+  .hw-web { width: 116px; height: 116px; }
+  .hw-joan { width: 62px; left: 8px; bottom: 4px; opacity: .62; }
+  .hw-bat.s3 { display: none; }
+  .hw-bat.s1 { width: 26px; }
+  .hw-bat.s2 { width: 38px; }
+}
+
+/* ==========================================================================
+   Фокус для клавиатуры. Общее правило на весь портал: раньше часть контролов
+   не имела видимого состояния фокуса.
+   ========================================================================== */
+.icon-btn:focus-visible, .btn:focus-visible, .btn-primary:focus-visible, .btn-ghost:focus-visible,
+.tab:focus-visible, .tab-btn:focus-visible, .subtab-btn:focus-visible, .nav-btn:focus-visible,
+.pill:focus-visible, .day-cell:focus-visible, .a-btn:focus-visible, .g-btn:focus-visible,
+.seg-btn:focus-visible, .cat-card:focus-visible, .role-btn:focus-visible, .group-card:focus-visible,
+.subj-card:focus-visible, .field-eye:focus-visible {
+  outline: 2px solid var(--acc-c);
+  outline-offset: 2px;
+}
+input:focus-visible, select:focus-visible, textarea:focus-visible { outline: none; }
+::selection { background: rgba(var(--glow), .32); color: #fff; }
+
+/* ==========================================================================
+   prefers-reduced-motion: декор остаётся, но замирает.
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .hw-bat, .hw-bat .hw-wing, .hw-fog, .hw-joan .hw-lantern { animation: none !important; }
+  .hw-ember { display: none; }
+}

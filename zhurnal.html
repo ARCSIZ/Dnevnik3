@@ -3,8 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="stylesheet" href="/theme.css">
+<script src="/theme.js"></script>
 <script src="/splash.js"></script>
-<title>Журнал · 02-СД-25-о</title>
+<title>Журнал группы · Электронный дневник</title>
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Unbounded:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -27,7 +29,7 @@
   .icon-btn:hover { color:#fff;background:rgba(255,255,255,.08); } .icon-btn:active { transform:scale(.9); }
   .btn { display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 16px;border-radius:14px;font-size:13.5px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all .18s; }
   .btn:active { transform:scale(.97); }
-  .btn-p { color:#fff;background:linear-gradient(135deg,#6d5bff,#a855f7);box-shadow:0 10px 26px -12px rgba(124,108,255,.8),inset 0 1px 0 rgba(255,255,255,.22); }
+  .btn-p { color:#fff;background:linear-gradient(135deg,var(--g1),var(--g2));box-shadow:0 10px 26px -12px rgba(var(--glow),.8),inset 0 1px 0 rgba(255,255,255,.22); }
   .btn-p:hover { filter:brightness(1.07);transform:translateY(-1px); }
   .btn-g { color:rgba(255,255,255,.75);border-color:rgba(255,255,255,.1);background:rgba(255,255,255,.04); }
   .btn-g:hover { color:#fff;background:rgba(255,255,255,.08); }
@@ -44,15 +46,15 @@
   .tabs { position:relative;display:flex;border-radius:15px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.07);padding:4px;gap:3px; }
   .tab { flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:6px;padding:9.5px 14px;border-radius:11px;font-size:12.5px;font-weight:600;color:rgba(255,255,255,.45);background:none;border:none;cursor:pointer;white-space:nowrap;transition:color .22s,background .22s,box-shadow .22s,transform .16s; }
   .tab svg { width:14px;height:14px;flex-shrink:0; }
-  .tab.on { color:#fff;background:linear-gradient(135deg,rgba(109,91,255,.9),rgba(168,85,247,.9));box-shadow:0 6px 18px -6px rgba(124,108,255,.6); }
+  .tab.on { color:#fff;background:linear-gradient(135deg,rgba(var(--g1rgb),.9),rgba(var(--g2rgb),.9));box-shadow:0 6px 18px -6px rgba(var(--glow),.6); }
   .tab:active { transform:scale(.96); }
   @media (min-width:600px) { .tab { flex:1; } }
   .day-cell { flex:0 0 auto;width:54px;padding:8px 3px;border-radius:14px;cursor:pointer;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);color:rgba(255,255,255,.55);text-align:center;transition:all .18s; }
-  .day-cell:hover { color:#fff;border-color:rgba(167,139,250,.35);transform:translateY(-2px); }
-  .day-cell.on { background:linear-gradient(140deg,#6d5bff,#a855f7);border-color:transparent;color:#fff;box-shadow:0 10px 26px -12px rgba(124,108,255,.7); }
+  .day-cell:hover { color:#fff;border-color:rgba(var(--acc),.35);transform:translateY(-2px); }
+  .day-cell.on { background:linear-gradient(140deg,var(--g1),var(--g2));border-color:transparent;color:#fff;box-shadow:0 10px 26px -12px rgba(var(--glow),.7); }
   .pill { padding:8px 12px;border-radius:12px;font-size:12.5px;font-weight:600;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04);color:rgba(255,255,255,.6);cursor:pointer;transition:all .18s;white-space:nowrap; }
   .pill:hover { color:#fff;background:rgba(255,255,255,.09); } .pill:active { transform:scale(.95); }
-  .pill.on { background:linear-gradient(135deg,#6d5bff,#a855f7);border-color:transparent;color:#fff; }
+  .pill.on { background:linear-gradient(135deg,var(--g1),var(--g2));border-color:transparent;color:#fff; }
   .a-btn { position:relative;width:34px;height:34px;border-radius:11px;font-size:12.5px;font-weight:800;color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04);cursor:pointer;transition:all .18s cubic-bezier(.34,1.5,.64,1); }
   .a-btn:hover { color:#fff;background:rgba(255,255,255,.1);transform:translateY(-1px); } .a-btn:active { transform:scale(.88); }
   .a-btn.on { color:#fff;transform:translateY(-1px) scale(1.06);font-weight:800; }
@@ -71,8 +73,8 @@
   .srv.on { color:#6ee7b7;background:rgba(16,185,129,.12);border-color:rgba(110,231,183,.3); }
   .srv.off { color:rgba(255,255,255,.4);background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1); }
   .av { width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:12px;font-weight:700;flex-shrink:0;background:linear-gradient(135deg,#065f46,#0d9488);color:#fff; }
-  .inp { width:100%;border-radius:13px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.1);padding:11px 13px;font-size:13.5px;color:#fff;outline:none;transition:all .2s;caret-color:#a78bfa; }
-  .inp:focus { border-color:rgba(167,139,250,.6);background:rgba(255,255,255,.07);box-shadow:0 0 0 4px rgba(124,108,255,.14); }
+  .inp { width:100%;border-radius:13px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.1);padding:11px 13px;font-size:13.5px;color:#fff;outline:none;transition:all .2s;caret-color:var(--acc-c); }
+  .inp:focus { border-color:rgba(var(--acc),.6);background:rgba(255,255,255,.07);box-shadow:0 0 0 4px rgba(var(--glow),.14); }
   .inp::placeholder { color:rgba(255,255,255,.25); }
   select.inp { appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%23ffffff88' stroke-width='2'%3E%3Cpath d='M3 5l4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center; }
   select.inp option { background:#15151f; }
@@ -133,6 +135,9 @@ function toast(msg,type='info'){const m={info:['info','text-violet-300'],ok:['ch
 
 let PAIRS={};
 const fmt=m=>String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+/* Пара может отсутствовать в сетке времени (группа без расписания) — время тогда не показываем. */
+const ptime=(n,k)=>Array.isArray(PAIRS[n])?fmt(PAIRS[n][k]):'—';
+const plural=(n,one,few,many)=>{const m=n%100,d=n%10;return (m>10&&m<20)||d===0||d>4?many:(d>1&&d<5)?few:one};
 const toMin=s=>{const m=/^(\d{1,2}):(\d{2})$/.exec((s||'').trim());return m?Math.min(1439,+m[1]*60+ +m[2]):null};
 const NK='';
 function emptyWeek(){
@@ -247,27 +252,29 @@ function render(){
 let attPair=null;
 function viewAtt(d){
   if(!canAtt)return `<div class="glass rounded-2xl p-6 text-center text-[13px] text-white/45">У вашей роли нет доступа к отметкам посещаемости.</div>`;
-  if(!d.lessons.length)return `<div class="glass rounded-2xl p-8 text-center"><div class="text-[14px] font-semibold mb-1">Занятий нет</div><p class="text-[12.5px] text-white/40">${d.wd}, ${d.day} ${d.mon} — выходной день.</p></div>`;
+  if(!d.lessons.length)return `<div class="glass rounded-2xl p-8 text-center"><div class="text-[14px] font-semibold mb-1">Занятий нет</div><p class="text-[12.5px] text-white/40">${d.wd}, ${d.day} ${d.mon} — ${(dayIdx%7)>4?'выходной день':'пар в этот день нет'}.</p></div>`;
   if(attPair===null||!d.lessons.some(l=>l.n===attPair))attPair=d.lessons[0].n;
   const l=d.lessons.find(x=>x.n===attPair);
-  const stat={У:0,Н:0,О:0,Б:0};STUDENTS.forEach((_,i)=>{const a=S.att[gk(dayIdx,attPair,i)];if(a)stat[a.t]++});
-  const here=STUDENTS.length-Object.values(stat).reduce((a,b)=>a+b,0);
+  /* Куратор видит только своих студентов: остальные приходят как null, но индекс нужен для ключей. */
+  const roster=STUDENTS.map((n,i)=>({n,i})).filter(s=>s.n);
+  const stat={У:0,Н:0,О:0,Б:0};roster.forEach(({i})=>{const a=S.att[gk(dayIdx,attPair,i)];if(a)stat[a.t]++});
+  const here=roster.length-Object.values(stat).reduce((a,b)=>a+b,0);
   return `<div>
-    <div class="flex gap-1.5 overflow-x-auto pb-1 mb-3">${d.lessons.map(x=>`<button class="pill ${x.n===attPair?'on':''}" data-pair="${x.n}">${x.n} пара · ${fmt(PAIRS[x.n][0])}</button>`).join('')}</div>
+    <div class="flex gap-1.5 overflow-x-auto pb-1 mb-3">${d.lessons.map(x=>`<button class="pill ${x.n===attPair?'on':''}" data-pair="${x.n}">${x.n} пара · ${ptime(x.n,0)}</button>`).join('')}</div>
     <div class="glass rounded-2xl p-4 mb-3">
       <div class="text-[14px] font-semibold leading-snug">${l.title}</div>
-      <div class="text-[12px] text-white/40 mt-1">${l.teacher} · ${l.room} · ${fmt(PAIRS[l.n][0])}–${fmt(PAIRS[l.n][1])}</div>
+      <div class="text-[12px] text-white/40 mt-1">${l.teacher} · ${l.room} · ${ptime(l.n,0)}–${ptime(l.n,1)}</div>
       <div class="flex gap-1.5 mt-3 flex-wrap">
         <span class="chip c-g">на занятии: ${here}</span>
         ${Object.entries(stat).filter(([,v])=>v).map(([k,v])=>`<span class="chip c-a">${k}: ${v}</span>`).join('')}
       </div>
     </div>
     <div class="flex items-center justify-between mb-2">
-      <div class="sec-title !mb-0"><i data-lucide="users"></i>${STUDENTS.length} студентов</div>
+      <div class="sec-title !mb-0"><i data-lucide="users"></i>${roster.length} ${plural(roster.length,'студент','студента','студентов')}</div>
       <button class="btn btn-g !py-1.5 !px-3 !text-[12px]" id="clrAtt"><i data-lucide="eraser" style="width:13px;height:13px"></i>Сбросить</button>
     </div>
     <div class="glass rounded-2xl divide-y divide-white/[0.06] overflow-hidden">
-      ${STUDENTS.map((n,i)=>{const a=S.att[gk(dayIdx,attPair,i)];const g=S.grades[gk(dayIdx,attPair,i)];
+      ${roster.map(({n,i})=>{const a=S.att[gk(dayIdx,attPair,i)];const g=S.grades[gk(dayIdx,attPair,i)];
         return `<div class="st-row ls-item ${a?'marked'+a.t:''}" style="animation-delay:${i*.02}s">
           <span class="av">${n.split(' ').map(x=>x[0]).join('')}</span>
           <span class="flex-1 min-w-[120px]">
@@ -313,7 +320,7 @@ function viewSch(d){
       ${d.lessons.length?d.lessons.map(l=>`
         <div class="glass rounded-2xl p-3.5 ls-item">
           <div class="flex items-center gap-2 mb-2.5">
-            <span class="chip c-s">${l.n} пара · ${fmt(PAIRS[l.n][0])}–${fmt(PAIRS[l.n][1])}</span>
+            <span class="chip c-s">${l.n} пара · ${ptime(l.n,0)}–${ptime(l.n,1)}</span>
             <button class="btn btn-d !py-1.5 !px-2.5 !text-[12px] ml-auto" data-del="${l.n}"><i data-lucide="trash-2" style="width:13px;height:13px"></i></button>
           </div>
           <input class="inp mb-2" data-f="title" data-n="${l.n}" value="${esc(l.title)}" placeholder="Предмет">
@@ -393,7 +400,7 @@ function viewTime(){
     <div class="glass rounded-2xl divide-y divide-white/[0.06] overflow-hidden">
       ${keys.map(n=>`
         <div class="flex items-center gap-2.5 p-3 ls-item">
-          <span class="w-9 h-9 rounded-xl grid place-items-center font-bold text-[13px] shrink-0" style="background:linear-gradient(135deg,#6d5bff,#a855f7)">${n}</span>
+          <span class="w-9 h-9 rounded-xl grid place-items-center font-bold text-[13px] shrink-0" style="background:linear-gradient(135deg,var(--g1),var(--g2))">${n}</span>
           <input class="inp !py-2 text-center" style="width:92px" data-tm="${n}" data-k="0" value="${fmt(PAIRS[n][0])}" placeholder="09:00">
           <span class="text-white/30">—</span>
           <input class="inp !py-2 text-center" style="width:92px" data-tm="${n}" data-k="1" value="${fmt(PAIRS[n][1])}" placeholder="10:30">

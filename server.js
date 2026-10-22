@@ -209,6 +209,11 @@ const quietNow = () => { const n = new Date(), m = n.getHours() * 60 + n.getMinu
 const fmtClock = m => `${pad2(Math.floor(m / 60))}:${pad2(m % 60)}`;
 function dayLabel(day) { const d = new Date(SCHEDULE_START); d.setDate(d.getDate() + Number(day)); return `${d.getDate()} ${MON_SHORT[d.getMonth()]}`; }
 const cut = (v, n) => { v = String(v || ''); return v.length > n ? v.slice(0, n - 1) + '…' : v; };
+/* Неделя и время пар принадлежат группе аккаунта; DB.sch / DB.times — запасной вариант
+   для аккаунтов без группы и для баз, созданных до появления групп. */
+function groupOf(ref) { return DB.groups.find(g => g.id === ref || g.name === ref) || null; }
+function scheduleOf(group) { return group && Array.isArray(group.schedule) ? group.schedule : (Array.isArray(DB.sch) ? DB.sch : []); }
+function timesOf(group) { const own = group && group.times; return own && Object.keys(own).length ? own : (DB.times || {}); }
 
 const jwtCache = new Map();
 function vapidJwt(aud) {
@@ -272,19 +277,21 @@ function gradesChanged(before, after, user) {
   for (const key of changedKeys(before, after)) {
     if (after[key] === undefined || before[key] === after[key]) continue;
     const rec = parseRecordKey(key, true); if (!rec) continue;
-    const lesson = lessonAt(rec.day, rec.pair);
-    for (const a of DB.accounts.filter(x => ROLES_STUDENT.includes(x.role) && x.studentIndex === rec.student && x.login !== user.login))
+    for (const a of DB.accounts.filter(x => ROLES_STUDENT.includes(x.role) && x.studentIndex === rec.student && x.login !== user.login)) {
+      const lesson = lessonAt(a, rec.day, rec.pair);
       notifyUser(a, 'grades', { title: `Новая оценка: ${after[key]}`, body: `${lesson ? lesson.title : `${rec.pair} пара`} · ${dayLabel(rec.day)}` });
+    }
   }
 }
 function homeworkChanged(before, after, user) {
   for (const key of changedKeys(before, after)) {
     const next = after[key]; if (!next || JSON.stringify(before[key]) === JSON.stringify(next)) continue;
     const rec = parseRecordKey(key, false); if (!rec) continue;
-    const lesson = lessonAt(rec.day, rec.pair);
     const body = `${cut(next.text, 140)}${next.due ? ` · срок: ${next.due}` : ''}`;
-    for (const a of accountsWhere(ROLES_STUDENT, user.login))
+    for (const a of accountsWhere(ROLES_STUDENT, user.login)) {
+      const lesson = lessonAt(a, rec.day, rec.pair);
       notifyUser(a, 'hw', { title: `Новое ДЗ · ${lesson ? lesson.title : `${rec.pair} пара`} (${dayLabel(rec.day)})`, body });
+    }
   }
 }
 function eventsChanged(before, after, user) {
@@ -302,7 +309,7 @@ function eventsChanged(before, after, user) {
 /* Напоминания о парах и выпуск отложенных ночью уведомлений */
 let remindDay = null; const remindSent = new Set();
 function lessonsFor(account, day) {
-  const lessons = DB.sch?.[weekdayOf(day)]?.lessons || [];
+  const lessons = scheduleOf(groupOf(account.group))?.[weekdayOf(day)]?.lessons || [];
   if (ROLES_STUDENT.includes(account.role)) return lessons;
   if (['teacher', 'curator'].includes(account.role)) return lessons.filter(l => sameTeacher(l.teacher, account.fio));
   return [];
@@ -323,10 +330,11 @@ function pushTick() {
     for (const account of DB.accounts) {
       const prefs = prefsOf(account.login);
       if (!prefs.remind) continue;
-      const lessons = lessonsFor(account, day).filter(l => DB.times[l.n]).sort((a, b) => a.n - b.n);
+      const times = timesOf(groupOf(account.group));
+      const lessons = lessonsFor(account, day).filter(l => times[l.n]).sort((a, b) => a.n - b.n);
       lessons.forEach((l, i) => {
-        const [start] = DB.times[l.n];
-        const prev = lessons[i - 1], gap = prev ? start - DB.times[prev.n][1] : Infinity;
+        const [start] = times[l.n];
+        const prev = lessons[i - 1], gap = prev ? start - times[prev.n][1] : Infinity;
         if (gap < 40) return;                                  // подряд идущие пары не дублируем
         if (minutes < start - prefs.remind || minutes >= start) return;
         const key = `${day}|${account.login}|${l.n}`;
@@ -438,10 +446,14 @@ function parseRecordKey(key, withStudent) {
   if (parts[0] < 0 || parts[0] > MAX_DAY || parts[1] < 1 || (withStudent && parts[2] < 0)) return null;
   return { day: parts[0], pair: parts[1], student: withStudent ? parts[2] : null };
 }
-function lessonAt(day, pair) { return DB.sch?.[weekdayOf(day)]?.lessons?.find(lesson => Number(lesson.n) === Number(pair)) || null; }
-function currentPair() {
+function lessonAt(account, day, pair) {
+  const lessons = scheduleOf(groupOf(account && account.group))?.[weekdayOf(day)]?.lessons || [];
+  return lessons.find(lesson => Number(lesson.n) === Number(pair)) || null;
+}
+function currentPair(user) {
   const now = new Date(), minutes = now.getHours() * 60 + now.getMinutes();
-  for (const [number, interval] of Object.entries(DB.times || {})) if (minutes >= interval[0] && minutes < interval[1]) return Number(number);
+  const times = timesOf(groupOf(user && user.group));
+  for (const [number, interval] of Object.entries(times || {})) if (minutes >= interval[0] && minutes < interval[1]) return Number(number);
   return null;
 }
 /* В расписании преподаватель часто записан как «Селецкая Е. Л.», а в аккаунте — полным ФИО.
@@ -456,7 +468,7 @@ function sameTeacher(a, b) {
   return n > 0 && ix.slice(0, n).every((c, i) => c === iy[i]);
 }
 function teacherOwns(user, day, pair) {
-  const lesson = lessonAt(day, pair);
+  const lesson = lessonAt(user, day, pair);
   return !!lesson && sameTeacher(lesson.teacher, user.fio);
 }
 function validStateObject(value, limit = 20000) { return value && typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length <= limit; }
@@ -538,7 +550,7 @@ async function handleApi(req, res, url) {
   if (pathname === '/api/state' && req.method === 'GET') {
     const user = requireAuth(req, res); if (!user) return;
     const staff = user.role !== 'student';
-    const group = DB.groups.find(g => g.id === user.group || g.name === user.group);
+    const group = groupOf(user.group);
     const groupAccounts = DB.accounts.filter(a => a.role === 'student' && (a.group === group?.id || a.group === group?.name));
     const groupStudentIndices = [...new Set(groupAccounts.map(a => Number(a.studentIndex)).filter(Number.isInteger))];
     const curator = user.role === 'curator';
@@ -546,28 +558,28 @@ async function handleApi(req, res, url) {
     const grades = staff ? Object.fromEntries(Object.entries(DB.grades).filter(([key]) => !visibleIndices || visibleIndices.has(Number(key.split(':')[2])))) : Object.fromEntries(Object.entries(DB.grades).filter(([key]) => Number(key.split(':')[2]) === user.studentIndex));
     const att = staff ? Object.fromEntries(Object.entries(DB.att).filter(([key]) => !visibleIndices || visibleIndices.has(Number(key.split(':')[2])))) : Object.fromEntries(Object.entries(DB.att).filter(([key]) => Number(key.split(':')[2]) === user.studentIndex));
     const students = curator ? DB.students.map((name, i) => groupStudentIndices.includes(i) ? name : null) : (staff ? DB.students : undefined);
-    return json(res, 200, { grades, att, hw: DB.hw, sch: group?.schedule || DB.sch, ev: DB.ev, times: group?.times || DB.times, groupInfo: group ? { name: group.name, specialty: group.specialty, course: group.course, curatorLogin: group.curatorLogin, starostaLogin: group.starostaLogin } : null, start: SCHEDULE_START_ISO, students, groupStudentIndices: curator ? groupStudentIndices : undefined, revision: DB.updatedAt || null });
+    return json(res, 200, { grades, att, hw: DB.hw, sch: scheduleOf(group), ev: DB.ev, times: timesOf(group), groupInfo: group ? { name: group.name, specialty: group.specialty, course: group.course, curatorLogin: group.curatorLogin, starostaLogin: group.starostaLogin } : null, start: SCHEDULE_START_ISO, students, groupStudentIndices: curator ? groupStudentIndices : undefined, revision: DB.updatedAt || null });
   }
   if (pathname.startsWith('/api/state/') && req.method === 'PUT') {
     const part = pathname.split('/')[3], user = requireAuth(req, res); if (!user) return;
     const input = await readBody(req);
     if (part === 'sch') {
       if (!can(user, 'schedule')) return json(res, 403, { ok: false, error: 'Нет права менять расписание' });
-      const group = DB.groups.find(g => g.id === user.group || g.name === user.group);
-      if (group) group.schedule = sanitizeSchedule(input); else DB.sch = sanitizeSchedule(input); scheduleChanged(user.login);
+      const group = groupOf(user.group);
+      if (group) group.schedule = sanitizeSchedule(input, timesOf(group)); else DB.sch = sanitizeSchedule(input); scheduleChanged(user.login);
     } else if (part === 'ev') {
       if (!can(user, 'events')) return json(res, 403, { ok: false, error: 'Нет права менять мероприятия' });
       const prevEv = DB.ev; DB.ev = sanitizeEvents(input); eventsChanged(prevEv || {}, DB.ev, user);
     } else if (part === 'times') {
       if (!can(user, 'times')) return json(res, 403, { ok: false, error: 'Нет права менять время пар' });
-      const group = DB.groups.find(g => g.id === user.group || g.name === user.group);
+      const group = groupOf(user.group);
       if (group) group.times = sanitizeTimes(input); else DB.times = sanitizeTimes(input); scheduleChanged(user.login);
     } else if (part === 'grades') {
       if (!can(user, 'grades') || !validStateObject(input)) return json(res, 403, { ok: false, error: 'Нет права менять оценки' });
       for (const key of changedKeys(DB.grades, input)) {
         const record = parseRecordKey(key, true), value = input[key];
         if (!record || (value !== undefined && ![2, 3, 4, 5].includes(Number(value)))) return json(res, 400, { ok: false, error: 'Некорректная оценка' });
-        if (user.role !== 'dev' && (!teacherOwns(user, record.day, record.pair) || record.day !== todayOffset() || currentPair() !== record.pair)) return json(res, 403, { ok: false, error: 'Оценки доступны только на своей текущей паре' });
+        if (user.role !== 'dev' && (!teacherOwns(user, record.day, record.pair) || record.day !== todayOffset() || currentPair(user) !== record.pair)) return json(res, 403, { ok: false, error: 'Оценки доступны только на своей текущей паре' });
       }
       const prevGrades = DB.grades; DB.grades = input; gradesChanged(prevGrades, input, user);
     } else if (part === 'att') {
@@ -575,7 +587,7 @@ async function handleApi(req, res, url) {
       for (const key of changedKeys(DB.att, input)) {
         const record = parseRecordKey(key, true), value = input[key];
         if (!record || (value !== undefined && (!['У', 'Н', 'О', 'Б'].includes(value.t) || (value.t === 'О' && (!Number.isInteger(value.min) || value.min < 1 || value.min > 300))))) return json(res, 400, { ok: false, error: 'Некорректная отметка посещаемости' });
-        if (user.role === 'teacher' && (!teacherOwns(user, record.day, record.pair) || record.day !== todayOffset() || currentPair() !== record.pair)) return json(res, 403, { ok: false, error: 'Отметки доступны только на своей текущей паре' });
+        if (user.role === 'teacher' && (!teacherOwns(user, record.day, record.pair) || record.day !== todayOffset() || currentPair(user) !== record.pair)) return json(res, 403, { ok: false, error: 'Отметки доступны только на своей текущей паре' });
       }
       DB.att = input;
     } else if (part === 'hw') {
@@ -600,13 +612,15 @@ async function handleApi(req, res, url) {
   if (pathname === '/api/schedule/import' && req.method === 'POST') {
     const user = requireAuth(req, res, 'schedule'); if (!user) return;
     const input = await readBody(req);
-    let times = DB.times;
+    const group = groupOf(user.group);
+    let times = timesOf(group);
     if (input.times && typeof input.times === 'object' && Object.keys(input.times).length) {
       if (!can(user, 'times')) return json(res, 403, { ok: false, error: 'Нет права менять время пар' });
-      times = sanitizeTimes({ ...DB.times, ...input.times });
+      times = sanitizeTimes({ ...times, ...input.times });
     }
     const sch = sanitizeSchedule(input.sch, times);
-    DB.times = times; DB.sch = sch; scheduleChanged(user.login);
+    if (group) { group.times = times; group.schedule = sch; } else { DB.times = times; DB.sch = sch; }
+    scheduleChanged(user.login);
     DB.updatedAt = new Date().toISOString(); saveDB();
     return json(res, 200, { ok: true, lessons: sch.reduce((sum, day) => sum + day.lessons.length, 0), revision: DB.updatedAt });
   }
@@ -731,7 +745,7 @@ async function handleApi(req, res, url) {
   return json(res, 404, { ok: false, error: 'Метод не найден' });
 }
 
-const STATIC_FILES = new Set(['/sw.js', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png', '/apple-touch-icon.png', '/og-image.png', '/splash.js']);
+const STATIC_FILES = new Set(['/sw.js', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png', '/apple-touch-icon.png', '/og-image.png', '/splash.js', '/theme.js', '/theme.css']);
 const MIME = { '.webmanifest': 'application/manifest+json; charset=utf-8', '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon' };
 const PUBLIC_URL = String(process.env.PUBLIC_URL || '').trim().replace(/\/+$/, '');
 // Абсолютный адрес сайта для og:image / og:url (Telegram и соцсети требуют полные URL).

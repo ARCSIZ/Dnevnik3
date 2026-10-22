@@ -3,8 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="stylesheet" href="/theme.css">
+<script src="/theme.js"></script>
 <script src="/splash.js"></script>
-<title>Дневник · 02-СД-25-о</title>
+<title>Дневник · Электронный дневник</title>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="theme-color" content="#07070d">
@@ -52,7 +54,7 @@
     -webkit-backdrop-filter: blur(18px);
     box-shadow: 0 24px 64px -28px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.07);
   }
-  .grad-text { background: linear-gradient(92deg, #a78bfa, #c084fc 45%, #818cf8); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .grad-text { background: linear-gradient(92deg, var(--acc-c), #c084fc 45%, #818cf8); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
   /* ---------- Появление ---------- */
   .fade-up { animation: fadeUp .8s cubic-bezier(.16,1,.3,1) both; }
@@ -82,12 +84,12 @@
     color: rgba(255,255,255,.55);
     transition: transform .16s cubic-bezier(.34,1.56,.64,1), background .2s, border-color .2s, color .2s, box-shadow .2s;
   }
-  .day-cell:hover { transform: translateY(-2px); border-color: rgba(167,139,250,.35); color: #fff; }
+  .day-cell:hover { transform: translateY(-2px); border-color: rgba(var(--acc),.35); color: #fff; }
   .day-cell:active { transform: scale(.94); }
   .day-cell .dc-wd { font-size: 9.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; opacity: .75; }
   .day-cell .dc-nwrap { position: relative; }
   .day-cell .dc-d { font-size: 16px; font-weight: 700; line-height: 1.25; }
-  .day-cell .dc-dot { position: absolute; right: -8px; top: 3px; width: 4.5px; height: 4.5px; border-radius: 99px; background: #a78bfa; }
+  .day-cell .dc-dot { position: absolute; right: -8px; top: 3px; width: 4.5px; height: 4.5px; border-radius: 99px; background: var(--acc-c); }
   .day-cell .dc-mon {
     position: absolute; top: 3.5px; right: 3.5px;
     font-size: 7px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; line-height: 1;
@@ -95,9 +97,9 @@
     padding: 2.5px 4px; border-radius: 99px;
   }
   .day-cell.on {
-    background: linear-gradient(140deg, #6d5bff, #a855f7);
+    background: linear-gradient(140deg, var(--g1), var(--g2));
     border-color: transparent; color: #fff;
-    box-shadow: 0 10px 26px -10px rgba(124,108,255,.65), inset 0 1px 0 rgba(255,255,255,.25);
+    box-shadow: 0 10px 26px -10px rgba(var(--glow),.65), inset 0 1px 0 rgba(255,255,255,.25);
   }
   .day-cell.on .dc-dot { background: #fff; }
   .day-cell.on .dc-mon { background: rgba(255,255,255,.2); color: #fff; }
@@ -110,7 +112,7 @@
 
   /* ---------- Подразделы дня ---------- */
   .subtabs { position: relative; display: flex; border-radius: 15px; background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.07); padding: 4px; }
-  .subtab-ind { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 11px; background: linear-gradient(135deg, rgba(109,91,255,.85), rgba(168,85,247,.85)); box-shadow: 0 6px 18px -6px rgba(124,108,255,.6), inset 0 1px 0 rgba(255,255,255,.2); transition: transform .42s cubic-bezier(.22,1.2,.36,1); }
+  .subtab-ind { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 11px; background: linear-gradient(135deg, rgba(var(--g1rgb),.85), rgba(var(--g2rgb),.85)); box-shadow: 0 6px 18px -6px rgba(var(--glow),.6), inset 0 1px 0 rgba(255,255,255,.2); transition: transform .42s cubic-bezier(.22,1.2,.36,1); }
   .subtab-btn { position: relative; z-index: 1; flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px; padding: 9.5px 0; border-radius: 11px; font-size: 13px; font-weight: 600; color: rgba(255,255,255,.45); background: none; border: none; cursor: pointer; transition: color .25s, transform .1s; }
   .subtab-btn svg { width: 15px; height: 15px; }
   .subtab-btn:active { transform: scale(.96); }
@@ -122,7 +124,7 @@
   /* ---------- Карточка-кнопка урока ---------- */
   .lesson-card[data-pair] { cursor: pointer; -webkit-tap-highlight-color: transparent; }
   .lesson-card[data-pair]:active { transform: scale(.985); }
-  .lesson-card[data-pair]:focus-visible { outline: 2px solid rgba(167,139,250,.7); outline-offset: 2px; }
+  .lesson-card[data-pair]:focus-visible { outline: 2px solid rgba(var(--acc),.7); outline-offset: 2px; }
   .lesson-card .ls-arrow { color: rgba(255,255,255,.25); transition: transform .2s, color .2s; }
   .lesson-card:hover .ls-arrow { color: rgba(255,255,255,.6); transform: translateX(3px); }
 
@@ -171,7 +173,7 @@
   .cat-list .cat-card:nth-child(2) { animation-delay: .1s; }
   .cat-list .cat-card:nth-child(3) { animation-delay: .16s; }
   .cat-list .cat-card:nth-child(4) { animation-delay: .22s; }
-  .cat-card:hover { transform: translateY(-2px); border-color: rgba(167,139,250,.4); }
+  .cat-card:hover { transform: translateY(-2px); border-color: rgba(var(--acc),.4); }
   .cat-card:active { transform: scale(.982); }
   .cat-ico { width: 42px; height: 42px; border-radius: 15px; display: grid; place-items: center; color: #fff; flex-shrink: 0; box-shadow: 0 10px 22px -10px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.25); }
   .cat-ico svg { width: 19px; height: 19px; }
@@ -225,19 +227,19 @@
     transition: transform .3s cubic-bezier(.34,1.5,.64,1), width .18s;
   }
   .switch input:checked + .track {
-    background: linear-gradient(135deg, #6d5bff, #a855f7); border-color: transparent;
-    box-shadow: 0 6px 16px -6px rgba(124,108,255,.75), inset 0 1px 0 rgba(255,255,255,.25);
+    background: linear-gradient(135deg, var(--g1), var(--g2)); border-color: transparent;
+    box-shadow: 0 6px 16px -6px rgba(var(--glow),.75), inset 0 1px 0 rgba(255,255,255,.25);
   }
   .switch input:checked + .track .thumb { transform: translateX(18px); }
   .switch input:active + .track .thumb { width: 24px; }
   .switch input:checked:active + .track .thumb { transform: translateX(14px); }
-  .switch input:focus-visible + .track { outline: 2px solid rgba(167,139,250,.7); outline-offset: 2px; }
+  .switch input:focus-visible + .track { outline: 2px solid rgba(var(--acc),.7); outline-offset: 2px; }
 
   /* Сегмент-выбор */
   .seg { display: flex; gap: 3px; padding: 3px; border-radius: 11px; background: rgba(255,255,255,.055); border: 1px solid rgba(255,255,255,.07); flex-shrink: 0; }
   .seg-btn { min-width: 32px; padding: 5px 7px; border: none; background: none; border-radius: 8px; color: rgba(255,255,255,.45); font-size: 12px; font-weight: 600; cursor: pointer; transition: all .2s; }
   .seg-btn:hover { color: #fff; }
-  .seg-btn.active { background: linear-gradient(135deg, #6d5bff, #a855f7); color: #fff; box-shadow: 0 4px 12px -4px rgba(124,108,255,.7); }
+  .seg-btn.active { background: linear-gradient(135deg, var(--g1), var(--g2)); color: #fff; box-shadow: 0 4px 12px -4px rgba(var(--glow),.7); }
   .seg-btn:active { transform: scale(.92); }
 
   /* Компактный режим расписания */
@@ -262,7 +264,7 @@
     box-shadow: 0 8px 20px -8px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.22);
   }
   .badge-lec { background: linear-gradient(135deg, #0ea5e9, #6366f1); }
-  .badge-prac { background: linear-gradient(135deg, #7c6cff, #c026d3); }
+  .badge-prac { background: linear-gradient(135deg, var(--g1), #c026d3); }
 
   .lesson-card { position: relative; overflow: hidden; transition: transform .2s cubic-bezier(.34,1.4,.64,1), border-color .2s; }
   .lesson-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.16); }
@@ -302,8 +304,8 @@
   .nav-ind {
     position: absolute; top: 6px; bottom: 6px; left: 6px;
     width: calc(50% - 6px); border-radius: 18px;
-    background: linear-gradient(135deg, rgba(109,91,255,.9), rgba(168,85,247,.9));
-    box-shadow: 0 10px 24px -8px rgba(124,108,255,.7), inset 0 1px 0 rgba(255,255,255,.25);
+    background: linear-gradient(135deg, rgba(var(--g1rgb),.9), rgba(var(--g2rgb),.9));
+    box-shadow: 0 10px 24px -8px rgba(var(--glow),.7), inset 0 1px 0 rgba(255,255,255,.25);
     transition: transform .42s cubic-bezier(.22,1.2,.36,1);
   }
   .nav-btn {
@@ -347,17 +349,16 @@
   <!-- ======= ШАПКА ======= -->
   <header class="relative z-10 mx-auto w-full max-w-[640px] px-5 pt-6 pb-2 flex items-center justify-between">
     <div class="flex items-center gap-3 fade-up">
-      <div class="w-10 h-10 rounded-2xl grid place-items-center bg-gradient-to-br from-[#6d5bff] to-[#a855f7] shadow-lg shadow-violet-500/30">
+      <div class="w-10 h-10 rounded-2xl grid place-items-center bg-gradient-to-br from-[var(--g1)] to-[var(--g2)] shadow-lg shadow-violet-500/30">
         <i data-lucide="graduation-cap" class="text-white" style="width:19px;height:19px"></i>
       </div>
       <div>
-        <div class="text-[14px] font-bold leading-none">02-СД-25-о</div>
-        <div class="text-[11px] text-white/40 mt-1">Сестринское дело · 2 курс</div>
+        <div class="text-[14px] font-bold leading-none" id="headGroup">Дневник</div>
+        <div class="text-[11px] text-white/40 mt-1" id="headSub">загружаем вашу группу…</div>
       </div>
     </div>
     <button class="icon-btn fade-up d1" id="bellBtn" aria-label="Уведомления">
       <i data-lucide="bell" style="width:17px;height:17px"></i>
-      <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-fuchsia-400 border-2 border-[#0a0a12]"></span>
     </button>
   </header>
 
@@ -368,7 +369,7 @@
     <section id="screenDiary">
       <div class="flex items-end justify-between gap-3 mt-5 mb-5 fade-up d1">
         <div>
-          <h1 class="font-display font-bold text-[24px] leading-none">Расписание</h1>
+          <h1 class="font-display font-bold text-[24px] leading-none" id="diaryTitle">Расписание</h1>
           <div class="flex items-center gap-1.5 mt-2.5 text-[12px] text-white/40">
             <i data-lucide="calendar-days" style="width:13px;height:13px" class="text-violet-300"></i>
             <span id="weekCaption">Текущая неделя</span>
@@ -398,7 +399,7 @@
       <!-- День -->
       <div id="dayView" class="mt-5 fade-up d3"></div>
 
-      <p class="text-center text-[11px] text-white/25 mt-10 fade-up d4">Расписание группы 02-СД-25-о</p>
+      <p class="text-center text-[11px] text-white/25 mt-10 fade-up d4" id="footCaption">Расписание группы</p>
     </section>
 
     <!-- ================= ЭКРАН: УРОК ================= -->
@@ -439,7 +440,7 @@
             <i data-lucide="chevron-right" class="cat-arrow"></i>
           </button>
           <button type="button" class="cat-card" data-cat="look">
-            <span class="cat-ico" style="background:linear-gradient(135deg,#a855f7,#ec4899)"><i data-lucide="palette"></i></span>
+            <span class="cat-ico" style="background:linear-gradient(135deg,var(--g2),#ec4899)"><i data-lucide="palette"></i></span>
             <span class="cat-text">
               <span class="cat-name">Внешний вид</span>
               <span class="cat-desc">Фон, плотность списка пар</span>
@@ -463,7 +464,7 @@
             <i data-lucide="chevron-right" class="cat-arrow"></i>
           </button>
         </div>
-        <p class="text-center text-[11px] text-white/25 mt-6">Настройки действуют только в текущей сессии</p>
+        <p class="text-center text-[11px] text-white/25 mt-6">Настройки вида применяются на этом устройстве</p>
       </div>
 
       <!-- Уведомления -->
@@ -528,6 +529,15 @@
             <span class="set-text"><span class="set-name">Компактный список пар</span><span class="set-desc">Меньше отступов в расписании</span></span>
             <span class="switch"><input type="checkbox" id="swCompact"><span class="track"><span class="thumb"></span></span></span>
           </label>
+          <div class="set-row">
+            <span class="set-ico" style="background:rgba(251,146,60,.14);color:#fdba74"><i data-lucide="ghost"></i></span>
+            <span class="set-text"><span class="set-name">Праздничное оформление</span><span class="set-desc">Хэллоуин сам включается 20 октября — 1 ноября</span></span>
+            <div class="seg" id="seasonSeg">
+              <button type="button" class="seg-btn" data-v="off">выкл</button>
+              <button type="button" class="seg-btn active" data-v="auto">авто</button>
+              <button type="button" class="seg-btn" data-v="on">вкл</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -562,12 +572,12 @@
       <div class="glass rounded-3xl p-5 mb-4 relative overflow-hidden">
         <div class="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-violet-400/50 to-transparent"></div>
         <div class="flex items-center gap-4">
-          <div class="w-16 h-16 rounded-3xl grid place-items-center bg-gradient-to-br from-[#6d5bff] to-[#a855f7] shadow-xl shadow-violet-500/30 shrink-0" id="accAvatar">
-            <span id="accInitials" class="text-white font-display font-bold text-[20px] tracking-wide">ИИ</span>
+          <div class="w-16 h-16 rounded-3xl grid place-items-center bg-gradient-to-br from-[var(--g1)] to-[var(--g2)] shadow-xl shadow-violet-500/30 shrink-0" id="accAvatar">
+            <span id="accInitials" class="text-white font-display font-bold text-[20px] tracking-wide"></span>
           </div>
           <div class="min-w-0">
-            <div class="font-display font-bold text-[16px] leading-tight" id="accName">Иванов Иван</div>
-            <div class="text-[12.5px] text-white/45 mt-1" id="accMeta">Группа 02-СД-25-о · очная форма</div>
+            <div class="font-display font-bold text-[16px] leading-tight" id="accName">Профиль</div>
+            <div class="text-[12.5px] text-white/45 mt-1" id="accMeta">загружаем аккаунт…</div>
             <div class="chip mt-2.5" style="color:#6ee7b7;background:rgba(52,211,153,.1);border-color:rgba(110,231,183,.25)">
               <i data-lucide="badge-check"></i> обучается
             </div>
@@ -578,15 +588,15 @@
       <div class="glass rounded-3xl divide-y divide-white/[0.06] mb-4 overflow-hidden">
         <div class="flex items-center justify-between px-5 py-3.5">
           <span class="flex items-center gap-2.5 text-[13px] text-white/45"><i data-lucide="users" style="width:15px;height:15px" class="text-violet-300"></i>Группа</span>
-          <span class="text-[13.5px] font-semibold">02-СД-25-о</span>
+          <span class="text-[13.5px] font-semibold" id="accRowGroup">—</span>
         </div>
         <div class="flex items-center justify-between px-5 py-3.5">
           <span class="flex items-center gap-2.5 text-[13px] text-white/45"><i data-lucide="heart-pulse" style="width:15px;height:15px" class="text-violet-300"></i>Специальность</span>
-          <span class="text-[13.5px] font-semibold">Сестринское дело</span>
+          <span class="text-[13.5px] font-semibold" id="accRowSpec">—</span>
         </div>
         <div class="flex items-center justify-between px-5 py-3.5">
           <span class="flex items-center gap-2.5 text-[13px] text-white/45"><i data-lucide="calendar-days" style="width:15px;height:15px" class="text-violet-300"></i>Учебный год</span>
-          <span class="text-[13.5px] font-semibold">2026/27 · 2 курс</span>
+          <span class="text-[13.5px] font-semibold" id="accRowYear">—</span>
         </div>
       </div>
 
@@ -596,7 +606,7 @@
         <button class="btn-ghost w-full justify-between" id="openGrades">
           <span class="flex items-center gap-2.5"><i data-lucide="trending-up" style="width:16px;height:16px" class="text-fuchsia-300"></i>Оценки и успеваемость</span>
           <span class="flex items-center gap-2">
-            <span class="text-[13px] font-bold text-emerald-300" id="accAvg">4.6</span>
+            <span class="text-[13px] font-bold text-emerald-300" id="accAvg">—</span>
             <i data-lucide="chevron-right" style="width:16px;height:16px" class="text-white/30"></i>
           </span>
         </button>
@@ -647,6 +657,9 @@ if (matchMedia('(pointer:fine)').matches && !reduced) {
 /* ================= ДАННЫЕ РАСПИСАНИЯ ================= */
 /* Время пар: [начало, конец] в минутах от полуночи */
 const PAIRS = {};
+/* У группы бывает пустой timetable: тогда время неизвестно и его нигде не показываем. */
+const pairRange = n => (Array.isArray(PAIRS[n]) ? PAIRS[n] : [null, null]);
+const timeLabel = n => { const [s, e] = pairRange(n); return s == null ? `${n}-я пара` : `${fmt(s)} – ${fmt(e)}`; };
 
 function emptyWeek() {
   const names = ['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'];
@@ -743,7 +756,7 @@ function gapChip(minutes, big) {
 
 function lessonHTML(l, isLast, live, pct, elapsed, delay) {
   const tp = TYPE[l.type];
-  const [s, e] = PAIRS[l.n];
+  const [s, e] = pairRange(l.n);
   const icon = pickIcon(l.title, tp.icon);
   const ex = extraOf(dayIdx, l.n);
   const marks = (ex.grade ? `<span class="grade-pill ${GRADE_CLS[ex.grade]}">${ex.grade}</span>` : '')
@@ -758,7 +771,7 @@ function lessonHTML(l, isLast, live, pct, elapsed, delay) {
           <span class="chip ${tp.chip}"><i data-lucide="${icon}"></i>${tp.label}</span>
           ${live ? '<span class="chip live-chip"><span class="live-dot"></span>сейчас идёт</span>' : ''}
           <span class="ml-auto flex items-center gap-1.5 text-[12px] font-medium text-white/45 whitespace-nowrap">
-            <i data-lucide="clock" style="width:12.5px;height:12.5px" class="text-white/30"></i>${fmt(s)} – ${fmt(e)}
+            <i data-lucide="clock" style="width:12.5px;height:12.5px" class="text-white/30"></i>${timeLabel(l.n)}
           </span>
         </div>
         <h3 class="font-semibold text-[15px] leading-snug mb-2.5">${l.title}</h3>
@@ -790,18 +803,21 @@ function dayHTML(d, off) {
   const m = off === todayRaw() ? nowMin() : -1;
   const ls = d.lessons;
   let liveN = null, gapLive = false;
-  ls.forEach(l => { const [s, e] = PAIRS[l.n]; if (m >= s && m < e) liveN = l.n; });
+  ls.forEach(l => { const p = PAIRS[l.n]; if (p && m >= p[0] && m < p[1]) liveN = l.n; });
   if (!liveN && ls.length > 1) {
     for (let k = 0; k < ls.length - 1; k++) {
-      const [, e1] = PAIRS[ls[k].n]; const [s2] = PAIRS[ls[k + 1].n];
-      if (m >= e1 && m < s2) { gapLive = true; break; }
+      const a = PAIRS[ls[k].n], b = PAIRS[ls[k + 1].n];
+      if (a && b && m >= a[1] && m < b[0]) { gapLive = true; break; }
     }
   }
 
   const dateFull = `${d.day} ${d.mon}`;
-  const summary = ls.length
-    ? `${ls.length} ${plural(ls.length, 'пара', 'пары', 'пар')} · ${fmt(PAIRS[ls[0].n][0])} – ${fmt(PAIRS[ls[ls.length - 1].n][1])}`
-    : 'выходной день';
+  const days = ls.length
+    ? `${ls.length} ${plural(ls.length, 'пара', 'пары', 'пар')}`
+    : d.weekend ? 'выходной день' : 'окно в расписании';
+  const first = ls.length ? pairRange(ls[0].n)[0] : null;
+  const last = ls.length ? pairRange(ls[ls.length - 1].n)[1] : null;
+  const summary = first == null || last == null ? days : `${days} · ${fmt(first)} – ${fmt(last)}`;
 
   let head = `
     <div class="ls-item">
@@ -834,12 +850,12 @@ function dayHTML(d, off) {
   ls.forEach((l, i) => {
     const live = l.n === liveN;
     let pct = 0, elapsed = 0;
-    if (live) { const [s, e] = PAIRS[l.n]; elapsed = m - s; pct = Math.min(100, Math.round(elapsed / (e - s) * 100)); }
+    if (live) { const p = PAIRS[l.n]; if (p) { elapsed = m - p[0]; pct = Math.min(100, Math.round(elapsed / (p[1] - p[0]) * 100)); } }
     rows += lessonHTML(l, i === ls.length - 1, live, pct, elapsed, delay);
     delay += .07;
     if (i < ls.length - 1) {
-      const gap = PAIRS[ls[i + 1].n][0] - PAIRS[l.n][1];
-      if (gap > 0) { rows += gapChip(gap, gap >= 25); delay += .04; }
+      const a = PAIRS[l.n], b = PAIRS[ls[i + 1].n];
+      if (a && b) { const gap = b[0] - a[1]; if (gap > 0) { rows += gapChip(gap, gap >= 25); delay += .04; } }
     }
   });
   return head + `<div class="mt-5">${rows}</div>`;
@@ -875,26 +891,24 @@ function eventsHTML(d, i) {
   }
   let rows = '', delay = .08;
   list.forEach((ev, k) => {
+    const where = [['map-pin', ev.place], ['user-round', ev.org]].filter(([, v]) => v && v !== '—');
     rows += `
       <div class="flex gap-3.5 ls-item" style="animation-delay:${delay}s">
         <div class="w-9 shrink-0 flex flex-col items-center">
-          <div class="pair-badge event-icon"><i data-lucide="${ev.icon}" style="width:16px;height:16px"></i></div>
+          <div class="pair-badge event-icon"><i data-lucide="${pickIcon(ev.title, 'calendar-days')}" style="width:16px;height:16px"></i></div>
         </div>
         <article class="lesson-card glass rounded-2xl px-4 py-3.5 flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap mb-2.5">
-            <span class="chip gap-chip"><i data-lucide="sparkles"></i>${ev.type}</span>
+            <span class="chip gap-chip"><i data-lucide="sparkles"></i>мероприятие</span>
             <span class="ml-auto flex items-center gap-1.5 text-[12px] font-medium text-white/45 whitespace-nowrap">
               <i data-lucide="clock" style="width:12.5px;height:12.5px" class="text-white/30"></i>${ev.time}
             </span>
           </div>
           <h3 class="font-semibold text-[15px] leading-snug mb-2.5">${ev.title}</h3>
           <div class="space-y-1.5 text-[13px] text-white/60">
-            <p class="flex items-center gap-2">
-              <i data-lucide="map-pin" style="width:13.5px;height:13.5px" class="text-white/30 shrink-0"></i>${ev.place}
-            </p>
-            <p class="flex items-center gap-2">
-              <i data-lucide="user-round" style="width:13.5px;height:13.5px" class="text-white/30 shrink-0"></i>${ev.org}
-            </p>
+            ${where.map(([ico, v]) => `<p class="flex items-center gap-2">
+              <i data-lucide="${ico}" style="width:13.5px;height:13.5px" class="text-white/30 shrink-0"></i><span class="truncate">${v}</span>
+            </p>`).join('')}
           </div>
         </article>
       </div>`;
@@ -930,11 +944,17 @@ $('#todayBtn').addEventListener('click', () => { const t = todayOff(); selectDay
 
 /* ------- Подразделы дня: Расписание / Мероприятия ------- */
 const subInd = $('#subInd');
+let GROUP_NAME = '';
+const footText = () => GROUP_NAME
+  ? `${subTab === 'events' ? 'Мероприятия' : 'Расписание'} группы ${GROUP_NAME}`
+  : 'Расписание появится, когда его опубликуют';
 function setSubTab(name) {
   if (name === subTab) return;
   subTab = name;
   subInd.style.transform = name === 'events' ? 'translateX(100%)' : 'translateX(0)';
   $$('.subtab-btn').forEach(b => b.classList.toggle('active', b.dataset.sub === name));
+  $('#diaryTitle').textContent = name === 'events' ? 'Мероприятия' : 'Расписание';
+  $('#footCaption').textContent = footText();
   selectDay(dayIdx, name === 'events' ? 1 : -1, false, true);
 }
 $$('.subtab-btn').forEach(b => b.addEventListener('click', () => setSubTab(b.dataset.sub)));
@@ -945,12 +965,12 @@ let lessonOpenN = null;
 
 function lessonDetailHTML(d, l, di) {
   const tp = TYPE[l.type];
-  const [s, e] = PAIRS[l.n];
+  const [s, e] = pairRange(l.n);
   const ex = extraOf(di, l.n);
   const icon = pickIcon(l.title, tp.icon);
   const dateFull = `${d.wd}, ${d.day} ${d.mon}`;
   const m = nowMin();
-  const live = di === todayRaw() && m >= s && m < e;
+  const live = s != null && di === todayRaw() && m >= s && m < e;
 
   const gradeBlock = ex.grade ? `
     <div class="glass rounded-2xl p-4 det-item" style="animation-delay:.16s">
@@ -1018,7 +1038,7 @@ function lessonDetailHTML(d, l, di) {
     <div class="glass rounded-2xl mt-3 divide-y divide-white/[0.06] overflow-hidden det-item" style="animation-delay:.1s">
       <div class="info-row">
         <span class="info-ico"><i data-lucide="clock" style="width:15px;height:15px"></i></span>
-        <div><div class="text-[11.5px] text-white/40">Время</div><div class="text-[14px] font-semibold mt-0.5">${fmt(s)} – ${fmt(e)}<span class="text-white/35 font-normal text-[12.5px]"> · 90 мин</span></div></div>
+        <div><div class="text-[11.5px] text-white/40">Время</div><div class="text-[14px] font-semibold mt-0.5">${timeLabel(l.n)}${s == null ? '' : `<span class="text-white/35 font-normal text-[12.5px]"> · ${e - s} мин</span>`}</div></div>
       </div>
       <div class="info-row">
         <span class="info-ico"><i data-lucide="map-pin" style="width:15px;height:15px"></i></span>
@@ -1172,6 +1192,27 @@ function hydrateProfile(user) {
     ? `${user.login} · группа ${user.group} · очная`
     : `${user.login} · ${ROLE_NAMES[user.role] || user.role}`;
   $('#accInitials').textContent = ((last[0] || 'П') + (first[0] || '')).toUpperCase();
+}
+
+/* Группа: шапка, экран аккаунта и заголовок вкладки берутся из данных сервера */
+function academicYear(date) {
+  const y = date.getMonth() >= 7 ? date.getFullYear() : date.getFullYear() - 1;
+  return `${y}/${String(y + 1).slice(-2)}`;
+}
+
+function hydrateGroup(info) {
+  const name = (info && info.name) || (AUTH_USER && AUTH_USER.group) || '';
+  GROUP_NAME = name;
+  const spec = (info && info.specialty || '').trim();
+  const course = info && Number(info.course) ? `${info.course}-й курс` : '';
+  const sub = [spec, course].filter(Boolean).join(' · ');
+  $('#headGroup').textContent = name || 'Дневник';
+  $('#headSub').textContent = name ? (sub || 'группа без описания') : 'группа ещё не назначена';
+  $('#footCaption').textContent = footText();
+  $('#accRowGroup').textContent = name || '—';
+  $('#accRowSpec').textContent = spec || '—';
+  $('#accRowYear').textContent = name ? `${academicYear(SCH_START)} · ${course || 'курс не указан'}` : '—';
+  document.title = (name ? `Дневник · ${name}` : 'Дневник') + ' · Электронный дневник';
 }
 
 /* ================= ОЦЕНКИ И УСПЕВАЕМОСТЬ ================= */
@@ -1597,6 +1638,20 @@ $('#swHideWknd').addEventListener('change', e => {
   $$('.day-cell.wknd').forEach(c => c.style.display = hideWknd ? 'none' : '');
   if (hideWknd && dayInfo(dayIdx).weekend) selectDay(Math.floor(dayIdx / 7) * 7, -1, false, true);
 });
+/* Праздничное оформление: запоминается на устройстве и действует на всех страницах */
+function syncSeasonSeg() {
+  const mode = window.SD_SEASON ? SD_SEASON.mode() : 'auto';
+  $$('#seasonSeg .seg-btn').forEach(b => b.classList.toggle('active', b.dataset.v === mode));
+}
+$('#seasonSeg').addEventListener('click', e => {
+  const b = e.target.closest('.seg-btn');
+  if (!b || !window.SD_SEASON) return;
+  e.preventDefault();
+  SD_SEASON.set(b.dataset.v);
+  syncSeasonSeg();
+});
+syncSeasonSeg();
+document.addEventListener('sd:season', syncSeasonSeg);
 
 /* ================= РОЛИ И ДОСТУП К СТУДИЯМ ================= */
 const ROLE_NAMES = { student: 'студент', starosta: 'староста', teacher: 'преподаватель', curator: 'куратор', admin: 'дежурный администратор', dev: 'разработчик' };
@@ -1656,6 +1711,7 @@ $('#logoutBtn').addEventListener('click', async () => {
     const r = await fetch('/api/state', { cache: 'no-store' });
     if (!r.ok) throw new Error('Не удалось загрузить дневник');
     const d = await r.json();
+    hydrateGroup(d.groupInfo);
     if (d.times) {
       Object.keys(PAIRS).forEach(key => delete PAIRS[key]);
       Object.assign(PAIRS, d.times);

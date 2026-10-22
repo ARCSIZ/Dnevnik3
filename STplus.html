@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="stylesheet" href="/theme.css">
+<script src="/theme.js"></script>
 <script src="/splash.js"></script>
 <title>Студия Plus · Панель разработчика</title>
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
@@ -27,7 +29,7 @@
   .icon-btn:hover { color:#fff;background:rgba(255,255,255,.08); } .icon-btn:active { transform:scale(.9); }
   .btn { display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 16px;border-radius:14px;font-size:13.5px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all .18s; }
   .btn:active { transform:scale(.97); }
-  .btn-p { color:#fff;background:linear-gradient(135deg,#6d5bff,#a855f7);box-shadow:0 10px 26px -12px rgba(124,108,255,.8),inset 0 1px 0 rgba(255,255,255,.22); }
+  .btn-p { color:#fff;background:linear-gradient(135deg,var(--g1),var(--g2));box-shadow:0 10px 26px -12px rgba(var(--glow),.8),inset 0 1px 0 rgba(255,255,255,.22); }
   .btn-p:hover { filter:brightness(1.07);transform:translateY(-1px); }
   .btn-g { color:rgba(255,255,255,.75);border-color:rgba(255,255,255,.1);background:rgba(255,255,255,.04); }
   .btn-g:hover { color:#fff;background:rgba(255,255,255,.08); }
@@ -44,9 +46,9 @@
   .tabs { position:relative;display:flex;border-radius:15px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.07);padding:4px;gap:2px; }
   .tab { flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9.5px 4px;border-radius:11px;font-size:12.5px;font-weight:600;color:rgba(255,255,255,.45);background:none;border:none;cursor:pointer;transition:all .22s; }
   .tab svg { width:14px;height:14px; }
-  .tab.on { color:#fff;background:linear-gradient(135deg,rgba(244,63,94,.85),rgba(168,85,247,.9));box-shadow:0 6px 18px -6px rgba(244,63,94,.5); }
-  .inp { width:100%;border-radius:13px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.1);padding:11px 13px;font-size:13.5px;color:#fff;outline:none;transition:all .2s;caret-color:#a78bfa; }
-  .inp:focus { border-color:rgba(167,139,250,.6);background:rgba(255,255,255,.07);box-shadow:0 0 0 4px rgba(124,108,255,.14); }
+  .tab.on { color:#fff;background:linear-gradient(135deg,var(--g1),var(--g2));box-shadow:0 6px 18px -6px rgba(var(--glow),.6); }
+  .inp { width:100%;border-radius:13px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.1);padding:11px 13px;font-size:13.5px;color:#fff;outline:none;transition:all .2s;caret-color:var(--acc-c); }
+  .inp:focus { border-color:rgba(var(--acc),.6);background:rgba(255,255,255,.07);box-shadow:0 0 0 4px rgba(var(--glow),.14); }
   .inp::placeholder { color:rgba(255,255,255,.25); }
   select.inp { appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%23ffffff88' stroke-width='2'%3E%3Cpath d='M3 5l4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center; }
   select.inp option { background:#15151f; }
@@ -111,10 +113,10 @@ function toast(msg,type='info'){const m={info:['info','text-violet-300'],ok:['ch
 const ROLES={
   student:{n:'Студент',c:'c-s',i:'graduation-cap',grp:true,g:'linear-gradient(135deg,#475569,#334155)'},
   starosta:{n:'Староста',c:'c-g',i:'clipboard-check',grp:true,g:'linear-gradient(135deg,#059669,#0d9488)'},
-  teacher:{n:'Преподаватель',c:'c-v',i:'presentation',grp:false,g:'linear-gradient(135deg,#6d5bff,#a855f7)'},
+  teacher:{n:'Преподаватель',c:'c-v',i:'presentation',grp:false,g:'linear-gradient(135deg,var(--g1),var(--g2))'},
   curator:{n:'Куратор группы',c:'c-b',i:'user-cog',grp:true,g:'linear-gradient(135deg,#0ea5e9,#6366f1)'},
   admin:{n:'Дежурный администратор',c:'c-a',i:'shield',grp:false,g:'linear-gradient(135deg,#f59e0b,#f97316)'},
-  dev:{n:'Разработчик',c:'c-r',i:'terminal',grp:false,g:'linear-gradient(135deg,#f43f5e,#a855f7)'},
+  dev:{n:'Разработчик',c:'c-r',i:'terminal',grp:false,g:'linear-gradient(135deg,#f43f5e,var(--g2))'},
 };
 let ACC=[];
 let GROUPS=[];

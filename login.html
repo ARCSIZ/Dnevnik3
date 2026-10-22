@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="stylesheet" href="/theme.css">
+<script src="/theme.js"></script>
 <script src="/splash.js"></script>
 <title>Вход · Электронный дневник</title>
 <meta name="description" content="Электронный дневник колледжа: оценки, расписание, домашние задания и уведомления в одном месте.">
@@ -29,10 +31,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Unbounded:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --acc1: #7c6cff;
-    --acc2: #b06cff;
-  }
   html { -webkit-tap-highlight-color: transparent; }
   body {
     font-family: 'Inter', system-ui, sans-serif;
@@ -70,7 +68,7 @@
     -webkit-backdrop-filter: blur(18px);
     box-shadow: 0 24px 64px -24px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.07);
   }
-  .card-glow { position: absolute; inset: -60px; z-index: -1; background: radial-gradient(ellipse at 50% 0%, rgba(124,108,255,.22), transparent 65%); filter: blur(30px); border-radius: 9999px; }
+  .card-glow { position: absolute; inset: -60px; z-index: -1; background: radial-gradient(ellipse at 50% 0%, rgba(var(--glow), .22), transparent 65%); filter: blur(30px); border-radius: 9999px; }
 
   /* ---------- Поля ввода ---------- */
   .field { position: relative; }
@@ -80,12 +78,12 @@
     border: 1px solid rgba(255,255,255,.1);
     padding: 24px 16px 8px; font-size: 16px; color: #fff;
     outline: none; transition: border-color .2s, background .2s, box-shadow .2s;
-    caret-color: #a78bfa;
+    caret-color: var(--acc-c);
   }
   .field:focus-within .field-input {
-    border-color: rgba(167,139,250,.6);
+    border-color: rgba(var(--acc),.6);
     background: rgba(255,255,255,.07);
-    box-shadow: 0 0 0 4px rgba(124,108,255,.14);
+    box-shadow: 0 0 0 4px rgba(var(--glow),.14);
   }
   .field-input.invalid { border-color: rgba(251,113,133,.65); }
   .field:focus-within .field-input.invalid { box-shadow: 0 0 0 4px rgba(251,113,133,.12); }
@@ -95,7 +93,7 @@
     transition: all .18s cubic-bezier(.4,0,.2,1);
   }
   .field-input:focus ~ .field-label, .field-input:not(:placeholder-shown) ~ .field-label {
-    top: 15px; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: rgba(167,139,250,.95);
+    top: 15px; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: rgba(var(--acc),.95);
   }
   .field-eye {
     position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
@@ -110,22 +108,22 @@
     width: 100%; border-radius: 12px; background: rgba(255,255,255,.045);
     border: 1px solid rgba(255,255,255,.1); padding: 13px 0; text-align: center;
     font-size: 16px; font-weight: 600; color: #fff; outline: none;
-    transition: border-color .2s, box-shadow .2s, background .2s; caret-color: #a78bfa;
+    transition: border-color .2s, box-shadow .2s, background .2s; caret-color: var(--acc-c);
   }
   .mini-input::placeholder { color: rgba(255,255,255,.22); font-weight: 500; }
-  .mini-input:focus { border-color: rgba(167,139,250,.6); background: rgba(255,255,255,.07); box-shadow: 0 0 0 4px rgba(124,108,255,.14); }
+  .mini-input:focus { border-color: rgba(var(--acc),.6); background: rgba(255,255,255,.07); box-shadow: 0 0 0 4px rgba(var(--glow),.14); }
   .mini-input.invalid { border-color: rgba(251,113,133,.65); }
 
   /* ---------- Кнопки ---------- */
   .btn-primary {
     position: relative; width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 9px;
     border-radius: 14px; padding: 15px 20px; font-weight: 600; font-size: 15px; color: #fff;
-    background: linear-gradient(135deg, #6d5bff, #a855f7);
-    box-shadow: 0 10px 28px -10px rgba(124,108,255,.55), inset 0 1px 0 rgba(255,255,255,.22);
+    background: linear-gradient(135deg, var(--g1), var(--g2));
+    box-shadow: 0 10px 28px -10px rgba(var(--glow),.55), inset 0 1px 0 rgba(255,255,255,.22);
     transition: transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .25s, filter .25s;
     user-select: none; cursor: pointer; border: none;
   }
-  .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 16px 36px -10px rgba(124,108,255,.7), inset 0 1px 0 rgba(255,255,255,.28); filter: brightness(1.06); }
+  .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 16px 36px -10px rgba(var(--glow),.7), inset 0 1px 0 rgba(255,255,255,.28); filter: brightness(1.06); }
   .btn-primary:active:not(:disabled) { transform: translateY(0) scale(.972); transition-duration: .06s; }
   .btn-primary:disabled { opacity: .6; cursor: not-allowed; }
   .btn-ghost {
@@ -168,7 +166,7 @@
 
   /* ---------- Прогресс ---------- */
   .pseg { height: 4px; flex: 1; border-radius: 99px; background: rgba(255,255,255,.08); overflow: hidden; }
-  .pseg::after { content: ''; display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--acc1), var(--acc2)); transform: scaleX(0); transform-origin: left; transition: transform .55s cubic-bezier(.16,1,.3,1); }
+  .pseg::after { content: ''; display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--g1), var(--g2)); transform: scaleX(0); transform-origin: left; transition: transform .55s cubic-bezier(.16,1,.3,1); }
   .pseg.on::after { transform: scaleX(1); }
 
   .step-error { align-items: flex-start; gap: 8px; font-size: 13px; color: #fda4af; }
@@ -187,12 +185,12 @@
     transition: all .18s cubic-bezier(.34,1.4,.64,1);
   }
   .role-btn svg { width: 16px; height: 16px; }
-  .role-btn:hover { color: #fff; border-color: rgba(167,139,250,.4); transform: translateY(-2px); }
+  .role-btn:hover { color: #fff; border-color: rgba(var(--acc),.4); transform: translateY(-2px); }
   .role-btn:active { transform: scale(.94); }
   .role-btn.active {
     color: #fff; border-color: transparent;
-    background: linear-gradient(140deg, #6d5bff, #a855f7);
-    box-shadow: 0 8px 20px -8px rgba(124,108,255,.7), inset 0 1px 0 rgba(255,255,255,.22);
+    background: linear-gradient(140deg, var(--g1), var(--g2));
+    box-shadow: 0 8px 20px -8px rgba(var(--glow),.7), inset 0 1px 0 rgba(255,255,255,.22);
   }
 
   /* ---------- Сила пароля ---------- */
@@ -207,13 +205,13 @@
     border: 1px solid rgba(255,255,255,.09); background: rgba(255,255,255,.03);
     transition: border-color .2s, background .2s, transform .15s;
   }
-  .group-card:not(.locked):hover { border-color: rgba(167,139,250,.45); background: rgba(124,108,255,.07); transform: translateY(-1px); }
+  .group-card:not(.locked):hover { border-color: rgba(var(--acc),.45); background: rgba(var(--glow),.07); transform: translateY(-1px); }
   .group-card:not(.locked):active { transform: scale(.985); }
-  .group-card.selected { border-color: rgba(167,139,250,.7); background: rgba(124,108,255,.12); box-shadow: 0 0 0 4px rgba(124,108,255,.12); }
+  .group-card.selected { border-color: rgba(var(--acc),.7); background: rgba(var(--glow),.12); box-shadow: 0 0 0 4px rgba(var(--glow),.12); }
   .group-card.locked { opacity: .45; cursor: not-allowed; }
   .radio-dot { width: 20px; height: 20px; border-radius: 9999px; border: 2px solid rgba(255,255,255,.25); display: grid; place-items: center; transition: all .2s; flex-shrink: 0; }
   .radio-dot::after { content: ''; width: 8px; height: 8px; border-radius: 9999px; background: #fff; transform: scale(0); transition: transform .25s cubic-bezier(.34,1.56,.64,1); }
-  .group-card.selected .radio-dot { border-color: #a78bfa; background: #7c6cff; }
+  .group-card.selected .radio-dot { border-color: var(--acc-c); background: var(--g1); }
   .group-card.selected .radio-dot::after { transform: scale(1); }
 
   /* ---------- Спиннер ---------- */
@@ -237,7 +235,7 @@
   #rotWord.rot-out { transform: translateY(-115%); opacity: 0; }
   #rotWord.rot-in { animation: rotIn .36s cubic-bezier(.16,1,.3,1) both; }
   @keyframes rotIn { from { transform: translateY(115%); opacity: 0; } to { transform: none; opacity: 1; } }
-  .grad-text { background: linear-gradient(92deg, #a78bfa, #c084fc 45%, #818cf8); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .grad-text { background: linear-gradient(92deg, var(--acc-c), #c084fc 45%, #818cf8); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
   .floaty { animation: floaty 7s ease-in-out infinite; }
   @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
@@ -285,7 +283,7 @@
   <!-- ======= МОБИЛЬНАЯ ШАПКА ======= -->
   <header class="relative z-10 flex items-center justify-between px-5 pt-5 pb-1 lg:hidden">
     <div class="flex items-center gap-2.5">
-      <div class="w-9 h-9 rounded-xl grid place-items-center bg-gradient-to-br from-[#6d5bff] to-[#a855f7] shadow-lg shadow-violet-500/30">
+      <div class="w-9 h-9 rounded-xl grid place-items-center bg-gradient-to-br from-[var(--g1)] to-[var(--g2)] shadow-lg shadow-violet-500/30">
         <i data-lucide="notebook-pen" class="text-white" style="width:18px;height:18px"></i>
       </div>
       <div>
@@ -305,7 +303,7 @@
       <!-- ======= ЛЕВАЯ ПАНЕЛЬ (ПК) ======= -->
       <section class="hidden lg:flex flex-col justify-center gap-10 pr-10">
         <div class="flex items-center gap-3 fade-up">
-          <div class="w-11 h-11 rounded-2xl grid place-items-center bg-gradient-to-br from-[#6d5bff] to-[#a855f7] shadow-xl shadow-violet-500/30">
+          <div class="w-11 h-11 rounded-2xl grid place-items-center bg-gradient-to-br from-[var(--g1)] to-[var(--g2)] shadow-xl shadow-violet-500/30">
             <i data-lucide="notebook-pen" class="text-white" style="width:22px;height:22px"></i>
           </div>
           <div>
@@ -324,7 +322,7 @@
             <span class="rot-mask"><span id="rotWord" class="grad-text">под контролем</span></span>
           </h1>
           <p class="fade-up d3 mt-6 max-w-[440px] text-[15px] leading-relaxed text-white/50">
-            Войдите, чтобы видеть расписание, оценки и домашние задания группы 02-СД-25-о — с телефона или компьютера, в любое время.
+            Войдите, чтобы видеть расписание, оценки и домашние задания своей группы — с телефона или компьютера, в любое время.
           </p>
         </div>
 
@@ -356,7 +354,7 @@
                 <i data-lucide="calendar-days" style="width:15px;height:15px" class="text-violet-300"></i>
                 Учебная неделя
               </div>
-              <span class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-violet-500/15 text-violet-300 border border-violet-400/20">02-СД-25-о</span>
+              <span class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-violet-500/15 text-violet-300 border border-violet-400/20">Пн–Вс</span>
             </div>
             <div class="rounded-2xl bg-white/[0.035] border border-white/[0.06] py-8 px-5 flex flex-col items-center text-center">
               <div class="w-11 h-11 rounded-2xl grid place-items-center bg-violet-500/15 text-violet-300 mb-3">
@@ -366,7 +364,7 @@
               <div class="text-[12px] text-white/35 mt-1">Данные появятся после публикации расписания</div>
             </div>
           </div>
-          <div class="floaty-slow absolute -top-5 -right-4 glass rounded-2xl px-4 py-3 flex items-center gap-2.5 rotate-3">
+          <div class="floaty-slow absolute -bottom-5 -right-4 glass rounded-2xl px-4 py-3 flex items-center gap-2.5 -rotate-3">
             <div class="text-[11.5px] leading-tight"><div class="font-semibold">Чистый старт</div><div class="text-white/40">без тестовых данных</div></div>
           </div>
         </div>
@@ -819,7 +817,7 @@ let selectedGroup = '';
     const groups = await response.json();
     if (!response.ok || !Array.isArray(groups)) throw new Error('Не удалось загрузить группы');
     host.innerHTML = groups.map((g,i)=>`<button type="button" class="group-card" data-group="${String(g.id).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')}" style="animation-delay:${i*.03}s">
-      <span class="w-11 h-11 rounded-xl grid place-items-center bg-gradient-to-br from-[#6d5bff] to-[#a855f7] text-white shrink-0"><i data-lucide="users" style="width:19px;height:19px"></i></span>
+      <span class="w-11 h-11 rounded-xl grid place-items-center bg-gradient-to-br from-[var(--g1)] to-[var(--g2)] text-white shrink-0"><i data-lucide="users" style="width:19px;height:19px"></i></span>
       <span class="flex-1 min-w-0"><span class="block font-semibold text-[15px]">${g.name}</span><span class="block text-[12px] text-white/40 mt-0.5">${g.specialty || 'Учебная группа'} · ${g.course || 1} курс</span></span><span class="radio-dot"></span></button>`).join('') || '<p class="text-[12px] text-white/40">Пока нет доступных групп.</p>';
     if (window.lucide) lucide.createIcons();
     $$('.group-card').forEach(card => card.addEventListener('click', () => {
@@ -876,7 +874,7 @@ function playSuccess(panel) {
   const wrap = $('#confettiWrap');
   wrap.innerHTML = '';
   if (!reduced) {
-    const colors = ['#a78bfa', '#c084fc', '#34d399', '#818cf8', '#fbbf24'];
+    const colors = ['var(--acc-c)', '#c084fc', '#34d399', '#818cf8', '#fbbf24'];
     for (let i = 0; i < 16; i++) {
       const c = document.createElement('span');
       c.className = 'confetti';
